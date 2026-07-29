@@ -2,6 +2,28 @@
 <issues format="6" by="lint 8.4.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.4.0-alpha08">
 
     <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.app.KeyguardManager#addDeviceLockedStateListener`"
+        errorLine1="            mKeyguard.addDeviceLockedStateListener("
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4685"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 36.1 (current min is 36): `android.app.KeyguardManager.DeviceLockedStateListener`"
+        errorLine1="            new DeviceLockedStateListener() {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4734"
+            column="17"/>
+    </issue>
+
+    <issue
         id="FlaggedApi"
         message="Method `updateForShouldDefaultToObserveMode()` is a flagged API and should be inside an `if (Flags.nfcObserveMode())` check (or annotate the surrounding method `updateForShouldDefaultToObserveMode` with `@FlaggedApi(Flags.FLAG_NFC_OBSERVE_MODE) to transfer requirement to caller`)"
         errorLine1="            mHostEmulationManager.updateForShouldDefaultToObserveMode(enableObserveMode);"

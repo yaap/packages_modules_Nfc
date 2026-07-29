@@ -35,7 +35,7 @@
     <string name="could_not_use_app" msgid="2945389413330489607">"Sovelluksen <xliff:g id="APP">%1$s</xliff:g> käyttö epäonnistui."</string>
     <string name="pay_with" msgid="5104112137995621262">"Maksusovellus:"</string>
     <string name="complete_with" msgid="6624789011610610450">"Käytettävä sovellus:"</string>
-    <string name="default_pay_app_removed" msgid="4678760785647557185">"Napauttamalla maksamiseen valitsemasi palvelu poistettiin. Haluatko valita toisen?"</string>
+    <string name="default_pay_app_removed" msgid="4678760785647557185">"Lähimaksamiseen valitsemasi palvelu poistettiin. Haluatko valita toisen?"</string>
     <string name="ask_nfc_tap" msgid="7921925213499063051">"Suorita toiminto loppuun napauttamalla toista laitetta"</string>
     <string name="wifi_connect" msgid="2726973850576310336">"Yhdistä"</string>
     <string name="status_unable_to_connect" msgid="3282224066213036023">"Verkkoyhteyttä ei voi muodostaa"</string>
@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> voi lukea NFC-tageja."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Seuraavat sovellukset voivat lukea NFC-tageja:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Siirry käytöstäpoisto-ohjeisiin napauttamalla."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> haluaa lukea NFC-tageja."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Seuraavat sovellukset haluavat lukea NFC-tageja:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Katso asetukset napauttamalla."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC-dataa tallennetaan"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Lopeta tallennus napauttamalla."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"Saako <xliff:g id="PKG">%1$s</xliff:g> ottaa NFC:n käyttöön?"</string>

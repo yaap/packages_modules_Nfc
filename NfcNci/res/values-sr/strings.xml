@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> може да чита NFC ознаке."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Следеће апликације могу да читају NFC ознаке: <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Додирните да бисте сазнали како да онемогућите."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> жели да чита NFC ознаке."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Следеће апликације желе да читају NFC ознаке: <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Додирните да бисте видели актуелна подешавања."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC подаци се снимају"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Додирните да бисте зауставили снимање."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"Желите да дозволите да <xliff:g id="PKG">%1$s</xliff:g> омогући NFC?"</string>

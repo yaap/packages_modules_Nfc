@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,8 @@ import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProtoEnums;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -72,7 +75,6 @@ import android.util.proto.ProtoOutputStream;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
-import com.android.nfc.flags.FeatureFlags;
 import com.android.nfc.handover.HandoverDataParser;
 import com.android.nfc.handover.PeripheralHandoverService;
 
@@ -124,6 +126,10 @@ public final class NfcDispatcherTest {
     @Mock
     UserManager mUserManager;
     @Mock
+    BluetoothManager mBluetoothManager;
+    @Mock
+    BluetoothAdapter mBluetoothAdapter;
+    @Mock
     ActivityManager mActivityManager;
     @Mock
     NfcAdapter mNfcAdapter;
@@ -142,7 +148,7 @@ public final class NfcDispatcherTest {
         mStaticMockSession = ExtendedMockito.mockitoSession()
                 .mockStatic(NfcStatsLog.class)
                 .mockStatic(android.nfc.Flags.class)
-                .mockStatic(com.android.nfc.flags.Flags.class)
+                .mockStatic(com.android.nfc.module.flags.Flags.class)
                 .mockStatic(NfcAdapter.class)
                 .mockStatic(Ndef.class)
                 .mockStatic(ForegroundUtils.class)
@@ -157,6 +163,8 @@ public final class NfcDispatcherTest {
         when(mockContext.getSystemService(KeyguardManager.class)).thenReturn(mKeyguardManager);
         when(mockContext.getSystemService(DisplayManager.class)).thenReturn(mDisplayManager);
         when(mockContext.getSystemService(UserManager.class)).thenReturn(mUserManager);
+        when(mockContext.getSystemService(BluetoothManager.class)).thenReturn(mBluetoothManager);
+        when(mBluetoothManager.getAdapter()).thenReturn(mBluetoothAdapter);
         when(mockContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(ForegroundUtils.getInstance(mActivityManager)).thenReturn(mForegroundUtils);
         when(mockContext.createPackageContextAsUser(anyString(), anyInt(), any()))
@@ -169,8 +177,9 @@ public final class NfcDispatcherTest {
         when(mockContext.getResources()).thenReturn(mResources);
         when(NfcAdapter.getDefaultAdapter(mockContext)).thenReturn(mNfcAdapter);
         when(mNfcInjector.createAtomicBoolean()).thenReturn(mAtomicBoolean);
-        when(mNfcInjector.createNfcTagAllowNotification(any(), any()))
+        when(mNfcInjector.createNfcTagAllowNotification(any(), any(), eq(true)))
                 .thenReturn(mNfcTagAllowNotification);
+        when(com.android.nfc.module.flags.Flags.nfcstack26q2Updates()).thenReturn(false);
 
         mNfcDispatcher = new NfcDispatcher(mockContext,
                 new HandoverDataParser(), mNfcInjector, true, mDeviceConfigFacade);
@@ -431,9 +440,6 @@ public final class NfcDispatcherTest {
         when(mUserManager.isQuietModeEnabled(userHandle)).thenReturn(false);
         NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher
                 .DispatchInfo(mockContext, mNfcInjector, tag, ndefMessage);
-        FeatureFlags featureFlags = mock(FeatureFlags.class);
-        when(featureFlags.sendViewIntentForUrlTagDispatch()).thenReturn(false);
-        when(mNfcInjector.getFeatureFlags()).thenReturn(featureFlags);
         ResolveInfo ri = mock(ResolveInfo.class);
         when(mPackageManager.resolveActivity(any(), anyInt())).thenReturn(ri);
         mNfcDispatcher.tryNdef(dispatchInfo, ndefMessage);
@@ -515,6 +521,117 @@ public final class NfcDispatcherTest {
                 BluetoothProtoEnums.MAJOR_CLASS_UNCATEGORIZED,
                 ""));
 
+    }
+
+    @Test
+    public void testTryStartActivitySafer() {
+        when(mResources.getBoolean(eq(R.bool.tag_intent_app_pref_supported)))
+                .thenReturn(true);
+        Tag tag = mock(Tag.class);
+        NdefMessage ndefMessage = mock(NdefMessage.class);
+        NdefRecord ndefRecord = NdefRecord.createUri("https://www.example.com");
+        when(ndefMessage.getRecords()).thenReturn(new NdefRecord[]{ndefRecord});
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher
+                .DispatchInfo(mockContext, mNfcInjector, tag, ndefMessage);
+        ResolveInfo ri = mock(ResolveInfo.class);
+        ActivityInfo ai = mock(ActivityInfo.class);
+        ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
+        applicationInfo.uid = 0;
+        applicationInfo.targetSdkVersion = 37;
+        ai.applicationInfo = applicationInfo;
+        ai.packageName = "com.android.test";
+        ai.name = "test";
+        ai.exported = true;
+        ai.permission = "android.permission.DISPATCH_NFC_MESSAGE";
+        ri.activityInfo = ai;
+        List<ResolveInfo> ris = new ArrayList<>();
+        ris.add(ri);
+        when(mPackageManager.queryIntentActivitiesAsUser(any(), any(), any())).thenReturn(ris);
+
+        assertThat(dispatchInfo.tryStartActivitySafer()).isTrue();
+    }
+
+    @Test
+    public void testTryStartActivitySafer_noPermission() {
+        when(mResources.getBoolean(eq(R.bool.tag_intent_app_pref_supported)))
+                .thenReturn(true);
+        Tag tag = mock(Tag.class);
+        NdefMessage ndefMessage = mock(NdefMessage.class);
+        NdefRecord ndefRecord = NdefRecord.createUri("https://www.example.com");
+        when(ndefMessage.getRecords()).thenReturn(new NdefRecord[]{ndefRecord});
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher
+                .DispatchInfo(mockContext, mNfcInjector, tag, ndefMessage);
+        ResolveInfo ri = mock(ResolveInfo.class);
+        ActivityInfo ai = mock(ActivityInfo.class);
+        ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
+        applicationInfo.uid = 0;
+        applicationInfo.targetSdkVersion = 37;
+        ai.applicationInfo = applicationInfo;
+        ai.packageName = "com.android.test";
+        ai.name = "test";
+        ai.exported = true;
+        ri.activityInfo = ai;
+        List<ResolveInfo> ris = new ArrayList<>();
+        ris.add(ri);
+        when(mPackageManager.queryIntentActivitiesAsUser(any(), any(), any())).thenReturn(ris);
+
+        assertThat(dispatchInfo.tryStartActivitySafer()).isFalse();
+    }
+
+    @Test
+    public void testTryStartActivitySafer_noPermission_notTargetSdk() {
+        when(mResources.getBoolean(eq(R.bool.tag_intent_app_pref_supported)))
+                .thenReturn(true);
+        Tag tag = mock(Tag.class);
+        NdefMessage ndefMessage = mock(NdefMessage.class);
+        NdefRecord ndefRecord = NdefRecord.createUri("https://www.example.com");
+        when(ndefMessage.getRecords()).thenReturn(new NdefRecord[]{ndefRecord});
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher
+                .DispatchInfo(mockContext, mNfcInjector, tag, ndefMessage);
+        ResolveInfo ri = mock(ResolveInfo.class);
+        ActivityInfo ai = mock(ActivityInfo.class);
+        ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
+        applicationInfo.uid = 0;
+        applicationInfo.targetSdkVersion = 36;
+        ai.applicationInfo = applicationInfo;
+        ai.packageName = "com.android.test";
+        ai.name = "test";
+        ai.exported = true;
+        ri.activityInfo = ai;
+        List<ResolveInfo> ris = new ArrayList<>();
+        ris.add(ri);
+        when(mPackageManager.queryIntentActivitiesAsUser(any(), any(), any())).thenReturn(ris);
+
+        assertThat(dispatchInfo.tryStartActivitySafer()).isTrue();
+    }
+
+    @Test
+    public void testTryStartActivitySafer_appStopped() {
+        when(mResources.getBoolean(eq(R.bool.tag_intent_app_pref_supported)))
+                .thenReturn(true);
+        Tag tag = mock(Tag.class);
+        NdefMessage ndefMessage = mock(NdefMessage.class);
+        NdefRecord ndefRecord = NdefRecord.createUri("https://www.example.com");
+        when(ndefMessage.getRecords()).thenReturn(new NdefRecord[]{ndefRecord});
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher
+                .DispatchInfo(mockContext, mNfcInjector, tag, ndefMessage);
+        ResolveInfo ri = mock(ResolveInfo.class);
+        ActivityInfo ai = mock(ActivityInfo.class);
+        ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
+        applicationInfo.uid = 0;
+        applicationInfo.targetSdkVersion = 37;
+        applicationInfo.flags |= ApplicationInfo.FLAG_STOPPED;
+        ai.applicationInfo = applicationInfo;
+        ai.packageName = "com.android.test";
+        ai.name = "test";
+        ai.exported = true;
+        ai.permission = "android.permission.DISPATCH_NFC_MESSAGE";
+        ri.activityInfo = ai;
+        List<ResolveInfo> ris = new ArrayList<>();
+        ris.add(ri);
+        when(mPackageManager.queryIntentActivitiesAsUser(any(), any(), any())).thenReturn(ris);
+
+        assertThat(dispatchInfo.tryStartActivitySafer()).isFalse();
     }
 
     @Test
@@ -603,7 +720,7 @@ public final class NfcDispatcherTest {
         Intent intent = mock(Intent.class);
         List<UserHandle> luh = new ArrayList<>();
         luh.add(userHandle);
-        when(dispatch.tryStartActivity()).thenReturn(true);
+        when(dispatch.tryStartActivitySafer()).thenReturn(true);
         Field field = NfcDispatcher.DispatchInfo.class.getDeclaredField("intent");
         field.setAccessible(true);
         field.set(dispatch, intent);
@@ -621,7 +738,7 @@ public final class NfcDispatcherTest {
         Intent intent = mock(Intent.class);
         List<UserHandle> luh = new ArrayList<>();
         luh.add(userHandle);
-        when(dispatch.tryStartActivity()).thenReturn(true);
+        when(dispatch.tryStartActivitySafer()).thenReturn(true);
         Field field = NfcDispatcher.DispatchInfo.class.getDeclaredField("intent");
         field.setAccessible(true);
         field.set(dispatch, intent);
@@ -794,6 +911,142 @@ public final class NfcDispatcherTest {
     }
 
     @Test
+    public void testTryTechWithSingleMatch_withActivityPermission() throws IllegalAccessException,
+            NoSuchFieldException, PackageManager.NameNotFoundException {
+        NfcDispatcher.DispatchInfo dispatch = mock(NfcDispatcher.DispatchInfo.class);
+        RegisteredComponentCache mTechListFilters = mock(RegisteredComponentCache.class);
+        UserHandle userHandle = mock(UserHandle.class);
+        Context context = mock(Context.class);
+        ResolveInfo resolveInfo = mock(ResolveInfo.class);
+        ActivityInfo activityInfo = mock(ActivityInfo.class);
+        ApplicationInfo appInfo = mock(ApplicationInfo.class);
+        Intent intent = mock(Intent.class);
+        Tag tag = mock(Tag.class);
+        String packageName = "sample.package.name";
+        RegisteredComponentCache.ComponentInfo info = mock(
+                RegisteredComponentCache.ComponentInfo.class);
+        PackageManager pm = mock(PackageManager.class);
+        List<UserHandle> luh = new ArrayList<>();
+        luh.add(userHandle);
+        ArrayList<RegisteredComponentCache.ComponentInfo> registered = new ArrayList<>();
+        registered.add(info);
+        Map<String, Boolean> prefList = new HashMap<>();
+        prefList.put(packageName + "another", true);
+        String[] tagTechs =
+                new String[]{IsoDep.class.getName(), NfcA.class.getName(), NfcB.class.getName()};
+        Field field = NfcDispatcher.class.getDeclaredField("mTechListFilters");
+        field.setAccessible(true);
+        field.set(mNfcDispatcher, mTechListFilters);
+        Field fieldCompInfoResolveInfo =
+                RegisteredComponentCache.ComponentInfo.class.getDeclaredField("resolveInfo");
+        fieldCompInfoResolveInfo.setAccessible(true);
+        fieldCompInfoResolveInfo.set(info, resolveInfo);
+        appInfo.targetSdkVersion = 37;
+        activityInfo.exported = true;
+        activityInfo.applicationInfo = appInfo;
+        activityInfo.packageName = packageName;
+        activityInfo.name = "name";
+        activityInfo.permission = "android.permission.DISPATCH_NFC_MESSAGE";
+        resolveInfo.activityInfo = activityInfo;
+        Field fieldCompInfoResolveTech =
+                RegisteredComponentCache.ComponentInfo.class.getDeclaredField("techs");
+        fieldCompInfoResolveTech.setAccessible(true);
+        fieldCompInfoResolveTech.set(info, tagTechs);
+        Field fieldNfcAdapter = NfcDispatcher.class.getDeclaredField("mNfcAdapter");
+        fieldNfcAdapter.setAccessible(true);
+        fieldNfcAdapter.set(mNfcDispatcher, mNfcAdapter);
+        Field fieldTagAppSupported = NfcDispatcher.class.getDeclaredField("mIsTagAppPrefSupported");
+        fieldTagAppSupported.setAccessible(true);
+        fieldTagAppSupported.set(mNfcDispatcher, true);
+        Field fieldIntent = NfcDispatcher.DispatchInfo.class.getDeclaredField("intent");
+        fieldIntent.setAccessible(true);
+        fieldIntent.set(dispatch, intent);
+        when(tag.getTechList()).thenReturn(tagTechs);
+        when(mTechListFilters.getComponents()).thenReturn(registered);
+        when(dispatch.getCurrentActiveUserHandles()).thenReturn(luh);
+        when(mockContext.createPackageContextAsUser("android", 0, userHandle))
+                .thenReturn(context);
+        when(context.getPackageManager()).thenReturn(pm);
+        when(pm.getActivityInfo(any(ComponentName.class), anyInt())).thenReturn(activityInfo);
+        when(mockContext.getPackageManager()).thenReturn(pm);
+        when(pm.getApplicationLabel(appInfo)).thenReturn("appname");
+        when(userHandle.getIdentifier()).thenReturn(0);
+        when(mNfcAdapter.getTagIntentAppPreferenceForUser(0)).thenReturn(prefList);
+        when(dispatch.tryStartActivity()).thenReturn(true);
+
+        assertTrue(mNfcDispatcher.tryTech(dispatch, tag));
+        verify(mNfcAdapter).setTagIntentAppPreferenceForUser(0, packageName, true);
+    }
+
+
+    @Test
+    public void testTryTechWithActivityNoPermission() throws IllegalAccessException,
+            NoSuchFieldException, PackageManager.NameNotFoundException {
+        NfcDispatcher.DispatchInfo dispatch = mock(NfcDispatcher.DispatchInfo.class);
+        RegisteredComponentCache mTechListFilters = mock(RegisteredComponentCache.class);
+        UserHandle userHandle = mock(UserHandle.class);
+        Context context = mock(Context.class);
+        ResolveInfo resolveInfo = mock(ResolveInfo.class);
+        ActivityInfo activityInfo = mock(ActivityInfo.class);
+        ApplicationInfo appInfo = mock(ApplicationInfo.class);
+        Intent intent = mock(Intent.class);
+        Tag tag = mock(Tag.class);
+        String packageName = "sample.package.name";
+        RegisteredComponentCache.ComponentInfo info = mock(
+                RegisteredComponentCache.ComponentInfo.class);
+        PackageManager pm = mock(PackageManager.class);
+        List<UserHandle> luh = new ArrayList<>();
+        luh.add(userHandle);
+        ArrayList<RegisteredComponentCache.ComponentInfo> registered = new ArrayList<>();
+        registered.add(info);
+        Map<String, Boolean> prefList = new HashMap<>();
+        prefList.put(packageName + "another", true);
+        String[] tagTechs =
+                new String[]{IsoDep.class.getName(), NfcA.class.getName(), NfcB.class.getName()};
+        Field field = NfcDispatcher.class.getDeclaredField("mTechListFilters");
+        field.setAccessible(true);
+        field.set(mNfcDispatcher, mTechListFilters);
+        Field fieldCompInfoResolveInfo =
+                RegisteredComponentCache.ComponentInfo.class.getDeclaredField("resolveInfo");
+        fieldCompInfoResolveInfo.setAccessible(true);
+        fieldCompInfoResolveInfo.set(info, resolveInfo);
+        luh.add(userHandle);
+        appInfo.targetSdkVersion = 37;
+        activityInfo.exported = true;
+        activityInfo.applicationInfo = appInfo;
+        activityInfo.packageName = packageName;
+        activityInfo.name = "name";
+        resolveInfo.activityInfo = activityInfo;
+        Field fieldCompInfoResolveTech =
+                RegisteredComponentCache.ComponentInfo.class.getDeclaredField("techs");
+        fieldCompInfoResolveTech.setAccessible(true);
+        fieldCompInfoResolveTech.set(info, tagTechs);
+        Field fieldNfcAdapter = NfcDispatcher.class.getDeclaredField("mNfcAdapter");
+        fieldNfcAdapter.setAccessible(true);
+        fieldNfcAdapter.set(mNfcDispatcher, mNfcAdapter);
+        Field fieldTagAppSupported = NfcDispatcher.class.getDeclaredField("mIsTagAppPrefSupported");
+        fieldTagAppSupported.setAccessible(true);
+        fieldTagAppSupported.set(mNfcDispatcher, true);
+        Field fieldIntent = NfcDispatcher.DispatchInfo.class.getDeclaredField("intent");
+        fieldIntent.setAccessible(true);
+        fieldIntent.set(dispatch, intent);
+        when(tag.getTechList()).thenReturn(tagTechs);
+        when(mTechListFilters.getComponents()).thenReturn(registered);
+        when(dispatch.getCurrentActiveUserHandles()).thenReturn(luh);
+        when(mockContext.createPackageContextAsUser("android", 0, userHandle))
+                .thenReturn(context);
+        when(context.getPackageManager()).thenReturn(pm);
+        when(pm.getActivityInfo(any(ComponentName.class), anyInt())).thenReturn(activityInfo);
+        when(mockContext.getPackageManager()).thenReturn(pm);
+        when(pm.getApplicationLabel(appInfo)).thenReturn("appname");
+        when(userHandle.getIdentifier()).thenReturn(0);
+        when(mNfcAdapter.getTagIntentAppPreferenceForUser(0)).thenReturn(prefList);
+
+        assertFalse(mNfcDispatcher.tryTech(dispatch, tag));
+        verify(dispatch, never()).tryStartActivity();
+    }
+
+    @Test
     public void testTryOverrides_NdefDispatchFails() throws CanceledException {
         // Verifies that tryOverrides returns false when PendingIntent.send fails for NDEF.
         // Setup a pending intent that will fail by throwing CanceledException.
@@ -880,5 +1133,91 @@ public final class NfcDispatcherTest {
         assertFalse(result);
         // Verify that the send method was called, which then threw the mocked exception.
         verify(pendingIntent).send(any(Context.class), eq(Activity.RESULT_OK), any(Intent.class));
+    }
+
+    @Test
+    public void testCheckPrefList_withActionView_doesNotMuteNewApp() {
+        // This test verifies that when nfcstack26q2Updates is enabled,
+        // an app that handles an ACTION_VIEW intent is not muted by default.
+        when(com.android.nfc.module.flags.Flags.nfcstack26q2Updates()).thenReturn(true);
+        when(mNfcInjector.createNfcTagAllowNotification(any(), any(), eq(false)))
+                .thenReturn(mNfcTagAllowNotification);
+
+        // Setup DispatchInfo with an ACTION_VIEW intent
+        Tag tag = mock(Tag.class);
+        NdefRecord record = NdefRecord.createUri("https://example.com");
+        NdefMessage message = new NdefMessage(record);
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher.DispatchInfo(
+                mockContext, mNfcInjector, tag, message);
+        dispatchInfo.setViewIntent(); // This sets ACTION_VIEW
+
+        // Setup a single activity to handle the intent
+        ResolveInfo resolveInfo = createResolveInfo("com.example.app", "TestActivity", 0);
+        List<ResolveInfo> activities = new ArrayList<>();
+        activities.add(resolveInfo);
+
+        // Mock that the app preference does not exist yet
+        when(mNfcAdapter.getTagIntentAppPreferenceForUser(anyInt())).thenReturn(new HashMap<>());
+
+        // Call checkPrefList
+        List<ResolveInfo> filteredActivities = dispatchInfo.checkPrefList(activities, 0);
+
+        // Verify the app is not filtered out
+        assertThat(filteredActivities).hasSize(1);
+        assertThat(filteredActivities.get(0)).isEqualTo(resolveInfo);
+
+        // Verify the app preference is set to 'allowed' (true)
+        verify(mNfcAdapter).setTagIntentAppPreferenceForUser(0, "com.example.app", true);
+
+        // Verify the notification indicates the app is allowed
+        verify(mNfcInjector).createNfcTagAllowNotification(any(), any(), eq(true));
+        verify(mNfcTagAllowNotification).startNotification();
+    }
+
+    @Test
+    public void testCheckPrefList_withTechDiscovered_mutesNewApp() {
+        // This test verifies that when nfcstack26q2Updates is enabled,
+        // an app that handles an ACTION_TECH_DISCOVERED intent is muted by default.
+        when(com.android.nfc.module.flags.Flags.nfcstack26q2Updates()).thenReturn(true);
+        when(mNfcInjector.createNfcTagAllowNotification(any(), any(), eq(false)))
+                .thenReturn(mNfcTagAllowNotification);
+
+        // Setup DispatchInfo with an ACTION_TECH_DISCOVERED intent
+        Tag tag = mock(Tag.class);
+        NfcDispatcher.DispatchInfo dispatchInfo = new NfcDispatcher.DispatchInfo(
+                mockContext, mNfcInjector, tag, null);
+        dispatchInfo.setTechIntent(); // This sets ACTION_TECH_DISCOVERED
+
+        // Setup a single activity to handle the intent
+        ResolveInfo resolveInfo = createResolveInfo("com.example.app", "TestActivity", 0);
+        List<ResolveInfo> activities = new ArrayList<>();
+        activities.add(resolveInfo);
+
+        // Mock that the app preference does not exist yet
+        when(mNfcAdapter.getTagIntentAppPreferenceForUser(anyInt())).thenReturn(new HashMap<>());
+
+        // Call checkPrefList
+        List<ResolveInfo> filteredActivities = dispatchInfo.checkPrefList(activities, 0);
+
+        // Verify the app is filtered out (muted)
+        assertThat(filteredActivities).isEmpty();
+
+        // Verify the app preference is set to 'muted' (false)
+        verify(mNfcAdapter).setTagIntentAppPreferenceForUser(0, "com.example.app", false);
+
+        // Verify the notification indicates the app is not allowed
+        verify(mNfcInjector).createNfcTagAllowNotification(any(), any(), eq(false));
+        verify(mNfcTagAllowNotification).startNotification();
+    }
+
+    private ResolveInfo createResolveInfo(String packageName, String name, int uid) {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = packageName;
+        resolveInfo.activityInfo.name = name;
+        resolveInfo.activityInfo.applicationInfo = new ApplicationInfo();
+        resolveInfo.activityInfo.applicationInfo.uid = uid;
+        resolveInfo.activityInfo.exported = true;
+        return resolveInfo;
     }
 }

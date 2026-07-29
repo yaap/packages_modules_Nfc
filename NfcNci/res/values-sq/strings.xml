@@ -24,7 +24,7 @@
     <string name="pairing_peripheral" msgid="5319926791325775305">"<xliff:g id="DEVICE_NAME">%1$s</xliff:g> po çiftohet"</string>
     <string name="pairing_peripheral_failed" msgid="5905500974914016272">"<xliff:g id="DEVICE_NAME">%1$s</xliff:g> nuk mund të çiftohej"</string>
     <string name="failed_to_enable_bt" msgid="5978409523818027926">"Bluetooth-i nuk mund të aktivizohej"</string>
-    <string name="confirm_pairing" msgid="6587809107551647782">"E konfirmon që dëshiron ta çiftosh pajisjen me bluetooth: <xliff:g id="DEVICE_NAME">%1$s</xliff:g>?"</string>
+    <string name="confirm_pairing" msgid="6587809107551647782">"E konfirmon që dëshiron ta çiftosh pajisjen me Bluetooth: <xliff:g id="DEVICE_NAME">%1$s</xliff:g>?"</string>
     <string name="pair_yes" msgid="3624986519335168604">"Po"</string>
     <string name="pair_no" msgid="1333098406083837138">"Jo"</string>
     <string name="tap_again_to_pay" msgid="4338572813931564301">"Trokit përsëri për të paguar me <xliff:g id="APP">%1$s</xliff:g>"</string>
@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> mund të lexojë etiketat NFC."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Aplikacionet në vijim mund të lexojnë etiketat NFC:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Trokit për të mësuar si ta çaktivizosh."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> kërkon të lexojë etiketat NFC."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Aplikacionet në vijim dëshirojnë të lexojnë etiketat NFC:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Trokit për të parë cilësimet aktuale."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"Të dhënat e lidhjes NFC po regjistrohen"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Trokit për të ndaluar regjistrimin"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"Të lejohet që <xliff:g id="PKG">%1$s</xliff:g> të aktivizojë NFC-në?"</string>

@@ -112,6 +112,12 @@
     <string name="tag_app_alert_message_multiple">The following apps can read NFC tags:<xliff:g id="appNames">%1$s</xliff:g></string>
     <!-- Notification action button string informing user can tap to learn more -->
     <string name="tag_app_alert_action_button">Tap to learn how to disable it.</string>
+    <!-- Notification message string informing the user that the blocked app wants to read tags -->
+    <string name="tag_app_alert_blocked_message"><xliff:g id="appNames">%1$s</xliff:g> wants to read NFC tags.</string>
+    <!-- Notification message string informing the user that the blocked apps want to read tags -->
+    <string name="tag_app_alert_message_blocked_multiple">The following apps want to read NFC tags:<xliff:g id="appNames">%1$s</xliff:g></string>
+    <!-- Notification action button string informing user can tap to see current settings -->
+    <string name="tag_app_alert_action_blocked_button">Tap to see current settings.</string>
     <!-- Notification title string informing the user that NFC data is being recorded -->
     <string name="nfc_logging_alert_title">NFC data is being recorded</string>
     <!-- Notification message string informing the user that NFC data is being recorded -->

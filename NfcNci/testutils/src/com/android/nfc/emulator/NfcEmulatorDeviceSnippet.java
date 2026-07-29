@@ -32,6 +32,7 @@ import androidx.test.uiautomator.UiSelector;
 
 import com.android.compatibility.common.util.CommonTestUtils;
 import com.android.nfc.service.AccessServiceTurnObserveModeOnProcessApdu;
+import com.android.nfc.service.NdefService;
 import com.android.nfc.utils.CommandApdu;
 import com.android.nfc.utils.HceUtils;
 import com.android.nfc.utils.NfcSnippet;
@@ -97,6 +98,32 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
                         InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
     }
 
+    /** Starts emulator activity for NDEF test */
+    @Rpc(description = "Start emulator activity for NDEF test")
+    public void startNdefEmulatorActivity() {
+        startSimpleEmulatorActivity(
+                new String[] {NdefService.class.getName()},
+                NdefService.class.getName(),
+                false,
+                true);
+    }
+
+    /** Starts emulator activity for gesture exchange test */
+    @Rpc(description = "Start emulator activity for gesture exchange test")
+    public void startGestureExchangeEmulatorActivity(String aid) {
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName(
+                instrumentation.getTargetContext(),
+                        GestureExchangeEmulatorActivity.class.getName());
+        intent.putExtra("com.android.nfc.emulator.AID", aid);
+        mActivity =
+                (GestureExchangeEmulatorActivity)
+                        instrumentation.startActivitySync(intent);
+    }
+
+    /** Opens emulator activity with Access Service that turns on observe mode. */
     @Rpc(description = "Opens emulator activity with Access Service that turns on observe mode")
     public void startAccessServiceObserveModeEmulatorActivity() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -302,6 +329,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         return cardEmulation.supportsAidPrefixRegistration();
     }
 
+    /** Returns if observe mode is supported. */
     @Rpc(description = "Returns if observe mode is supported.")
     public boolean isObserveModeSupported() {
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(mContext);
@@ -311,6 +339,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         return adapter.isObserveModeSupported();
     }
 
+    /** Returns if exit frame is supported. */
     @Rpc(description = "Returns if exit frame is supported.")
     public boolean isExitFramesSupported() {
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(mContext);
@@ -323,11 +352,13 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         return adapter.isExitFramesSupported();
     }
 
+    /** Returns if observe mode is enabled. */
     @Rpc(description = "Returns if observe mode is enabled.")
     public boolean isObserveModeEnabled() {
         return mActivity.isObserveModeEnabled();
     }
 
+    /** Set observe mode. */
     @Rpc(description = "Set observe mode.")
     public boolean setObserveModeEnabled(boolean enable) {
         if (mActivity != null && isObserveModeSupported()) {
@@ -349,8 +380,20 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         mActivity = (PollingAndOffHostEmulatorActivity) instrumentation.startActivitySync(intent);
     }
 
-    /** Open polling loop emulator activity for Type A */
-    @Rpc(description = "Open polling loop emulator activity for polling loop A test")
+    /** Open polling loop annotation emulator activity. */
+    @Rpc(description = "Open polling loop annotation emulator activity")
+    public void startPollingLoopAnnotationEmulatorActivity() {
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName(
+                instrumentation.getTargetContext(),
+                        PollingLoopAnnotationEmulatorActivity.class.getName());
+        mActivity = (PollingLoopAnnotationEmulatorActivity) instrumentation
+                .startActivitySync(intent);
+    }
+    /** Open polling loop emulator activity for Type A. */
+    @Rpc(description = "Open polling loop emulator activity for Type A")
     public void startPollingLoopAEmulatorActivity() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         Intent intent =
@@ -390,6 +433,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         mActivity = (PollingLoopEmulatorActivity) instrumentation.startActivitySync(intent);
     }
 
+    /** Open two polling frame emulator activity for two readers test. */
     @Rpc(description = "Open two polling frame emulator activity for two readers test")
     public void startTwoPollingFrameEmulatorActivity() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -403,6 +447,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         mActivity = (TwoPollingFrameEmulatorActivity) instrumentation.startActivitySync(intent);
     }
 
+    /** Opens PN532 Activity. */
     @Rpc(description = "Opens PN532 Activity")
     public void startPN532Activity() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -414,6 +459,20 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         mActivity = (PN532Activity) instrumentation.startActivitySync(intent);
     }
 
+    /** Opens PN532 Activity with TagLoss stress loop enabled. */
+    @Rpc(description = "Opens PN532 Activity with TagLoss stress loop enabled")
+    public void startPN532ActivityForTagLoss() {
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName(instrumentation.getTargetContext(), PN532Activity.class.getName());
+        intent.putExtra("stress_test_tag_loss", true);
+
+        mActivity = (PN532Activity) instrumentation.startActivitySync(intent);
+    }
+
+    /** Opens the Event Listener Activity. */
     @Rpc(description = "Opens the Event Listener Activity")
     public void startEventListenerActivity() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -421,11 +480,12 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName(instrumentation.getTargetContext(),
-            EventListenerEmulatorActivity.class.getName());
+                EventListenerEmulatorActivity.class.getName());
 
         mActivity = (EventListenerEmulatorActivity) instrumentation.startActivitySync(intent);
     }
 
+    /** Opens the Exit Frame Activity. */
     @Rpc(description = "Opens the Exit Frame Activity")
     public void startExitFrameActivity(String intendedExitFrame, String[] plpfs,
             boolean waitForTransaction) {
@@ -456,6 +516,14 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
                 callbackId, eventName, PN532Activity.ACTION_TAG_DISCOVERED);
     }
 
+    /** Registers receiver that waits for TagLostException broadcast from Activity. */
+    @AsyncRpc(description = "Waits for TagLostException broadcast")
+    public void asyncWaitForTagLostException(String callbackId, String eventName) {
+        registerSnippetBroadcastReceiver(
+                callbackId, eventName, PN532Activity.ACTION_TAG_LOST_CATCH);
+    }
+
+    /** Enable reader mode with given flags. */
     @Rpc(description = "Enable reader mode with given flags")
     public void enableReaderMode(int flags) {
         if (mActivity == null || !(mActivity instanceof PN532Activity)) {
@@ -518,6 +586,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         registerSnippetBroadcastReceiver(callbackId, eventName, Intent.ACTION_SCREEN_ON);
     }
 
+    /** Waits for Observe Mode False. */
     @AsyncRpc(description = "Waits for Observe Mode False")
     public void asyncWaitForObserveModeFalse(String callbackId, String eventName) {
         registerSnippetBroadcastReceiver(
@@ -526,6 +595,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
                 AccessServiceTurnObserveModeOnProcessApdu.OBSERVE_MODE_FALSE);
     }
 
+    /** Waits for off host aid selected event. */
     @AsyncRpc(description = "Waits for off host aid selected event")
     public void asyncWaitForOffHostAidSelected(String callbackId, String eventName) {
         registerSnippetBroadcastReceiver(
@@ -575,7 +645,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
             } else {
                 Log.e(TAG, "UI Object does not exist.");
             }
-        } catch (UiObjectNotFoundException|InterruptedException e) {
+        } catch (UiObjectNotFoundException | InterruptedException e) {
             Log.e(TAG, "Ui Object not found.", e);
         }
     }
@@ -613,6 +683,7 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
         }
     }
 
+    /** Gets command apdus. */
     @Rpc(description = "Gets command apdus")
     public String[] getCommandApdus(String serviceClassName) {
         CommandApdu[] commandApdus = HceUtils.COMMAND_APDUS_BY_SERVICE.get(serviceClassName);
@@ -621,11 +692,13 @@ public class NfcEmulatorDeviceSnippet extends NfcSnippet {
                 .toArray(String[]::new);
     }
 
+    /** Gets response apdus. */
     @Rpc(description = "Gets response apdus")
     public String[] getResponseApdus(String serviceClassName) {
         return HceUtils.RESPONSE_APDUS_BY_SERVICE.get(serviceClassName);
     }
 
+    /** Resets the wallet role holder before tests. */
     @Rpc(description = "Resets the wallet role holder before tests")
     public void resetWalletRoleHolder() {
         HceUtils.setDefaultWalletRoleHolder(mContext, null);

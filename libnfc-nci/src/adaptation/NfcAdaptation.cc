@@ -149,6 +149,16 @@ static std::vector<uint8_t> host_allowlist;
   return vendor_api_level;
 }
 
+[[maybe_unused]] static int get_system_api_level() {
+  int system_api_level =
+      ::android::base::GetIntProperty("ro.llndk.api_level", -1);
+  if (system_api_level == -1) {
+    system_api_level =
+        ::android::base::GetIntProperty("ro.system.build.version.sdk", -1);
+  }
+  return system_api_level;
+}
+
 static void notifyHalBinderDied() {
   if (sVndExtnsPresent) {
     uint8_t event = -1, status = -1;
@@ -197,6 +207,16 @@ void HalAidlBinderDied(void* /* cookie */) {
   notifyHalBinderDied();
   exit(0);
 }
+
+class NfcLoggerInitializer {
+ public:
+  NfcLoggerInitializer() {
+    // Init log tag
+    android::base::InitLogging(nullptr);
+    android::base::SetDefaultTag("libnfc_nci");
+  }
+};
+NfcLoggerInitializer gNfcLoggerInitializer;
 
 }  // namespace
 
@@ -586,9 +606,6 @@ void NfcAdaptation::Initialize() {
   if (sVndExtnsPresent) {
     sNfcVendorExtn->processEvent(HANDLE_NFC_ADAPTATION_INIT, HAL_NFC_STATUS_OK);
   }
-  // Init log tag
-  android::base::InitLogging(nullptr);
-  android::base::SetDefaultTag("libnfc_nci");
 
   initializeGlobalDebugEnabledFlag();
   initializeNciResetTypeFlag();
@@ -718,7 +735,7 @@ void NfcAdaptation::Finalize() {
   const char* func = "NfcAdaptation::Finalize";
   AutoThreadMutex a(sLock);
 
-  LOG(VERBOSE) << StringPrintf("%s: enter", func);
+  LOG(DEBUG) << StringPrintf("%s: enter", func);
   GKI_shutdown();
 
   NfcConfig::clear();
@@ -736,7 +753,7 @@ void NfcAdaptation::Finalize() {
     }
     mNfcHalDeathRecipient->finalize();
   }
-  LOG(VERBOSE) << StringPrintf("%s: exit", func);
+  LOG(DEBUG) << StringPrintf("%s: exit", func);
   delete this;
 }
 
@@ -751,6 +768,10 @@ void NfcAdaptation::FactoryReset() {
 }
 
 void NfcAdaptation::DeviceShutdown() {
+  const char* func = "NfcAdaptation::DeviceShutdown";
+  AutoThreadMutex a(sLock);
+
+  LOG(DEBUG) << StringPrintf("%s: enter", func);
   if (sVndExtnsPresent) {
     sNfcVendorExtn->processEvent(HANDLE_NFC_DEVICE_SHUTDOWN, HAL_NFC_STATUS_OK);
   }
@@ -769,6 +790,7 @@ void NfcAdaptation::DeviceShutdown() {
       mHal->unlinkToDeath(mNfcHalDeathRecipient);
     }
   }
+  LOG(DEBUG) << StringPrintf("%s: exit", func);
 }
 
 /*******************************************************************************
@@ -920,7 +942,7 @@ void NfcAdaptation::InitializeHalDeviceContext() {
   if (mHal == nullptr) {
     // Try get AIDL
     mAidlHal = waitForNfcServiceAsync();
-    if (mAidlHal != nullptr) {
+    if (mAidlHal != nullptr && AIBinder_isAlive(mAidlHal->asBinder().get())) {
       use_aidl = true;
       AIBinder_linkToDeath(mAidlHal->asBinder().get(), mDeathRecipient.get(),
                            nullptr /* cookie */);
@@ -930,7 +952,7 @@ void NfcAdaptation::InitializeHalDeviceContext() {
                                 func, mAidlHalVer);
       // TODO: Enforce VSR API level check later
       // if (get_vsr_api_level() <= __ANDROID_API_V__) {
-      if (mAidlHalVer <= 1) {
+      if (mAidlHalVer <= 1 || (get_vsr_api_level() < get_system_api_level())) {
         sVndExtnsPresent = sNfcVendorExtn->Initialize(nullptr, mAidlHal);
       }
     } else {
@@ -990,11 +1012,13 @@ void NfcAdaptation::HalTerminate() {
 void NfcAdaptation::HalOpenInternal(tHAL_NFC_CBACK* p_hal_cback,
                                     tHAL_NFC_DATA_CBACK* p_data_cback) {
   const char* func = "NfcAdaptation::HalOpenInternal";
-  LOG(VERBOSE) << StringPrintf("%s", func);
+  AutoThreadMutex a(sLock);
+
+  LOG(DEBUG) << StringPrintf("%s: enter", func);
   if (sVndExtnsPresent) {
     sNfcVendorExtn->setNciCallback(p_hal_cback, p_data_cback);
   }
-  if (mAidlHal != nullptr) {
+  if (mAidlHal != nullptr && AIBinder_isAlive(mAidlHal->asBinder().get())) {
     mAidlCallback = ::ndk::SharedRefBase::make<NfcAidlClientCallback>(
         p_hal_cback, p_data_cback);
     Status status = mAidlHal->open(mAidlCallback);
@@ -1018,6 +1042,7 @@ void NfcAdaptation::HalOpenInternal(tHAL_NFC_CBACK* p_hal_cback,
     mCallback = new NfcClientCallback(p_hal_cback, p_data_cback);
     mHal->open(mCallback);
   }
+  LOG(DEBUG) << StringPrintf("%s: exit", func);
 }
 
 /*******************************************************************************
@@ -1302,7 +1327,7 @@ void NfcAdaptation::HalDownloadFirmwareCallback(nfc_event_t event,
     p_msg->status = event_status;
     GKI_send_msg(NFC_TASK, NFC_MBOX_ID, p_msg);
   } else {
-    LOG(ERROR) << StringPrintf("No buffer");
+    LOG(ERROR) << StringPrintf("%s: No buffer", func);
   };
 }
 
@@ -1335,9 +1360,9 @@ void NfcAdaptation::HalDownloadFirmwareDataCallback(uint16_t data_len,
     memcpy((uint8_t*)(p_msg + 1) + p_msg->offset, p_data, p_msg->len);
 
     GKI_send_msg(NFC_TASK, NFC_MBOX_ID, p_msg);
-    LOG(VERBOSE) << StringPrintf("GKI msg sent!");
+    LOG(VERBOSE) << StringPrintf("%s: GKI msg sent!", func);
   } else {
-    LOG(ERROR) << StringPrintf("No buffer");
+    LOG(ERROR) << StringPrintf("%s: No buffer", func);
   }
 }
 
@@ -1450,7 +1475,7 @@ bool ThreadCondVar::wait(long millisec) {
   struct timespec absoluteTime;
 
   if (clock_gettime(CLOCK_MONOTONIC, &absoluteTime) == -1) {
-    LOG(ERROR) << StringPrintf("ThreadCondVar::wait: fail get time; errno=0x%X",
+    LOG(ERROR) << StringPrintf("%s: fail get time; errno=0x%X", __func__,
                                errno);
   } else {
     absoluteTime.tv_sec += millisec / 1000;
@@ -1464,7 +1489,7 @@ bool ThreadCondVar::wait(long millisec) {
 
   int waitResult = pthread_cond_timedwait(&mCondVar, *this, &absoluteTime);
   if ((waitResult != 0) && (waitResult != ETIMEDOUT))
-    LOG(ERROR) << StringPrintf("ThreadCondVar::wait: fail timed wait; error=0x%X",
+    LOG(ERROR) << StringPrintf("%s: fail timed wait; error=0x%X", __func__,
                                waitResult);
   retVal = (waitResult == 0);  // waited successfully
   if (retVal) pthread_mutex_unlock(*this);

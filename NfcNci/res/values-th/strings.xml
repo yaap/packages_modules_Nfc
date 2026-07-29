@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> อ่านแท็ก NFC ได้"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"แอปต่อไปนี้อ่านแท็ก NFC ได้: <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"แตะเพื่อดูวิธีปิดใช้"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> ต้องการอ่านแท็ก NFC"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"แอปต่อไปนี้ต้องการอ่านแท็ก NFC: <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"แตะเพื่อดูการตั้งค่าปัจจุบัน"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"กำลังบันทึกข้อมูล NFC"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"แตะเพื่อหยุดบันทึก"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"อนุญาตให้ <xliff:g id="PKG">%1$s</xliff:g> เปิดใช้ NFC ไหม"</string>

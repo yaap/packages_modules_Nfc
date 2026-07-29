@@ -19,7 +19,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical">
+              android:orientation="vertical" xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/tap_again_toolbar"
@@ -47,7 +47,7 @@
             android:textAlignment="center"
             android:text="@string/tap_again_description"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="?android:attr/textColorPrimary"/>
+            android:textColor="@color/materialColorOnSurface"/>
 
         <ImageView android:id="@+id/tap_again_appicon"
             android:layout_height="84dp"

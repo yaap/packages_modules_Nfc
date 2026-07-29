@@ -18,8 +18,10 @@ package android.nfc;
 
 import android.annotation.UserIdInt;
 import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 
 import java.util.Objects;
 
@@ -69,6 +71,15 @@ public class ComponentNameAndUser implements Parcelable {
     @UserIdInt
     public int getUserId() {
         return mUserId;
+    }
+
+    /** Returns uid of the package */
+    public int getUid(PackageManager packageManager) {
+        try {
+            return packageManager.getPackageUid(mComponentName.getPackageName(), mUserId);
+        } catch (PackageManager.NameNotFoundException e) {
+            return Process.INVALID_UID;
+        }
     }
 
     public ComponentName getComponentName() {

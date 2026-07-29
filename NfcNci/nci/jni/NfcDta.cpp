@@ -89,7 +89,7 @@ std::vector<uint8_t> NfcDta::parseConfigParams(std::string configParams) {
           (uint8_t)strtol(configParams.substr(index, 2).c_str(), NULL, 16));
     }
     index += 2;
-    if (configParams[index] == '_') {
+    if (index < configParams.size() && configParams[index] == '_') {
       index++;
     }
   }

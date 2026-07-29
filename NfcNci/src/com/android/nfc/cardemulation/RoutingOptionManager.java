@@ -431,10 +431,6 @@ public class RoutingOptionManager {
             Log.d(TAG, "readRoutingOptionsFromPrefs: create mPrefs in readRoutingOptions");
             mContext = context;
             mPrefs = context.getSharedPreferences(PREF_ROUTING_OPTIONS, Context.MODE_PRIVATE);
-
-            // TODO(b/441652779): rpius - Remove this line once the issue is fixed.
-            mPrefs.edit().clear().commit();
-
             mIsUiccCapable = context.getPackageManager().hasSystemFeature(
                     PackageManager.FEATURE_NFC_OFF_HOST_CARD_EMULATION_UICC);
             mIsEseCapable = context.getPackageManager().hasSystemFeature(
@@ -449,43 +445,44 @@ public class RoutingOptionManager {
         }
 
         // read default route
-        if (!mPrefs.contains(KEY_DEFAULT_ROUTE)) {
+        if (!mPrefs.contains(KEY_DEFAULT_ROUTE) || prefsIsEmptyStr(KEY_DEFAULT_ROUTE)) {
             writeRoutingOption(KEY_DEFAULT_ROUTE, deviceConfigFacade.getDefaultRoute());
         }
         mDefaultRoute = getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_ROUTE, null));
 
         // read default iso dep route
-        if (!mPrefs.contains(KEY_DEFAULT_ISO_DEP_ROUTE)) {
+        if (!mPrefs.contains(KEY_DEFAULT_ISO_DEP_ROUTE)
+                || prefsIsEmptyStr(KEY_DEFAULT_ISO_DEP_ROUTE)) {
             writeRoutingOption(
                 KEY_DEFAULT_ISO_DEP_ROUTE, deviceConfigFacade.getDefaultIsoDepRoute());
         }
         mDefaultIsoDepRoute =
-            getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_ISO_DEP_ROUTE, null));
+                getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_ISO_DEP_ROUTE, null));
 
         // read default offhost route
-        if (!mPrefs.contains(KEY_DEFAULT_OFFHOST_ROUTE)) {
+        if (!mPrefs.contains(KEY_DEFAULT_OFFHOST_ROUTE)
+                || prefsIsEmptyStr(KEY_DEFAULT_OFFHOST_ROUTE)) {
             writeRoutingOption(
                 KEY_DEFAULT_OFFHOST_ROUTE, deviceConfigFacade.getDefaultOffHostRoute());
         }
         mDefaultOffHostRoute =
-            getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_OFFHOST_ROUTE, null));
+                getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_OFFHOST_ROUTE, null));
 
         // read default felica route
-        if (!mPrefs.contains(KEY_DEFAULT_FELICA_ROUTE)) {
+        if (!mPrefs.contains(KEY_DEFAULT_FELICA_ROUTE)
+                || prefsIsEmptyStr(KEY_DEFAULT_FELICA_ROUTE)) {
             writeRoutingOption(
                     KEY_DEFAULT_FELICA_ROUTE, deviceConfigFacade.getDefaultFelicaRoute());
         }
-
         mDefaultFelicaRoute =
                 getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_FELICA_ROUTE, null));
 
         // read default system code route
-        if (!mPrefs.contains(KEY_DEFAULT_SC_ROUTE)) {
+        if (!mPrefs.contains(KEY_DEFAULT_SC_ROUTE) || prefsIsEmptyStr(KEY_DEFAULT_SC_ROUTE)) {
             writeRoutingOption(
                 KEY_DEFAULT_SC_ROUTE, deviceConfigFacade.getDefaultScRoute());
         }
-        mDefaultScRoute =
-            getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_SC_ROUTE, null));
+        mDefaultScRoute = getRouteForSecureElement(mPrefs.getString(KEY_DEFAULT_SC_ROUTE, null));
 
         // read auto change capable
         if (!mPrefs.contains(KEY_AUTO_CHANGE_CAPABLE)) {
@@ -505,7 +502,29 @@ public class RoutingOptionManager {
     }
 
     private void writeRoutingOption(String key, String name) {
-        mPrefs.edit().putString(key, name).apply();
+        // Fallback to default if the string is empty
+        if (!TextUtils.isEmpty(name)) {
+            mPrefs.edit().putString(key, name).apply();
+            Log.d(TAG, "writeRoutingOption: Add " + key + ":" + name + " to mPrefs.");
+            return;
+        }
+        int route = switch (key) {
+            case KEY_DEFAULT_ROUTE -> doGetDefaultRouteDestination();
+            case KEY_DEFAULT_ISO_DEP_ROUTE -> doGetDefaultIsoDepRouteDestination();
+            case KEY_DEFAULT_OFFHOST_ROUTE -> doGetDefaultOffHostRouteDestination();
+            case KEY_DEFAULT_FELICA_ROUTE -> doGetDefaultFelicaRouteDestination();
+            case KEY_DEFAULT_SC_ROUTE -> doGetDefaultScRouteDestination();
+            default -> {
+                Log.e(TAG, "writeRoutingOption: Unexpected key:" + key);
+                yield ROUTE_UNKNOWN;
+            }
+        };
+        if (route == ROUTE_UNKNOWN) {
+            return;
+        }
+        mPrefs.edit().putString(key, getSecureElementForRoute(route)).apply();
+        Log.d(TAG, "writeRoutingOption: Add default " + key + ":"
+                + getSecureElementForRoute(route) + " to mPrefs.");
     }
 
     private void writeRoutingOption(String key, boolean value) {
@@ -520,6 +539,7 @@ public class RoutingOptionManager {
                     .orElseGet(() -> 0x00);
         } else {
             if (se == null || se.length() <= 3) {
+                Log.e(TAG, "getRouteForSecureElement invalid input, fallback to DEVICE_HOST");
                 return 0;
             }
             try {
@@ -533,6 +553,9 @@ public class RoutingOptionManager {
                     if (mOffHostRouteUicc.length >= index && index > 0) {
                         return mOffHostRouteUicc[index - 1] & 0xFF;
                     }
+                } else if (se.equals(SE_NDEF_NFCEE)) {
+                    return Optional.ofNullable(mRouteForSecureElement.get(se))
+                            .orElseGet(() -> 0x00);
                 }
                 if (mOffHostRouteEse == null && mOffHostRouteUicc == null) {
                     return mDefaultOffHostRoute;
@@ -540,6 +563,7 @@ public class RoutingOptionManager {
             } catch (NumberFormatException e) {
                 Log.e(TAG, "NumberFormatException while parsing secure element index", e);
             }
+            Log.e(TAG, "getRouteForSecureElement no match, fallback to DEVICE_HOST");
             return 0;
         }
     }
@@ -565,7 +589,7 @@ public class RoutingOptionManager {
                     R.bool.telephony_subscription_routing_enabled);
             if (telephonySubscriptionEnabled) {
                 if (mPreferredSimSettings.type == TelephonyUtils.SIM_TYPE_UNKNOWN) {
-                    Log.e(TAG, "getAlternativeRouteIfSimIsInvalid: sim is invalid");
+                    Log.e(TAG, "getAlternativeRouteIfSimIsInvalid: sim " + route + " is invalid");
                     return getRouteForSecureElement(mIsEseCapable
                             ? (SE_PREFIX_ESE + 1) : DEVICE_HOST);
                 }
@@ -583,5 +607,9 @@ public class RoutingOptionManager {
                 mSecureElementForRoute.putIfAbsent(route, name);
             }
         }
+    }
+
+    private boolean prefsIsEmptyStr(String key) {
+        return TextUtils.isEmpty(mPrefs.getString(key, null));
     }
 }

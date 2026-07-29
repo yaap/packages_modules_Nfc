@@ -187,7 +187,7 @@ typedef struct {
   NFC_HDR hdr;
   tNFA_VSC_CBACK* p_cback;
   uint8_t oid;
-  uint8_t cmd_params_len;
+  uint16_t cmd_params_len;
   uint16_t pad; /* add padding to ensure the size is big enough for
                    offset=NCI_VSC_MSG_HDR_SIZE */
   uint8_t* p_cmd_params;
@@ -429,6 +429,7 @@ typedef struct {
 
   TIMER_LIST_ENT tle; /* timer for waiting deactivation NTF               */
   TIMER_LIST_ENT kovio_tle; /* timer for Kovio bar code tag presence check */
+  TIMER_LIST_ENT mifare_pc_tle; /* timer for MIFARE IDLE mode presence check*/
 
   bool deact_pending; /* TRUE if deactivate while checking presence       */
   bool deact_notify_pending; /* TRUE if notify DEACTIVATED EVT while Stop rf

@@ -797,7 +797,7 @@ tNFA_STATUS NFA_EeAddSystemCodeRouting(uint16_t systemcode,
   if (p_cb == nullptr || systemcode == 0) {
     LOG(ERROR) << StringPrintf("%s: Bad ee_handle or System Code", __func__);
     status = NFA_STATUS_INVALID_PARAM;
-  } else if ((NFA_GetNCIVersion() < NCI_VERSION_2_0) &&
+  } else if ((NFA_GetNCIVersion() < NCI_VERSION_2_0) ||
              (nfc_cb.isScbrSupported == false)) {
     LOG(ERROR) << StringPrintf("%s: Invalid NCI Version/SCBR not supported",
                                __func__);

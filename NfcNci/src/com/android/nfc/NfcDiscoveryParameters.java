@@ -64,6 +64,11 @@ public final class NfcDiscoveryParameters {
             return this;
         }
 
+        public NfcDiscoveryParameters.Builder setExtraAnnotation(byte[] annotation) {
+            mParameters.mExtraAnnotation = annotation;
+            return this;
+        }
+
         public NfcDiscoveryParameters build() {
             return mParameters;
         }
@@ -78,6 +83,7 @@ public final class NfcDiscoveryParameters {
     private boolean mEnableReaderMode = false;
     private boolean mEnableHostRouting = false;
     private byte[] mTechAPollingLoopAnnotation = null;
+    private byte[] mExtraAnnotation = null;
 
     public NfcDiscoveryParameters() {}
 
@@ -103,6 +109,10 @@ public final class NfcDiscoveryParameters {
 
     public byte[] techAPollingLoopAnnotation() {
         return mTechAPollingLoopAnnotation;
+    }
+
+    public byte[] extraAnnotation() {
+        return mExtraAnnotation;
     }
 
     @Override

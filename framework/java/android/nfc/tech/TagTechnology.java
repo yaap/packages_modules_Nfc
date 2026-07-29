@@ -17,6 +17,7 @@
 package android.nfc.tech;
 
 import android.nfc.Tag;
+import android.nfc.TagLostException;
 
 import java.io.Closeable;
 import java.io.IOException;

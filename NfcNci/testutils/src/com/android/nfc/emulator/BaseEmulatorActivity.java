@@ -16,6 +16,7 @@
 package com.android.nfc.emulator;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -251,12 +252,12 @@ public abstract class BaseEmulatorActivity extends Activity {
         // Combine services from both categories into a single stream
         List<ApduServiceInfo> allServices = new ArrayList<>();
         List<ApduServiceInfo> paymentServices = mCardEmulation.getServices(
-                CardEmulation.CATEGORY_PAYMENT, 0);
+                CardEmulation.CATEGORY_PAYMENT, ActivityManager.getCurrentUser());
         if (paymentServices != null) { // Add null check for robustness
             allServices.addAll(paymentServices);
         }
         List<ApduServiceInfo> otherServices = mCardEmulation.getServices(
-                CardEmulation.CATEGORY_OTHER, 0);
+                CardEmulation.CATEGORY_OTHER, ActivityManager.getCurrentUser());
         if (otherServices != null) { // Add null check for robustness
             allServices.addAll(otherServices);
         }

@@ -77,6 +77,7 @@
             <item name="default_preferred_subscription_to_uicc" type="bool" />
             <item name="separate_offhost_felica_routing" type="bool" />
             <item name="telephony_subscription_routing_enabled" type="bool" />
+            <item name="launch_oem_app_chooser" type="bool" />
           <!-- Params from config.xml that can be overlaid -->
 
           <!-- Params from strings.xml that can be overlaid -->

@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"‏‫<xliff:g id="APPNAMES">%1$s</xliff:g> NFC ٹیگز پڑھ سکتی ہیں۔"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"‏درج ذیل ایپس NFC ٹیگز پڑھ سکتی ہیں:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"اسے غیر فعال کرنے کا طریقہ جاننے کے لیے تھپتھپائیں۔"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"‏‫<xliff:g id="APPNAMES">%1$s</xliff:g> NFC ٹیگز پڑھنا چاہتا ہے۔"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"‏درج ذیل ایپس NFC ٹیگز پڑھنا چاہتی ہیں:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"موجودہ ترتیبات دیکھنے کے لیے تھپتھپائیں۔"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"‏NFC ڈیٹا ریکارڈ کیا جا رہا ہے"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"ریکارڈنگ روکنے کے لیے تھپتھپائیں۔"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"‏<xliff:g id="PKG">%1$s</xliff:g> کو NFC فعال کرنے کی اجازت دیں؟"</string>

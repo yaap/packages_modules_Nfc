@@ -64,6 +64,7 @@ public class ConfirmConnectActivity extends Activity {
                         allowIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, mDevice);
                         allowIntent.setPackage(getPackageName());
                         sendBroadcast(allowIntent);
+                        mAlert.dismiss();
                         ConfirmConnectActivity.this.mAlert = null;
                         ConfirmConnectActivity.this.finish();
                    }
@@ -75,6 +76,7 @@ public class ConfirmConnectActivity extends Activity {
                        denyIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, mDevice);
                        denyIntent.setPackage(getPackageName());
                        sendBroadcast(denyIntent);
+                       mAlert.dismiss();
                        ConfirmConnectActivity.this.mAlert = null;
                        ConfirmConnectActivity.this.finish();
                    }

@@ -249,8 +249,14 @@ tNFC_STATUS RW_SetActivatedTagType(tNFC_ACTIVATE_DEVT* p_activate_params,
   /* Reset tag-specific area of control block */
   if (rw_cb.tcb_type == RW_CB_TYPE_T4T && rw_cb.tcb.t4t.p_retry_cmd) {
     GKI_freebuf(rw_cb.tcb.t4t.p_retry_cmd);
+    rw_cb.tcb.t4t.p_retry_cmd = nullptr;
+  }
+  if (rw_cb.tcb_type == RW_CB_TYPE_T5T && rw_cb.tcb.i93.p_retry_cmd) {
+    GKI_freebuf(rw_cb.tcb.i93.p_retry_cmd);
+    rw_cb.tcb.i93.p_retry_cmd = nullptr;
   }
   memset(&rw_cb.tcb, 0, sizeof(tRW_TCB));
+  rw_cb.tcb_type = RW_CB_TYPE_UNKNOWN;
 
 #if (RW_STATS_INCLUDED == TRUE)
   /* Reset RW stats */

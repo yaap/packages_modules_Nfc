@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"Aplikácia <xliff:g id="APPNAMES">%1$s</xliff:g> dokáže čítať štítky NFC."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Tieto aplikácie dokážu čítať štítky NFC: <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Klepnutím sa dozviete, ako ju deaktivovať."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> chce čítať štítky NFC."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Tieto aplikácie chcú čítať štítky NFC:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Klepnutím zobrazíte aktuálne nastavenia."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"Nahrávajú sa údaje NFC"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Nahrávanie zastavíte klepnutím."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"Chcete povoliť balíku <xliff:g id="PKG">%1$s</xliff:g> aktivovať NFC?"</string>

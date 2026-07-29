@@ -10,21 +10,11 @@ flag {
 }
 
 flag {
-    name: "reader_mode_annotations"
+    name: "reader_mode_annotations_api"
     is_exported: true
-    namespace: "wallet_integration"
+    namespace: "nfc"
     description: "Enables NFC-A polling loop annotations in reader mode"
     bug: "398910589"
-}
-
-flag {
-    name: "reader_mode_ignore_frame"
-    namespace: "wallet_integration"
-    description: "Enable ignore frames in the default reader mode polling loop."
-    bug: "383047950"
-    metadata {
-        purpose: PURPOSE_BUGFIX
-    }
 }
 
 flag {
@@ -52,14 +42,6 @@ flag {
 }
 
 flag {
-    name: "ce_wake_lock"
-    is_exported: false
-    namespace: "nfc"
-    description: "Holds a wake lock while CE is in field on state."
-    bug: "406827464"
-}
-
-flag {
     name: "screen_state_attribute_toggle"
     is_exported: true
     namespace: "nfc"
@@ -82,3 +64,20 @@ flag {
     description: "Deprecate isDeviceFoldable"
     bug: "395695630"
 }
+
+flag {
+    name: "tap_to_x"
+    is_exported: true
+    namespace: "nfc"
+    description: "Tap to X API for Android 17"
+    bug: "416517337"
+}
+
+flag {
+    name: "nfcstack_26q2_updates"
+    is_exported: true
+    namespace: "nfc"
+    description: "This flags controls updates to nfc stack for 26Q2"
+    bug: "446675679"
+}
+

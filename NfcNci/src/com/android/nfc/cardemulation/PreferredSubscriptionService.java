@@ -82,10 +82,10 @@ public class PreferredSubscriptionService implements TelephonyUtils.Callback {
         if (mIsUiccCapable || mIsEuiccCapable) {
             onDefaultSubscriptionChanged();
             if (mTelephonySubscriptionRouting) {
-                Log.d(TAG, "Registering telephony subscription callback");
+                Log.d(TAG, "initialize: Registering telephony subscription callback");
                 mTelephonyUtils.registerSubscriptionChangedCallback(this);
             } else {
-                Log.d(TAG, "Skip registering telephony subscription callback");
+                Log.d(TAG, "initialize: Skip registering telephony subscription callback");
             }
         }
     }
@@ -128,7 +128,7 @@ public class PreferredSubscriptionService implements TelephonyUtils.Callback {
 
     private boolean isSubscriptionActivated(int subscriptionId) {
         if (mActiveSubscriptions == null) {
-            Log.d(TAG, "Get active subscriptions because list is empty");
+            Log.d(TAG, "isSubscriptionActivated: Get active subscriptions because list is empty");
             mActiveSubscriptions = mTelephonyUtils.getActiveSubscriptions().stream()
                     .filter(TelephonyUtils.SUBSCRIPTION_ACTIVE_CONDITION_FOR_UICC
                             .or(TelephonyUtils.SUBSCRIPTION_ACTIVE_CONDITION_FOR_EUICC))
@@ -136,7 +136,8 @@ public class PreferredSubscriptionService implements TelephonyUtils.Callback {
         }
 
         if (mTelephonyUtils.isUiccSubscription(subscriptionId)) {
-            Log.d(TAG, "Check uicc subscription activated status with SWP supported physical slot");
+            Log.d(TAG, "isSubscriptionActivated: Check uicc subscription activated status"
+                    + " with SWP supported physical slot");
             return mActiveSubscriptions.stream()
                     .filter(TelephonyUtils.SUBSCRIPTION_ACTIVE_CONDITION_FOR_UICC)
                     .anyMatch(subscriptionInfo ->
@@ -161,7 +162,7 @@ public class PreferredSubscriptionService implements TelephonyUtils.Callback {
                 TelephonyUtils.SUBSCRIPTION_STATE_ACTIVATE :
                 TelephonyUtils.SUBSCRIPTION_STATE_INACTIVATE;
         if (previousActiveSubscriptionState != currentActiveSubscriptionState) {
-            Log.d(TAG, "active subscription state changed "
+            Log.d(TAG, "checkSubscriptionStateChanged: active subscription state changed "
                     + previousActiveSubscriptionState + " to " + currentActiveSubscriptionState);
             mActiveSubscriptoinState = currentActiveSubscriptionState;
             return true;

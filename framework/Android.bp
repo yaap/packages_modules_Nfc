@@ -36,7 +36,8 @@ java_sdk_library {
     static_libs: [
         "android.nfc.flags-aconfig-java",
         "android.permission.flags-aconfig-java",
-        "com.android.nfc.module.flags-aconfig-java",
+        "com.android.nfc.module.flags-aconfig-exported-java",
+        "com.android.nfc.module.flags-aconfig-non-exported-java",
     ],
     srcs: [
         ":framework-nfc-updatable-sources",

@@ -12,7 +12,7 @@ void GKI_os_free(void* p) {
   }
 }
 
-void GKI_exception(uint16_t, std::string s) { LOG(ERROR) << s; }
+void GKI_exception(uint16_t, std::string) {}
 
 // We fuzz in a single thread so locks and scheduling are not implemented
 

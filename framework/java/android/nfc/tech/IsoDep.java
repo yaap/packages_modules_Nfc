@@ -18,6 +18,7 @@ package android.nfc.tech;
 
 import android.nfc.ErrorCodes;
 import android.nfc.Tag;
+import android.nfc.TagLostException;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;

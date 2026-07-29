@@ -59,7 +59,7 @@ class NativeWlcManager {
   ** Returns:         None
   **
   *******************************************************************************/
-  int registerJniFunctions(JNIEnv* e);
+  static int registerJniFunctions(JNIEnv* e);
 
   /*******************************************************************************
   **

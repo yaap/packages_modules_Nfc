@@ -50,7 +50,7 @@ public class NfcEnableAllowlistActivity extends Activity implements View.OnClick
         mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(this);
         mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(
                 v -> {
-                    Log.i(TAG, "Nfc is disallowed by user for app: " + appName);
+                    Log.i(TAG, "onCreate: Nfc is disallowed by user for app: " + appName);
                     finish();
                 });
         mAlertDialog.setOnCancelListener(dialog -> finish());

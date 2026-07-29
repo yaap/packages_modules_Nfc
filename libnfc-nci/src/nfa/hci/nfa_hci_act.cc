@@ -1238,9 +1238,9 @@ void nfa_hci_handle_admin_gate_cmd(uint8_t* p_data, uint16_t data_len) {
                                                     source_host, source_gate);
       } else {
         // SIM card trying to open MEP connectivity gate... need to reject
-        if ((source_host != 0xC0 /* not eSE */) &&
+        if ((source_host == 0x02 /* pSIM */) &&
             (dest_gate != NFA_HCI_CONNECTIVITY_GATE)) {
-          LOG(WARNING) << StringPrintf("%s: reject pipe=%x creation (non eSE)",
+          LOG(WARNING) << StringPrintf("%s: reject pipe=%x creation (pSIM)",
                                        __func__, pipe);
           response = NFA_HCI_ANY_E_NOK;
         } else if ((pgate = nfa_hciu_find_gate_by_gid(dest_gate)) != nullptr) {

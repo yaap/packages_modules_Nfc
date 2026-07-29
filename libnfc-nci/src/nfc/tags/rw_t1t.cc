@@ -583,26 +583,30 @@ static void rw_t1t_process_error(void) {
     LOG(VERBOSE) << StringPrintf("%s: T1T retransmission attempt %i of %i",
                                  __func__, rw_cb.cur_retry, RW_MAX_RETRIES);
 
-    /* allocate a new buffer for message */
-    p_cmd_buf = (NFC_HDR*)GKI_getpoolbuf(NFC_RW_POOL_ID);
-    if (p_cmd_buf != nullptr) {
-      memcpy(p_cmd_buf, p_t1t->p_cur_cmd_buf,
-             sizeof(NFC_HDR) + p_t1t->p_cur_cmd_buf->offset +
-                 p_t1t->p_cur_cmd_buf->len);
+    if (p_t1t->p_cur_cmd_buf != nullptr) {
+      /* allocate a new buffer for message */
+      p_cmd_buf = (NFC_HDR*)GKI_getpoolbuf(NFC_RW_POOL_ID);
+      if (p_cmd_buf != nullptr) {
+        memcpy(p_cmd_buf, p_t1t->p_cur_cmd_buf,
+               sizeof(NFC_HDR) + p_t1t->p_cur_cmd_buf->offset +
+                   p_t1t->p_cur_cmd_buf->len);
 
 #if (RW_STATS_INCLUDED == TRUE)
-      /* Update stats */
-      rw_main_update_tx_stats(p_cmd_buf->len, true);
+        /* Update stats */
+        rw_main_update_tx_stats(p_cmd_buf->len, true);
 #endif /* RW_STATS_INCLUDED */
 
-      if (NFC_SendData(NFC_RF_CONN_ID, p_cmd_buf) == NFC_STATUS_OK) {
-        /* Start timer for waiting for response */
-        nfc_start_quick_timer(
-            &p_t1t->timer, NFC_TTYPE_RW_T1T_RESPONSE,
-            (RW_T1T_TOUT_RESP * QUICK_TIMER_TICKS_PER_SEC) / 1000);
+        if (NFC_SendData(NFC_RF_CONN_ID, p_cmd_buf) == NFC_STATUS_OK) {
+          /* Start timer for waiting for response */
+          nfc_start_quick_timer(
+              &p_t1t->timer, NFC_TTYPE_RW_T1T_RESPONSE,
+              (RW_T1T_TOUT_RESP * QUICK_TIMER_TICKS_PER_SEC) / 1000);
 
-        return;
+          return;
+        }
       }
+    } else {
+      LOG(ERROR) << StringPrintf("%s: p_t1t->p_cur_cmd_buf null", __func__);
     }
   } else {
     /* we might get response later to all or some of the retrasnmission

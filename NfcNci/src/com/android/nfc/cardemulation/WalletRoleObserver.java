@@ -122,7 +122,7 @@ public class WalletRoleObserver {
                         RoleManager.ROLE_WALLET);
 
                 if (roleUserHandle == null) {
-                    Log.d(TAG, "No active user for role");
+                    Log.d(TAG, "getDefaultWalletRoleHolder: No active user for role");
                     return noRoleHolderResult;
                 }
             } else if (!userRoleManager.isRoleAvailable(RoleManager.ROLE_WALLET)) {

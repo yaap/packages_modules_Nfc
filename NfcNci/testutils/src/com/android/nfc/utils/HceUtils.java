@@ -29,7 +29,9 @@ import android.nfc.NfcAdapter;
 
 import com.android.nfc.service.AccessService;
 import com.android.nfc.service.ExitFrameService;
+import com.android.nfc.service.GestureExchangeService;
 import com.android.nfc.service.LargeNumAidsService;
+import com.android.nfc.service.NdefService;
 import com.android.nfc.service.OffHostService;
 import com.android.nfc.service.PaymentService1;
 import com.android.nfc.service.PaymentService2;
@@ -66,6 +68,8 @@ public final class HceUtils {
     public static final String SE_AID_1 = "A000000151000000";
     public static final String SE_AID_2 = "A000000003000000";
     public static final String ACCESS_AID = "F005060708";
+    public static final String NDEF_AID = "D2760000850101";
+    public static final String GESTURE_EXCHANGE_AID = "A00000047609";
 
     public static final String TRANSPORT_PREFIX_AID = "F001020304";
     public static final String ACCESS_PREFIX_AID = "F005060708";
@@ -84,19 +88,50 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 TransportService1.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(TRANSPORT_AID, true), buildCommandApdu("80CA01E000", true)
+                    buildSelectApdu(TRANSPORT_AID, true), buildCommandApdu("80CA01E000", true)
                 });
 
         RESPONSE_APDUS_BY_SERVICE.put(
                 TransportService1.class.getName(), new String[] {"80CA9000", "83947102829000"});
 
+        COMMAND_APDUS_BY_SERVICE.put(
+                NdefService.class.getName(),
+                new CommandApdu[] {
+                    // 1. SELECT NDEF Application (AID: D2760000850101)
+                    buildSelectApduWithLeBytes(NDEF_AID, true),
+                    // 2. SELECT Capability Container (File ID: E103)
+                    buildCommandApdu("00A4000C02E103", true),
+                    // 3. READ Capability Container (Offset 0, Length 15)
+                    buildCommandApdu("00B000000F", true),
+                    // 4. SELECT NDEF Data File (File ID: E104)
+                    buildCommandApdu("00A4000C02E104", true),
+                    // 5. READ NDEF Length (First 2 bytes)
+                    buildCommandApdu("00B0000002", true),
+                    // 6. READ NDEF Content (Offset 2, Length 16 for android.com)
+                    buildCommandApdu("00B0000210", true)
+                });
+
+        RESPONSE_APDUS_BY_SERVICE.put(
+                NdefService.class.getName(),
+                new String[] {
+                    "9000", // Success Select AID
+                    "9000", // Success Select CC File
+                    // CC File content: NDEF File ID is E104, Max size 0032, Read Access 00,
+                    // Write Access FF
+                    "000F20003B00340406E104003200009000",
+                    "9000", // Success Select NDEF File
+                    "00109000", // NDEF Message Length: 15 bytes (0x10)
+                    // Payload: NDEF Well-known URI "https://android.com" + Success 9000
+                    "D1010C5504616E64726F69642E636F6D9000"
+                });
+
         // Payment Service #1
         COMMAND_APDUS_BY_SERVICE.put(
                 PaymentService1.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(PPSE_AID, true),
-                        buildSelectApdu(MC_AID, true),
-                        buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(PPSE_AID, true),
+                    buildSelectApdu(MC_AID, true),
+                    buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PaymentService1.class.getName(),
@@ -106,9 +141,9 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 ExitFrameService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(PPSE_AID, true),
-                        buildSelectApdu(MC_AID, true),
-                        buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(PPSE_AID, true),
+                    buildSelectApdu(MC_AID, true),
+                    buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 ExitFrameService.class.getName(),
@@ -123,9 +158,9 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 PaymentServiceDynamicAids.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(PPSE_AID, true),
-                        buildSelectApdu(VISA_AID, true),
-                        buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(PPSE_AID, true),
+                    buildSelectApdu(VISA_AID, true),
+                    buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PaymentServiceDynamicAids.class.getName(),
@@ -134,9 +169,9 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 PrefixPaymentService1.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(PPSE_AID, true),
-                        buildSelectApdu(MC_AID, true),
-                        buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(PPSE_AID, true),
+                    buildSelectApdu(MC_AID, true),
+                    buildCommandApdu("80CA01F000", true)
                 });
 
         RESPONSE_APDUS_BY_SERVICE.put(
@@ -146,35 +181,33 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 PrefixPaymentService2.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(PPSE_AID, true),
-                        buildSelectApdu(MC_AID, true),
-                        buildCommandApdu("80CA02F000", true),
-                        buildSelectApdu("F0000000FFFFFFFFFFFFFFFFFFFFFFFF", true),
-                        buildSelectApdu("F000000000", true)
+                    buildSelectApdu(PPSE_AID, true),
+                    buildSelectApdu(MC_AID, true),
+                    buildCommandApdu("80CA02F000", true),
+                    buildSelectApdu("F0000000FFFFFFFFFFFFFFFFFFFFFFFF", true),
+                    buildSelectApdu("F000000000", true)
                 });
 
         RESPONSE_APDUS_BY_SERVICE.put(
                 PrefixPaymentService2.class.getName(),
                 new String[] {
-                        "FAAA9000", "FBBB9000", "F789FFCCDD9000", "FFBAFEBECA", "F0BABEFECA"
+                    "FAAA9000", "FBBB9000", "F789FFCCDD9000", "FFBAFEBECA", "F0BABEFECA"
                 });
 
         COMMAND_APDUS_BY_SERVICE.put(
                 OffHostService.class.getName(),
-                new CommandApdu[]{
-                        buildSelectApdu(SE_AID_1, true),
-                        buildCommandApdu("80CA9F7F00", true),
-                        buildSelectApdu(SE_AID_2, true),
-                        buildCommandApdu("80CA9F7F00", true)
+                new CommandApdu[] {
+                    buildSelectApdu(SE_AID_1, true),
+                    buildCommandApdu("80CA9F7F00", true),
+                    buildSelectApdu(SE_AID_2, true),
+                    buildCommandApdu("80CA9F7F00", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
-                OffHostService.class.getName(),
-                new String[] {"*", "*", "*", "*"}
-        );
+                OffHostService.class.getName(), new String[] {"*", "*", "*", "*"});
         COMMAND_APDUS_BY_SERVICE.put(
                 TransportService2.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(TRANSPORT_AID, true), buildCommandApdu("80CA01E100", true)
+                    buildSelectApdu(TRANSPORT_AID, true), buildCommandApdu("80CA01E100", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 TransportService2.class.getName(), new String[] {"81CA9000", "7483624748FEFE9000"});
@@ -182,7 +215,7 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 AccessService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(ACCESS_AID, true), buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(ACCESS_AID, true), buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 AccessService.class.getName(), new String[] {"123456789000", "1481148114819000"});
@@ -190,85 +223,85 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 PrefixTransportService1.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFFF", true),
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAA", true),
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAABBCCDDEEFF", true),
-                        buildCommandApdu("80CA01FFAA", true)
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFFF", true),
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAA", true),
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAABBCCDDEEFF", true),
+                    buildCommandApdu("80CA01FFAA", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PrefixTransportService1.class.getName(),
                 new String[] {
-                        "25929000", "FFEF25929000", "FFDFFFAABB25929000", "FFDFFFAACC25929000"
+                    "25929000", "FFEF25929000", "FFDFFFAABB25929000", "FFDFFFAACC25929000"
                 });
 
         COMMAND_APDUS_BY_SERVICE.put(
                 PrefixTransportService2.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFFF", true),
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAA", true),
-                        buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAABBCCDDEEFF", true),
-                        buildCommandApdu("80CA01FFBB", true)
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFFF", true),
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAA", true),
+                    buildSelectApdu(TRANSPORT_PREFIX_AID + "FFAABBCCDDEEFF", true),
+                    buildCommandApdu("80CA01FFBB", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PrefixTransportService2.class.getName(),
                 new String[] {
-                        "36039000", "FFBB25929000", "FFDFFFBBBB25929000", "FFDFFFBBCC25929000"
+                    "36039000", "FFBB25929000", "FFDFFFBBBB25929000", "FFDFFFBBCC25929000"
                 });
 
         COMMAND_APDUS_BY_SERVICE.put(
                 PrefixAccessService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(ACCESS_PREFIX_AID + "FFFF", true),
-                        buildSelectApdu(ACCESS_PREFIX_AID + "FFAA", true),
-                        buildSelectApdu(ACCESS_PREFIX_AID + "FFAABBCCDDEEFF", true),
-                        buildCommandApdu("80CA010000010203", true)
+                    buildSelectApdu(ACCESS_PREFIX_AID + "FFFF", true),
+                    buildSelectApdu(ACCESS_PREFIX_AID + "FFAA", true),
+                    buildSelectApdu(ACCESS_PREFIX_AID + "FFAABBCCDDEEFF", true),
+                    buildCommandApdu("80CA010000010203", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PrefixAccessService.class.getName(),
                 new String[] {
-                        "FAFE9000", "FAFE25929000", "FAFEAABB25929000", "FAFEFFAACC25929000"
+                    "FAFE9000", "FAFE25929000", "FAFEAABB25929000", "FAFEFFAACC25929000"
                 });
 
         COMMAND_APDUS_BY_SERVICE.put(
                 ThroughputService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu("F0010203040607FF", true),
-                        buildCommandApdu("80CA010100", true),
-                        buildCommandApdu("80CA010200", true),
-                        buildCommandApdu("80CA010300", true),
-                        buildCommandApdu("80CA010400", true),
-                        buildCommandApdu("80CA010500", true),
-                        buildCommandApdu("80CA010600", true),
-                        buildCommandApdu("80CA010700", true),
-                        buildCommandApdu("80CA010800", true),
-                        buildCommandApdu("80CA010900", true),
-                        buildCommandApdu("80CA010A00", true),
-                        buildCommandApdu("80CA010B00", true),
-                        buildCommandApdu("80CA010C00", true),
-                        buildCommandApdu("80CA010D00", true),
-                        buildCommandApdu("80CA010E00", true),
-                        buildCommandApdu("80CA010F00", true),
+                    buildSelectApdu("F0010203040607FF", true),
+                    buildCommandApdu("80CA010100", true),
+                    buildCommandApdu("80CA010200", true),
+                    buildCommandApdu("80CA010300", true),
+                    buildCommandApdu("80CA010400", true),
+                    buildCommandApdu("80CA010500", true),
+                    buildCommandApdu("80CA010600", true),
+                    buildCommandApdu("80CA010700", true),
+                    buildCommandApdu("80CA010800", true),
+                    buildCommandApdu("80CA010900", true),
+                    buildCommandApdu("80CA010A00", true),
+                    buildCommandApdu("80CA010B00", true),
+                    buildCommandApdu("80CA010C00", true),
+                    buildCommandApdu("80CA010D00", true),
+                    buildCommandApdu("80CA010E00", true),
+                    buildCommandApdu("80CA010F00", true),
                 });
 
         RESPONSE_APDUS_BY_SERVICE.put(
                 ThroughputService.class.getName(),
                 new String[] {
-                        "9000",
-                        "0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0001FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0002FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0003FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0004FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0005FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0006FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0007FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0008FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "0009FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "000AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "000BFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "000CFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "000DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
-                        "000EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "9000",
+                    "0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0001FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0002FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0003FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0004FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0005FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0006FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0007FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0008FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "0009FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "000AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "000BFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "000CFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "000DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
+                    "000EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
                 });
 
         CommandApdu[] largeCommandSequence = new CommandApdu[256];
@@ -289,9 +322,9 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 ScreenOffPaymentService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu(HceUtils.PPSE_AID, true),
-                        buildSelectApdu(HceUtils.MC_AID, true),
-                        buildCommandApdu("80CA01F000", true)
+                    buildSelectApdu(HceUtils.PPSE_AID, true),
+                    buildSelectApdu(HceUtils.MC_AID, true),
+                    buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 ScreenOffPaymentService.class.getName(),
@@ -300,20 +333,27 @@ public final class HceUtils {
         COMMAND_APDUS_BY_SERVICE.put(
                 ScreenOnOnlyOffHostService.class.getName(),
                 new CommandApdu[] {
-                        buildSelectApdu("A000000476416E64726F696443545340", true),
+                    buildSelectApdu("A000000476416E64726F696443545340", true),
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 ScreenOnOnlyOffHostService.class.getName(), new String[] {"*"});
 
         COMMAND_APDUS_BY_SERVICE.put(
                 PollingLoopService.class.getName(),
-                new CommandApdu[] {buildSelectApdu(HceUtils.ACCESS_AID, true),
-                    buildCommandApdu("80CA01F000", true)
+                new CommandApdu[] {
+                    buildSelectApdu(HceUtils.ACCESS_AID, true), buildCommandApdu("80CA01F000", true)
                 });
         RESPONSE_APDUS_BY_SERVICE.put(
                 PollingLoopService.class.getName(),
-                new String[] {"123456789000", "1481148114819000"}
-        );
+                new String[] {"123456789000", "1481148114819000"});
+
+        COMMAND_APDUS_BY_SERVICE.put(
+                GestureExchangeService.class.getName(),
+                new CommandApdu[] {
+                    buildSelectApduWithLeBytes(GESTURE_EXCHANGE_AID, true),
+                });
+        RESPONSE_APDUS_BY_SERVICE.put(
+                GestureExchangeService.class.getName(), new String[] {"9000"});
     }
 
     /** Enables specified component */
@@ -321,7 +361,7 @@ public final class HceUtils {
         pm.setComponentEnabledSetting(
                 component,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
+                PackageManager.DONT_KILL_APP | PackageManager.SYNCHRONOUS);
     }
 
     /** Disables specified component */
@@ -329,7 +369,7 @@ public final class HceUtils {
         pm.setComponentEnabledSetting(
                 component,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
+                PackageManager.DONT_KILL_APP | PackageManager.SYNCHRONOUS);
     }
 
     /** Converts a byte array to hex string */
@@ -337,6 +377,10 @@ public final class HceUtils {
         StringBuilder sb = new StringBuilder();
         if (header != null) {
             sb.append(header + ": ");
+        }
+        if (bytes == null) {
+            sb.append("null");
+            return sb.toString();
         }
         for (byte b : bytes) {
             sb.append(String.format("%02X ", b));
@@ -368,6 +412,11 @@ public final class HceUtils {
     }
 
     /** Builds a select AID command APDU */
+    public static CommandApdu buildSelectApduWithLeBytes(String aid, boolean reachable) {
+        String apdu = String.format("00A40400%02X%s00", aid.length() / 2, aid);
+        return new CommandApdu(apdu, reachable);
+    }
+
     public static CommandApdu buildSelectApdu(String aid, boolean reachable) {
         String apdu = String.format("00A40400%02X%s", aid.length() / 2, aid);
         return new CommandApdu(apdu, reachable);
@@ -382,7 +431,8 @@ public final class HceUtils {
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
                     .getUiAutomation()
                     .adoptShellPermissionIdentity(
-                            MANAGE_DEFAULT_APPLICATIONS, MANAGE_ROLE_HOLDERS,
+                            MANAGE_DEFAULT_APPLICATIONS,
+                            MANAGE_ROLE_HOLDERS,
                             INTERACT_ACROSS_USERS_FULL);
             assert roleManager != null;
             // Disable fallback to ensure that the default application does not

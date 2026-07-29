@@ -26,7 +26,9 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.NFC_TRANSACTION_EVENT" />
     <uses-permission android:name="android.permission.NFC_PREFERRED_PAYMENT_INFO" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.PERFORM_GESTURE_EXCHANGE" />
 
     <application>
         <!-- Add any classes that implement the Snippet interface as meta-data, whose
@@ -35,6 +37,11 @@
         <meta-data
             android:name="mobly-snippets"
             android:value="com.android.nfc.emulator.NfcEmulatorDeviceSnippet"/>
+        <activity
+            android:name=".GestureExchangeEmulatorActivity"
+            android:label="Gesture Exchange Emulator"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".AccessServiceTurnObserveModeOnProcessApduEmulatorActivity"
             android:label="Access Service Observe Mode Emulator"
@@ -158,6 +165,15 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <meta-data android:name="android.nfc.cardemulation.host_apdu_service" android:resource="@xml/access_aid_list"/>
+        </service>
+        <service android:name="com.android.nfc.service.NdefService" android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <meta-data android:name="android.nfc.cardemulation.host_apdu_service" android:resource="@xml/ndef_aid_list"/>
         </service>
         <service android:name="com.android.nfc.service.TransportService1" android:exported="true"
             android:permission="android.permission.BIND_NFC_SERVICE"
@@ -323,6 +339,31 @@
             </intent-filter>
             <meta-data android:name="android.nfc.cardemulation.off_host_apdu_service" android:resource="@xml/screen_on_only_offhost_aid_list"/>
         </service>
+        <service android:name="com.android.nfc.service.GestureExchangeService" android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <meta-data android:name="android.nfc.cardemulation.host_apdu_service" android:resource="@xml/gesture_exchange_aid_list"/>
+        </service>
+
+        <service android:name="com.android.nfc.service.PollingLoopAnnotationService" android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <meta-data android:name="android.nfc.cardemulation.host_apdu_service" android:resource="@xml/polling_loop_annotation_aid_list"/>
+        </service>
+
+        <activity
+            android:name=".PollingLoopAnnotationEmulatorActivity"
+            android:label="Polling Loop Annotation Emulator Activity"
+            android:exported="true">
+        </activity>
     </application>
     <instrumentation android:name="com.google.android.mobly.snippet.SnippetRunner"
         android:targetPackage="com.android.nfc.emulator"

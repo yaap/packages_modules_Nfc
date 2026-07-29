@@ -7,5 +7,6 @@ rule android.nfc.*FeatureFlags* com.android.nfc.x.@0
 rule android.nfc.FeatureFlags* com.android.nfc.x.@0
 rule android.nfc.Flags com.android.nfc.x.@0
 rule com.android.nfc.module.flags.** com.android.nfc.x.@0
+rule com.android.nfc.module.nonexported.flags.** com.android.nfc.x.@0
 rule android.permission.flags.** com.android.nfc.x.@0
 rule com.android.internal.hidden_from_bootclasspath.** com.android.nfc.x.@1

@@ -25,6 +25,7 @@
 
 #include <android-base/logging.h>
 #include <android-base/stringprintf.h>
+#include <pthread.h>
 
 #include "nfa_hci_defs.h"
 #include "nfa_hci_int.h"

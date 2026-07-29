@@ -165,7 +165,7 @@ public class NativeNfcManager implements DeviceHost {
 
     @Override
     public boolean isPowerSavingModeSupported() {
-        return mProprietaryCaps.isPowerSavingModeSupported();
+        return mProprietaryCaps != null && mProprietaryCaps.isPowerSavingModeSupported();
     }
 
     private native boolean doSetPowerSavingMode(boolean flag);
@@ -288,6 +288,11 @@ public class NativeNfcManager implements DeviceHost {
     }
 
     @Override
+    public byte[] getT4tNfceeAid() {
+        return mT4tNfceeMgr.getT4tNfceeAid();
+    }
+
+    @Override
     public int doWriteData(byte[] fileId, byte[] data) {
         return mT4tNfceeMgr.doWriteData(fileId, data);
     }
@@ -340,6 +345,12 @@ public class NativeNfcManager implements DeviceHost {
         }
     }
 
+    public boolean isT3TIdentifierRegistered() {
+        synchronized (mLock) {
+            return mT3tIdentifiers.size() > 0;
+        }
+    }
+
     @Override
     public void clearT3tIdentifiersCache() {
         synchronized (mLock) {
@@ -367,6 +378,7 @@ public class NativeNfcManager implements DeviceHost {
             boolean enableReaderMode,
             boolean enableHostRouting,
             byte[] techAPollingLoopAnnotation,
+            byte[] extraAnnotation,
             boolean restart);
 
 
@@ -378,6 +390,7 @@ public class NativeNfcManager implements DeviceHost {
                 params.shouldEnableReaderMode(),
                 params.shouldEnableHostRouting(),
                 params.techAPollingLoopAnnotation(),
+                params.extraAnnotation(),
                 restart);
     }
 
@@ -542,23 +555,17 @@ public class NativeNfcManager implements DeviceHost {
     private void notifyEeAidSelected(byte[] aid, String eeName) {
         Log.i(TAG, "notifyEeAidSelected: AID= " + HexFormat.of().formatHex(aid) + " selected by "
                 + eeName);
-        if (com.android.nfc.flags.Flags.eeAidSelect()) {
-            mListener.onSeSelected(NfcService.SE_SELECTED_AID, aid, eeName);
-        }
+        mListener.onSeSelected(NfcService.SE_SELECTED_AID, aid, eeName);
     }
 
     private void notifyEeProtocolSelected(int protocol, String eeName) {
         Log.i(TAG, "notifyEeProtocolSelected: Protocol: " + protocol + " selected by " + eeName);
-        if (com.android.nfc.flags.Flags.eeAidSelect()) {
-            mListener.onSeSelected(NfcService.SE_SELECTED_PROTOCOL, null, eeName);
-        }
+        mListener.onSeSelected(NfcService.SE_SELECTED_PROTOCOL, null, eeName);
     }
 
     private void notifyEeTechSelected(int tech, String eeName) {
         Log.i(TAG, "notifyEeTechSelected: Tech: " + tech + " selected by " + eeName);
-        if (com.android.nfc.flags.Flags.eeAidSelect()) {
-            mListener.onSeSelected(NfcService.SE_SELECTED_TECH, null, eeName);
-        }
+        mListener.onSeSelected(NfcService.SE_SELECTED_TECH, null, eeName);
     }
 
     public void notifyPollingLoopFrame(int data_len, byte[] p_data) {
@@ -724,6 +731,16 @@ public class NativeNfcManager implements DeviceHost {
     @Override
     public native void setNciConfig(int paramId, byte[] param, int length, boolean custom);
 
+    @Override
+    public native byte[] getRfDiscoverConfig();
+
+    private native void doSetDefaultFrame(byte[] frame);
+
+    @Override
+    public void setDefaultFrame(byte[] frame) {
+        doSetDefaultFrame(frame);
+    }
+
     /** wrappers for values */
     private static final int CAPS_OBSERVE_MODE_UNKNOWN =
             NFC_PROPRIETARY_CAPABILITIES_REPORTED__PASSIVE_OBSERVE_MODE__MODE_UNKNOWN;
@@ -766,7 +783,8 @@ public class NativeNfcManager implements DeviceHost {
                 proprietaryCaps.isPollingFrameNotificationSupported(),
                 proprietaryCaps.isPowerSavingModeSupported(),
                 proprietaryCaps.isAutotransactPollingLoopFilterSupported(),
-                proprietaryCaps.getNumberOfExitFramesSupported());
+                proprietaryCaps.getNumberOfExitFramesSupported(),
+                proprietaryCaps.isReaderModeAnnotationSupported());
     }
 
     public void notifyObserveModeChanged(boolean enabled) {

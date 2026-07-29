@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> NFC ট্যাগ পড়তে পারবে।"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"নিচে উল্লেখ করা অ্যাপ NFC ট্যাগ পড়তে পারবে:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"এটি কীভাবে বন্ধ করা যায় তা জানতে ট্যাপ করুন।"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> NFC ট্যাগ পড়তে চায়।"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"নিম্নলিখিত অ্যাপগুলি NFC ট্যাগ পড়তে চায়:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"বর্তমান সেটিংস দেখতে ট্যাপ করুন।"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC ডেটা রেকর্ড করা হচ্ছে"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"রেকর্ডিং বন্ধ করতে ট্যাপ করুন।"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"NFC চালু করার জন্য <xliff:g id="PKG">%1$s</xliff:g>-কে অনুমতি দেবেন?"</string>

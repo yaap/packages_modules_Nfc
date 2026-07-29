@@ -86,42 +86,44 @@ public class NfcProprietaryCaps {
         int numberOfExitFramesSupported = 0;
         boolean isReaderModeAnnotationSupported = false;
         int offset = 0;
-        while ((offset + 2) < caps.length) {
-            int id = caps[offset++];
-            int value_len = caps[offset++];
-            int value_offset = offset;
-            offset += value_len;
+        if (caps != null) {
+            while ((offset + 2) < caps.length) {
+                int id = caps[offset++];
+                int value_len = caps[offset++];
+                int value_offset = offset;
+                offset += value_len;
 
-            // value bounds check
-            // all caps have minimum length of 1, check this bound
-            // here to simplify match cases.
-            if (value_len < 1 || offset > caps.length) {
-                break;
-            }
-            switch (id) {
-                case PASSIVE_OBSERVE_MODE:
-                    passiveObserveMode = switch (caps[value_offset]) {
-                        case 0 -> PassiveObserveMode.NOT_SUPPORTED;
-                        case 1 -> PassiveObserveMode.SUPPORT_WITH_RF_DEACTIVATION;
-                        case 2 -> PassiveObserveMode.SUPPORT_WITHOUT_RF_DEACTIVATION;
-                        default -> passiveObserveMode;
-                    };
+                // value bounds check
+                // all caps have minimum length of 1, check this bound
+                // here to simplify match cases.
+                if (value_len < 1 || offset > caps.length) {
                     break;
-                case POLLING_FRAME_NTF:
-                    isPollingFrameNotificationSupported = caps[value_offset] == 0x1;
-                    break;
-                case POWER_SAVING_MODE:
-                    isPowerSavingModeSupported = caps[value_offset] == 0x1;
-                    break;
-                case AUTOTRANSACT_POLLING_LOOP_FILTER:
-                    isAutotransactPollingLoopFilterSupported = caps[value_offset] == 0x1;
-                    break;
-                case NUMBER_OF_EXIT_FRAMES_SUPPORTED:
-                    numberOfExitFramesSupported = caps[value_offset];
-                case READER_MODE_ANNOTATIONS_SUPPORTED:
-                    isReaderModeAnnotationSupported = caps[value_offset] == 0x1;
-                    break;
+                }
+                switch (id) {
+                    case PASSIVE_OBSERVE_MODE:
+                        passiveObserveMode = switch (caps[value_offset]) {
+                            case 0 -> PassiveObserveMode.NOT_SUPPORTED;
+                            case 1 -> PassiveObserveMode.SUPPORT_WITH_RF_DEACTIVATION;
+                            case 2 -> PassiveObserveMode.SUPPORT_WITHOUT_RF_DEACTIVATION;
+                            default -> passiveObserveMode;
+                        };
+                        break;
+                    case POLLING_FRAME_NTF:
+                        isPollingFrameNotificationSupported = caps[value_offset] == 0x1;
+                        break;
+                    case POWER_SAVING_MODE:
+                        isPowerSavingModeSupported = caps[value_offset] == 0x1;
+                        break;
+                    case AUTOTRANSACT_POLLING_LOOP_FILTER:
+                        isAutotransactPollingLoopFilterSupported = caps[value_offset] == 0x1;
+                        break;
+                    case NUMBER_OF_EXIT_FRAMES_SUPPORTED:
+                        numberOfExitFramesSupported = caps[value_offset];
+                    case READER_MODE_ANNOTATIONS_SUPPORTED:
+                        isReaderModeAnnotationSupported = caps[value_offset] == 0x1;
+                        break;
 
+                }
             }
         }
         return new NfcProprietaryCaps(passiveObserveMode, isPollingFrameNotificationSupported,
@@ -140,6 +142,8 @@ public class NfcProprietaryCaps {
                 + mIsPowerSavingModeSupported
                 + ", isAutotransactPollingLoopFilterSupported="
                 + mIsAutotransactPollingLoopFilterSupported
+                + ", numberOfExitFramesSupported="
+                + mNumberOfExitFramesSupported
                 + ", mIsReaderModeAnnotationSupported="
                 + mIsReaderModeAnnotationSupported
                 + '}';

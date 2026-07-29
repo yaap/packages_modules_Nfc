@@ -435,6 +435,9 @@
 */
 #define NFA_DM_DISC_TIMEOUT_W4_DEACT_NTF (NFC_DEACTIVATE_TIMEOUT * 1000 + 6000)
 
+#ifndef NFA_DM_DISC_TIMEOUT_MIFARE_IDLE_PRESENCE_CHECK
+#define NFA_DM_DISC_TIMEOUT_MIFARE_IDLE_PRESENCE_CHECK (200)
+#endif
 /* Max number of NDEF type handlers that can be registered (including the
  * default handler) */
 #ifndef NFA_NDEF_MAX_HANDLERS

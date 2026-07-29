@@ -110,6 +110,9 @@ custom_bootclasspath_fragment {
     name: "com.android.nfcservices-bootclasspath-fragment",
     contents: ["framework-nfc"],
     apex_available: ["com.android.nfcservices"],
+    dex_preopt: {
+        profile: "packages/modules/Nfc/apex/boot-image-profile.txt",
+    },
     // This is disabled for now since the build system does not allow for adding a bootclasspath
     // fragment and conditionally adding it to PRODUCT_APEX_BOOT_JARS.
     // When `RELEASE_PACKAGE_NFC_STACK` is set to `com.android.nfcservices`, this needs to be

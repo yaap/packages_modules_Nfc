@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> എന്നതിന് NFC ടാഗുകൾ വായിക്കാനാകും."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"ഈ ആപ്പുകൾക്ക് NFC ടാഗുകൾ വായിക്കാനാകും:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"ഇത് എങ്ങനെ പ്രവർത്തനരഹിതമാക്കാമെന്ന് അറിയാൻ ടാപ്പ് ചെയ്യുക."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> എന്നതിന് NFC ടാഗുകൾ വായിക്കണമെന്നുണ്ട്."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"ഇനിപ്പറയുന്ന ആപ്പുകൾക്ക് NFC ടാഗുകൾ വായിക്കണമെന്നുണ്ട്:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"നിലവിലെ ക്രമീകരണം കാണാൻ ടാപ്പ് ചെയ്യുക."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC ഡാറ്റ റെക്കോർഡ് ചെയ്യുന്നുണ്ട്"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"റെക്കോർഡ് ചെയ്യുന്നത് നിർത്താൻ ടാപ്പ് ചെയ്യുക."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"NFC പ്രവർത്തനക്ഷമമാക്കാൻ <xliff:g id="PKG">%1$s</xliff:g> എന്നതിനെ അനുവദിക്കണോ?"</string>

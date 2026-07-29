@@ -21,6 +21,9 @@ android_library {
         "//packages/modules/Nfc:__subpackages__",
         "//vendor:__subpackages__",
     ],
+    lint: {
+        baseline_filename: "lint-baseline.xml",
+    },
 }
 
 android_test {
@@ -46,6 +49,27 @@ android_test {
         "//vendor:__subpackages__",
     ],
     jarjar_rules: ":nfc-cts-jarjar-rules",
+}
+
+android_test {
+    name: "NfcReaderTestApp",
+    sdk_version: "test_current",
+    srcs: [
+        "src/com/android/nfc/reader/**/*.java",
+    ],
+    manifest: "src/com/android/nfc/reader/AndroidManifest.xml",
+    static_libs: [
+        "framework-nfc.impl",
+        "compatibility-device-util-axt",
+        "nfc-multidevice-utils",
+    ],
+    min_sdk_version: "36",
+    visibility: [
+        "//cts:__subpackages__",
+        "//packages/modules/Nfc/NfcNci:__subpackages__",
+        "//packages/modules/Nfc:__subpackages__",
+        "//vendor:__subpackages__",
+    ],
 }
 
 python_library {

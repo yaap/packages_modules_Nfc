@@ -1318,7 +1318,7 @@ extern tNFA_STATUS NFA_SendVsCommand(uint8_t oid, uint8_t cmd_params_len,
 **
 *******************************************************************************/
 
-extern tNFA_STATUS NFA_SendRawVsCommand(uint8_t cmd_params_len,
+extern tNFA_STATUS NFA_SendRawVsCommand(uint16_t cmd_params_len,
                                         uint8_t* p_cmd_params,
                                         tNFA_VSC_CBACK* p_cback);
 

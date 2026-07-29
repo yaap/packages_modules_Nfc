@@ -34,6 +34,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.nfc.ComponentNameAndUser;
+import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.ApduServiceInfo;
 import android.nfc.cardemulation.CardEmulation;
 import android.nfc.cardemulation.PollingFrame;
@@ -78,6 +79,7 @@ public final class NfcCardEmulationOccurredTest {
     private NfcInjector mockNfcInjector;
     private Context mockContext;
     private PackageManager packageManager;
+    private NfcAdapter mNfcAdapter;
     private final TestLooper mTestLooper = new TestLooper();
 
     private static final int UID_1 = 111;
@@ -94,12 +96,16 @@ public final class NfcCardEmulationOccurredTest {
                         .mockStatic(Flags.class)
                         .mockStatic(NfcService.class)
                         .mockStatic(NfcInjector.class)
+                        .mockStatic(NfcAdapter.class)
                         .strictness(Strictness.LENIENT)
                         .startMocking();
         initMockContext(context);
 
         mockAidCache = Mockito.mock(RegisteredAidCache.class);
         mockNfcInjector = Mockito.mock(NfcInjector.class);
+        mNfcAdapter = Mockito.mock(NfcAdapter.class);
+        when(NfcAdapter.getDefaultAdapter(mockContext)).thenReturn(mNfcAdapter);
+        when(mNfcAdapter.getAdapterState()).thenReturn(NfcAdapter.STATE_ON);
         when(mockNfcInjector.getDeviceConfigFacade()).
                 thenReturn(Mockito.mock(DeviceConfigFacade.class));
         ApduServiceInfo apduServiceInfo = Mockito.mock(ApduServiceInfo.class);
@@ -231,10 +237,14 @@ public final class NfcCardEmulationOccurredTest {
         when(pollingLoopTypeOffFrame.getType()).thenReturn(PollingFrame.POLLING_LOOP_TYPE_OFF);
         ComponentName componentName = mock(ComponentName.class);
         when(componentName.getPackageName()).thenReturn("com.android.nfc");
+        ApduServiceInfo service = mock(ApduServiceInfo.class);
+        when(service.isOnHost()).thenReturn(true);
         when(mockAidCache.getPreferredService())
                 .thenReturn(new ComponentNameAndUser(0, componentName));
+        when(mockAidCache.getPreferredServiceInfo())
+                .thenReturn(service);
         IBinder iBinder = new Binder();
-        ServiceConnection serviceConnection = mHostEmulation.getServiceConnection();
+        ServiceConnection serviceConnection = mHostEmulation.new HostEmulationServiceConnection(0);
         serviceConnection.onServiceConnected(componentName, iBinder);
         mHostEmulation.onPollingLoopDetected(pollingLoopTypeOnFrames);
         mHostEmulation.onPollingLoopDetected(pollingLoopTypeOnFrames);

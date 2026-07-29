@@ -16,47 +16,43 @@
 package com.android.nfc.cardemulation;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import android.bluetooth.BluetoothProtoEnums;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.nfc.cardemulation.ApduServiceInfo;
-import android.nfc.cardemulation.CardEmulation;
 import android.os.UserHandle;
 import android.os.test.TestLooper;
-import android.util.Log;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.junit.CheckFlagsRule;
 import android.platform.test.flag.junit.DeviceFlagsValueProvider;
+import android.util.Log;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.nfc.DeviceConfigFacade;
-import com.android.nfc.cardemulation.RegisteredAidCache.AidResolveInfo;
 import com.android.nfc.NfcInjector;
 import com.android.nfc.NfcStatsLog;
+import com.android.nfc.cardemulation.RegisteredAidCache.AidResolveInfo;
 import com.android.nfc.flags.Flags;
-
-import junit.framework.TestListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
+
+import java.util.ArrayList;
 
 @RunWith(AndroidJUnit4.class)
 public final class NfcAidConflictOccurredTest {
@@ -65,6 +61,9 @@ public final class NfcAidConflictOccurredTest {
     private MockitoSession mStaticMockSession;
     private HostEmulationManager mHostEmulation;
     private HostEmulationManager.NfcAidRoutingListener mMockNfcAidRoutingListener;
+
+    private Resources mMockResources;
+
     @Rule
     public final CheckFlagsRule mCheckFlagsRule = DeviceFlagsValueProvider.createCheckFlagsRule();
     private final TestLooper mTestLooper = new TestLooper();
@@ -81,6 +80,9 @@ public final class NfcAidConflictOccurredTest {
         ApduServiceInfo apduServiceInfo = Mockito.mock(ApduServiceInfo.class);
         AidResolveInfo aidResolveInfo = mockAidCache.new AidResolveInfo();
         NfcInjector mockNfcInjector = Mockito.mock(NfcInjector.class);
+
+        mMockResources = Mockito.mock(Resources.class);
+
         // no defaultService and no activeService
         aidResolveInfo.services = new ArrayList<ApduServiceInfo>();
         aidResolveInfo.services.add(apduServiceInfo);
@@ -99,7 +101,15 @@ public final class NfcAidConflictOccurredTest {
             public void sendBroadcastAsUser(Intent intent, UserHandle user) {
                 Log.i(TAG, "[Mock] sendBroadcastAsUser");
             }
+
+            @Override
+            public Resources getResources() {
+                return mMockResources;
+            }
         };
+
+        when(mMockResources.getBoolean(anyInt())).thenReturn(false);
+
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
               () -> mHostEmulation = new HostEmulationManager(
                       mockContext, mTestLooper.getLooper(), mockAidCache,

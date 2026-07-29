@@ -368,7 +368,8 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
     }
 
     public void resetToIdleState() {
-        mHostEmulationManager.returnToIdleState();
+        onHostCardEmulationDeactivated(NFC_HCE_APDU);
+        onHostCardEmulationDeactivated(NFC_HCE_NFCF);
     }
 
     public void onHostCardEmulationDeactivated(int technology) {
@@ -790,7 +791,7 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
     public void onPreferredSubscriptionChanged(int subscriptionId, boolean isActive) {
         int simType = isActive ?  getSimTypeById(subscriptionId) : TelephonyUtils.SIM_TYPE_UNKNOWN;
         Log.i(TAG, "onPreferredSubscriptionChanged: subscription_" + subscriptionId
-                + "is active(" + isActive + "), type(" + simType + ")");
+                + " is active(" + isActive + "), type(" + simType + ")");
         mRoutingOptionManager.onPreferredSimChanged(simType);
         if (simType != TelephonyUtils.SIM_TYPE_UNKNOWN) {
             updateRouteBasedOnPreferredSim();
@@ -1027,6 +1028,13 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
                 String pollingLoopFilter, boolean autoTransact) throws RemoteException {
             NfcPermissions.validateUserId(userId);
             NfcPermissions.enforceUserPermissions(mContext);
+            if (pollingLoopFilter.equalsIgnoreCase("6A01CF0000")
+                    && !mAidCache.isDefaultOrAssociatedWalletPackage(service.getPackageName(),
+                    userId)) {
+                Log.e(TAG, "registerPollingLoopFilterForService: " + service.getPackageName()
+                        + " isn't default wallet, can't register ignore frame");
+                return false;
+            }
             if (!isServiceRegistered(userId, service)) {
                 Log.e(TAG, "registerPollingLoopFilterForService: service (" + service
                         + ") isn't registered for user " + userId);
@@ -1109,6 +1117,13 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
                 String pollingLoopPatternFilter, boolean autoTransact) throws RemoteException {
             NfcPermissions.validateUserId(userId);
             NfcPermissions.enforceUserPermissions(mContext);
+            if (pollingLoopPatternFilter.equalsIgnoreCase("6A01CF0000")
+                    && !mAidCache.isDefaultOrAssociatedWalletPackage(service.getPackageName(),
+                    userId)) {
+                Log.e(TAG, "registerPollingLoopPatternFilterForService: " + service.getPackageName()
+                        + " isn't default wallet, can't register ignore frame");
+                return false;
+            }
             if (!isServiceRegistered(userId, service)) {
                 Log.e(TAG, "registerPollingLoopPatternFilterForService: service (" + service
                         + ") isn't registed for user " + userId);
@@ -1272,9 +1287,12 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
         }
 
         @Override
-        public boolean setPreferredService(ComponentName service)
+        public boolean setPreferredService(ComponentName service, boolean hasActivity)
                 throws RemoteException {
             NfcPermissions.enforceUserPermissions(mContext);
+            if (!NfcPermissions.checkGestureExchangePermissions(mContext) && !hasActivity) {
+                throw new NullPointerException("activity is null");
+            }
             if (!isServiceRegistered( UserHandle.getUserHandleForUid(
                     Binder.getCallingUid()).getIdentifier(), service)) {
                 Log.e(TAG, "setPreferredService: unknown component");
@@ -1285,8 +1303,11 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
         }
 
         @Override
-        public boolean unsetPreferredService() throws RemoteException {
+        public boolean unsetPreferredService(boolean hasActivity) throws RemoteException {
             NfcPermissions.enforceUserPermissions(mContext);
+            if (!NfcPermissions.checkGestureExchangePermissions(mContext) && !hasActivity) {
+                throw new NullPointerException("activity is null");
+            }
             return mPreferredServices.unregisteredPreferredForegroundService(
                     Binder.getCallingUid());
         }
@@ -2080,6 +2101,17 @@ public class CardEmulationManager implements RegisteredServicesCache.Callback,
             return AidRoutingManager.CONFIGURE_ROUTING_FAILURE_UNKNOWN;
         } finally {
             mRoutingChangeFuture = null;
+        }
+    }
+
+    /**
+     * Forwards the request to allow a single transaction to the HostEmulationManager.
+     */
+    public void allowOneTransaction() {
+        if (mHostEmulationManager != null) {
+            mHostEmulationManager.allowOneTransaction();
+        } else {
+            Log.e("CardEmulationManager", "HostEmulationManager is not available.");
         }
     }
 }

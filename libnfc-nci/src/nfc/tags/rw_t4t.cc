@@ -2324,7 +2324,9 @@ void rw_t4t_handle_isodep_nak_rsp(uint8_t status, bool is_ntf) {
     rw_data.status = status;
     nfc_stop_quick_timer(&p_t4t->timer);
     p_t4t->state = RW_T4T_STATE_IDLE;
-    (*(rw_cb.p_cback))(RW_T4T_PRESENCE_CHECK_EVT, &rw_data);
+    if (rw_cb.p_cback) {
+      (*(rw_cb.p_cback))(RW_T4T_PRESENCE_CHECK_EVT, &rw_data);
+    }
   }
 }
 

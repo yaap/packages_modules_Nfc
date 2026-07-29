@@ -193,17 +193,6 @@ bool NfcTag::isActivated() { return mIsActivated; }
 
 /*******************************************************************************
 **
-** Function:        getProtocol
-**
-** Description:     Get the protocol of the current tag.
-**
-** Returns:         Protocol number.
-**
-*******************************************************************************/
-tNFC_PROTOCOL NfcTag::getProtocol() { return mProtocol; }
-
-/*******************************************************************************
-**
 ** Function         TimeDiff
 **
 ** Description      Computes time difference in milliseconds.
@@ -591,9 +580,11 @@ static void deleteglobaldata(JNIEnv* e) {
   LOG(DEBUG) << StringPrintf("%s: enter", fn);
   if (sTechPollBytes != NULL) {
     e->DeleteGlobalRef(sTechPollBytes);
+    sTechPollBytes = NULL;
   }
   if (gtechActBytes != NULL) {
     e->DeleteGlobalRef(gtechActBytes);
+    gtechActBytes = NULL;
   }
   LOG(DEBUG) << StringPrintf("%s: exit", fn);
 }
@@ -695,6 +686,9 @@ void NfcTag::fillNativeNfcTagMembers3(JNIEnv* e, jclass tag_cls, jobject tag,
       e, e->NewObjectArray(mNumTechList, byteArrayClass.get(), 0));
   int len = 0;
   if (mTechListTail == 0) {
+    if (sTechPollBytes != NULL) {
+      e->DeleteGlobalRef(sTechPollBytes);
+    }
     sTechPollBytes =
         reinterpret_cast<jobjectArray>(e->NewGlobalRef(techPollBytes.get()));
   } else {
@@ -864,6 +858,9 @@ void NfcTag::fillNativeNfcTagMembers4(JNIEnv* e, jclass tag_cls, jobject tag,
   }
 
   if (mTechListTail == 0) {
+    if (gtechActBytes != NULL) {
+      e->DeleteGlobalRef(gtechActBytes);
+    }
     // Keep the backup of the selected tag information to restore back with
     // multi selection.
     gtechActBytes =
@@ -1496,17 +1493,6 @@ bool NfcTag::isT2tNackResponse(const uint8_t* response, uint32_t responseLen) {
 
 /*******************************************************************************
 **
-** Function:        isNdefDetectionTimedOut
-**
-** Description:     Whether NDEF-detection algorithm timed out.
-**
-** Returns:         True if NDEF-detection algorithm timed out.
-**
-*******************************************************************************/
-bool NfcTag::isNdefDetectionTimedOut() { return mNdefDetectionTimedOut; }
-
-/*******************************************************************************
-**
 ** Function:        notifyTagDiscovered
 **
 ** Description:     Notify NFC service about tag discovery.
@@ -1516,17 +1502,18 @@ bool NfcTag::isNdefDetectionTimedOut() { return mNdefDetectionTimedOut; }
 **
 *******************************************************************************/
 void NfcTag::notifyTagDiscovered(bool discovered) {
-  ScopedAttach attach(mNativeData->vm, &mJniEnv);
-  if (mJniEnv == NULL) {
+  JNIEnv* e = NULL;
+  ScopedAttach attach(mNativeData->vm, &e);
+  if (e == NULL) {
     LOG(ERROR) << __func__ << ": jni env is null";
     return;
   }
   LOG(DEBUG) << StringPrintf("%s: discovered=%d", __func__, discovered);
-  mJniEnv->CallVoidMethod(mNativeData->manager,
+  e->CallVoidMethod(mNativeData->manager,
                           android::gCachedNfcManagerNotifyTagDiscovered,
                           discovered);
-  if (mJniEnv->ExceptionCheck()) {
-    mJniEnv->ExceptionClear();
+  if (e->ExceptionCheck()) {
+    e->ExceptionClear();
     LOG(ERROR) << StringPrintf("%s: fail notify", __func__);
   }
 }
@@ -1551,6 +1538,11 @@ void NfcTag::connectionEventHandler(uint8_t event, tNFA_CONN_EVT_DATA* data) {
       if ((disc_result.status == NFA_STATUS_OK) && !mIsReselecting) {
         notifyTagDiscovered(true);
         discoverTechnologies(disc_result);
+      }
+      if (disc_result.status == NFA_STATUS_OK) {
+        // Tag/tags not really active but not idle either,
+        // This enables deactivating the tag properly if needed
+        setActivationState();
       }
     } break;
 
@@ -1579,8 +1571,11 @@ void NfcTag::connectionEventHandler(uint8_t event, tNFA_CONN_EVT_DATA* data) {
       mProtocol = NFC_PROTOCOL_UNKNOWN;
       if (!mIsReselecting) {
         resetTechnologies();
+        notifyTagDiscovered(false);
+      } else {
+        LOG(ERROR) << StringPrintf(
+            "%s: Reselect Ongoing, Skip notifyTagDiscovered", fn);
       }
-      notifyTagDiscovered(false);
       break;
 
     case NFA_READ_CPLT_EVT: {

@@ -1,5 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.4.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.4.0-alpha08">
+<issues
+    format="6"
+    by="lint 8.4.0-alpha08"
+    type="baseline"
+    client=""
+    dependencies="true"
+    name=""
+    variant="all"
+    version="8.4.0-alpha08">
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.app.KeyguardManager#addDeviceLockedStateListener`"
+        errorLine1="            mKeyguard.addDeviceLockedStateListener("
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4685"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 36.1 (current min is 36): `android.app.KeyguardManager.DeviceLockedStateListener`"
+        errorLine1="            new DeviceLockedStateListener() {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4734"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `new android.nfc.cardemulation.ApduServiceInfo`"
+        errorLine1="            ApduServiceInfo ndefNfceeAidService = new ApduServiceInfo("
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="577"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresScreenOn`"
+        errorLine1="                        serviceInfo.setRequiresScreenOn("
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="663"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresUnlock`"
+        errorLine1="                        serviceInfo.setRequiresUnlock("
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="670"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresScreenOn`"
+        errorLine1="                serviceInfo.setRequiresScreenOn(enable);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="1352"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresUnlock`"
+        errorLine1="                serviceInfo.setRequiresUnlock(enable);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="1387"
+            column="29"/>
+    </issue>
 
     <issue
         id="ApplySharedPref"
@@ -543,7 +627,7 @@
     <issue
         id="VisibleForTests"
         message="This class should only be accessed from tests or within private scope"
-        errorLine1="        final HashMap&lt;String, AidRoutingManager.AidEntry> routingEntries = new HashMap&lt;>();"
+        errorLine1="        final HashMap&lt;String, AidRoutingManager.AidEntry&gt; routingEntries = new HashMap&lt;&gt;();"
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredAidCache.java"
@@ -850,8 +934,8 @@
 
     <issue
         id="QueryAllPackagesPermission"
-        message="A `&lt;queries>` declaration should generally be used instead of QUERY_ALL_PACKAGES; see https://g.co/dev/packagevisibility for details"
-        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.QUERY_ALL_PACKAGES&quot; />"
+        message="A `&lt;queries&gt;` declaration should generally be used instead of QUERY_ALL_PACKAGES; see https://g.co/dev/packagevisibility for details"
+        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.QUERY_ALL_PACKAGES&quot; /&gt;"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="./out/soong/.intermediates/packages/modules/Nfc/NfcNci/NfcNciApex/android_common_apex36/manifest_merger/AndroidManifest.xml"
@@ -917,7 +1001,7 @@
     <issue
         id="ObsoleteLayoutParam"
         message="Invalid layout param in a `LinearLayout`: `layout_centerHorizontal`"
-        errorLine1="        android:layout_centerHorizontal=&quot;true&quot;/>"
+        errorLine1="        android:layout_centerHorizontal=&quot;true&quot;/&gt;"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/layout/cardemu_payment_item.xml"
@@ -928,7 +1012,7 @@
     <issue
         id="ObsoleteLayoutParam"
         message="Invalid layout param in a `LinearLayout`: `layout_centerHorizontal`"
-        errorLine1="            android:layout_centerHorizontal=&quot;true&quot;/>"
+        errorLine1="            android:layout_centerHorizontal=&quot;true&quot;/&gt;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/layout/tapagain.xml"
@@ -938,7 +1022,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 35"
+        message="Unnecessary; SDK_INT is always &gt;= 35"
         errorLine1="    @TargetApi(35)"
         errorLine2="    ~~~~~~~~~~~~~~">
         <location
@@ -949,7 +1033,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 35"
+        message="Unnecessary; SDK_INT is always &gt;= 35"
         errorLine1="    @TargetApi(35)"
         errorLine2="    ~~~~~~~~~~~~~~">
         <location
@@ -960,7 +1044,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 35"
+        message="Unnecessary; SDK_INT is always &gt;= 35"
         errorLine1="    @TargetApi(35)"
         errorLine2="    ~~~~~~~~~~~~~~">
         <location
@@ -971,7 +1055,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 35"
+        message="Unnecessary; SDK_INT is always &gt;= 35"
         errorLine1="    @TargetApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -982,7 +1066,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 35"
+        message="Unnecessary; SDK_INT is always &gt;= 35"
         errorLine1="    @TargetApi(35)"
         errorLine2="    ~~~~~~~~~~~~~~">
         <location
@@ -1027,7 +1111,7 @@
     <issue
         id="StaticFieldLeak"
         message="This `AsyncTask` class should be static or leaks might occur (com.android.nfc.NfcService.EnableDisableTask)"
-        errorLine1="    class EnableDisableTask extends AsyncTask&lt;Integer, Void, Boolean> {"
+        errorLine1="    class EnableDisableTask extends AsyncTask&lt;Integer, Void, Boolean&gt; {"
         errorLine2="          ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
@@ -1038,7 +1122,7 @@
     <issue
         id="StaticFieldLeak"
         message="This `AsyncTask` class should be static or leaks might occur (com.android.nfc.NfcService.ApplyRoutingTask)"
-        errorLine1="    class ApplyRoutingTask extends AsyncTask&lt;Integer, Void, Void> {"
+        errorLine1="    class ApplyRoutingTask extends AsyncTask&lt;Integer, Void, Void&gt; {"
         errorLine2="          ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
@@ -1060,7 +1144,7 @@
     <issue
         id="VectorPath"
         message="Very long vector path (934 characters), which is bad for performance. Considering reducing precision, removing minor details or rasterizing vector."
-        errorLine1="    &lt;path android:fillColor=&quot;#939393&quot; android:pathData=&quot;M87.6,31.9L87.6,31.9h0.8l0,0l30.7,0.2h0.7h0.1c2.1,0 3.8,0.6 4.9,1.7c1.1,1.1 1.7,2.7 1.7,4.7v0.1v0.6l-0.6,76.7c0,0.4 0,0.7 0,1.1l0,0l0,0c0,0.2 0,0.5 -0.1,0.7l0,0c-0.7,4 -4.4,4.6 -6.6,4.6h-0.1h-0.7l-30.7,-0.3h-0.7h-0.1c-2.2,0 -5.9,-0.6 -6.5,-4.7l0,0c0,-0.2 -0.1,-0.4 -0.1,-0.7l0,0l0,0c0,-0.4 0,-0.7 0,-1.1l0.6,-76.7v-0.6v-0.1c0,-2 0.6,-3.6 1.7,-4.7C83.7,32.4 85.4,31.9 87.6,31.9C87.5,31.9 87.5,31.9 87.6,31.9C87.5,31.9 87.6,31.9 87.6,31.9L87.6,31.9M87.7,31.4L87.7,31.4L87.7,31.4h-0.2l0,0c-2.3,0 -4,0.6 -5.3,1.8c-1.2,1.2 -1.9,2.9 -1.9,5.1v0.1v0.6l-0.6,76.7c0,0.4 0,0.7 0,1.1l0,0l0,0c0,0.2 0,0.5 0.1,0.7l0,0l0,0l0,0l0,0c0.3,1.9 1.3,3.4 3,4.2c1.4,0.7 3,0.9 4.1,0.9h0.1h0.7l30.7,0.2h0.7h0.1c1.1,0 2.7,-0.1 4.1,-0.8c1.7,-0.8 2.7,-2.2 3,-4.2l0,0l0,0l0,0l0,0c0,-0.2 0.1,-0.4 0.1,-0.7l0,0l0,0c0,-0.4 0,-0.7 0,-1.1l0.6,-76.7v-0.6v-0.1c0,-2.2 -0.6,-3.9 -1.8,-5.1c-1.2,-1.2 -3,-1.8 -5.3,-1.8h-0.1h-0.7l-30.7,-0.2l0,0L87.7,31.4L87.7,31.4L87.7,31.4z&quot;/>"
+        errorLine1="    &lt;path android:fillColor=&quot;#939393&quot; android:pathData=&quot;M87.6,31.9L87.6,31.9h0.8l0,0l30.7,0.2h0.7h0.1c2.1,0 3.8,0.6 4.9,1.7c1.1,1.1 1.7,2.7 1.7,4.7v0.1v0.6l-0.6,76.7c0,0.4 0,0.7 0,1.1l0,0l0,0c0,0.2 0,0.5 -0.1,0.7l0,0c-0.7,4 -4.4,4.6 -6.6,4.6h-0.1h-0.7l-30.7,-0.3h-0.7h-0.1c-2.2,0 -5.9,-0.6 -6.5,-4.7l0,0c0,-0.2 -0.1,-0.4 -0.1,-0.7l0,0l0,0c0,-0.4 0,-0.7 0,-1.1l0.6,-76.7v-0.6v-0.1c0,-2 0.6,-3.6 1.7,-4.7C83.7,32.4 85.4,31.9 87.6,31.9C87.5,31.9 87.5,31.9 87.6,31.9C87.5,31.9 87.6,31.9 87.6,31.9L87.6,31.9M87.7,31.4L87.7,31.4L87.7,31.4h-0.2l0,0c-2.3,0 -4,0.6 -5.3,1.8c-1.2,1.2 -1.9,2.9 -1.9,5.1v0.1v0.6l-0.6,76.7c0,0.4 0,0.7 0,1.1l0,0l0,0c0,0.2 0,0.5 0.1,0.7l0,0l0,0l0,0l0,0c0.3,1.9 1.3,3.4 3,4.2c1.4,0.7 3,0.9 4.1,0.9h0.1h0.7l30.7,0.2h0.7h0.1c1.1,0 2.7,-0.1 4.1,-0.8c1.7,-0.8 2.7,-2.2 3,-4.2l0,0l0,0l0,0l0,0c0,-0.2 0.1,-0.4 0.1,-0.7l0,0l0,0c0,-0.4 0,-0.7 0,-1.1l0.6,-76.7v-0.6v-0.1c0,-2.2 -0.6,-3.9 -1.8,-5.1c-1.2,-1.2 -3,-1.8 -5.3,-1.8h-0.1h-0.7l-30.7,-0.2l0,0L87.7,31.4L87.7,31.4L87.7,31.4z&quot;/&gt;"
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/drawable/ic_weblink_nfc.xml"
@@ -1159,7 +1243,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Inkomende straal...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Inkomende straal...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-af/strings.xml"
@@ -1170,7 +1254,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ገቢ ሞገድ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ገቢ ሞገድ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-am/strings.xml"
@@ -1181,7 +1265,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;بيانات واردة...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;بيانات واردة...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ar/strings.xml"
@@ -1192,7 +1276,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;অন্তৰ্গামী বীম...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;অন্তৰ্গামী বীম...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-as/strings.xml"
@@ -1203,7 +1287,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Gələn beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Gələn beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-az/strings.xml"
@@ -1214,7 +1298,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dolazno prebacivanje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dolazno prebacivanje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-b+sr+Latn/strings.xml"
@@ -1225,7 +1309,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Уваходная перадача beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Уваходная перадача beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-be/strings.xml"
@@ -1236,7 +1320,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Входящо излъчване...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Входящо излъчване...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bg/strings.xml"
@@ -1247,7 +1331,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;আগত বীম...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;আগত বীম...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bn/strings.xml"
@@ -1258,7 +1342,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dolazni prijenos...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dolazni prijenos...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bs/strings.xml"
@@ -1269,7 +1353,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Transferència entrant...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Transferència entrant...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ca/strings.xml"
@@ -1280,7 +1364,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Příchozí přenos...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Příchozí přenos...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-cs/strings.xml"
@@ -1291,7 +1375,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Indgående overførsel...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Indgående overførsel...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-da/strings.xml"
@@ -1302,7 +1386,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Beam wird empfangen...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Beam wird empfangen...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-de/strings.xml"
@@ -1313,7 +1397,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Incoming beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Incoming beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rAU/strings.xml"
@@ -1324,7 +1408,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Incoming beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Incoming beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rCA/strings.xml"
@@ -1335,7 +1419,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Incoming beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Incoming beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rGB/strings.xml"
@@ -1346,7 +1430,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Incoming beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Incoming beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rIN/strings.xml"
@@ -1357,7 +1441,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;7453634884807323920&quot;>&quot;‎‏‎‎‎‎‎‏‎‏‏‏‎‎‎‎‎‏‎‏‎‎‏‎‏‏‎‏‏‏‏‏‏‏‏‎‎‏‏‏‎‏‏‏‎‎‎‎‏‎‏‎‎‎‎‏‎‏‏‎‏‏‏‏‏‏‎‎‏‎‏‎‎‏‏‎‎‏‏‎‎‏‏‏‎‎‎‏‎‎‎‏‎‎‎‎‎Incoming beam...‎‏‎‎‏‎&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;7453634884807323920&quot;&gt;&quot;‎‏‎‎‎‎‎‏‎‏‏‏‎‎‎‎‎‏‎‏‎‎‏‎‏‏‎‏‏‏‏‏‏‏‏‎‎‏‏‏‎‏‏‏‎‎‎‎‏‎‏‎‎‎‎‏‎‏‏‎‏‏‏‏‏‏‎‎‏‎‏‎‎‏‏‎‎‏‏‎‎‏‏‏‎‎‎‏‎‎‎‏‎‎‎‎‎Incoming beam...‎‏‎‎‏‎&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rXC/strings.xml"
@@ -1368,7 +1452,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Transmisión entrante...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Transmisión entrante...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-es-rUS/strings.xml"
@@ -1379,7 +1463,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Transferencia entrante...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Transferencia entrante...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-es/strings.xml"
@@ -1390,7 +1474,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Sissetulev kiir ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Sissetulev kiir ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-et/strings.xml"
@@ -1401,7 +1485,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;در حال دریافت پرتو...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;در حال دریافت پرتو...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-fa/strings.xml"
@@ -1412,7 +1496,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Saapuva sisällönjakopyyntö...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Saapuva sisällönjakopyyntö...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-fi/strings.xml"
@@ -1423,7 +1507,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Partage entrant...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Partage entrant...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-fr-rCA/strings.xml"
@@ -1434,7 +1518,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Partage entrant...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Partage entrant...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-fr/strings.xml"
@@ -1445,7 +1529,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Transferencia entrante...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Transferencia entrante...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-gl/strings.xml"
@@ -1456,7 +1540,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ઇનકમિંગ બીમ ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ઇનકમિંગ બીમ ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-gu/strings.xml"
@@ -1467,7 +1551,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;इनकमिंग बीम...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;इनकमिंग बीम...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hi/strings.xml"
@@ -1478,7 +1562,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dolazno emitiranje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dolazno emitiranje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hr/strings.xml"
@@ -1489,7 +1573,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Bejövő sugár...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Bejövő sugár...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hu/strings.xml"
@@ -1500,7 +1584,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Մուտքային փոխանցում...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Մուտքային փոխանցում...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hy/strings.xml"
@@ -1511,7 +1595,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Pancaran yang masuk...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Pancaran yang masuk...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-in/strings.xml"
@@ -1522,7 +1606,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Sending berst...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Sending berst...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-is/strings.xml"
@@ -1533,7 +1617,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Trasmissione in arrivo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Trasmissione in arrivo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-it/strings.xml"
@@ -1544,7 +1628,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ビームを受信しています...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ビームを受信しています...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ja/strings.xml"
@@ -1555,7 +1639,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;შემომავალი სხივი...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;შემომავალი სხივი...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ka/strings.xml"
@@ -1566,7 +1650,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Келген сигналдар...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Келген сигналдар...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-kk/strings.xml"
@@ -1577,7 +1661,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ការ​ផ្ទេរ​ចូល...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ការ​ផ្ទេរ​ចូល...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-km/strings.xml"
@@ -1588,7 +1672,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ಒಳಬರುತ್ತಿರುವ ಬೀಮ್...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ಒಳಬರುತ್ತಿರುವ ಬೀಮ್...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-kn/strings.xml"
@@ -1599,7 +1683,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;수신 빔...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;수신 빔...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ko/strings.xml"
@@ -1610,7 +1694,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Кириш beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Кириш beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ky/strings.xml"
@@ -1621,7 +1705,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ມີ beam ເຂົ້າມາ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ມີ beam ເຂົ້າມາ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lo/strings.xml"
@@ -1632,7 +1716,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Gaunamas perdavimas...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Gaunamas perdavimas...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lt/strings.xml"
@@ -1643,7 +1727,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Ienākošie vienumi, izmantojot funkciju Beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Ienākošie vienumi, izmantojot funkciju Beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lv/strings.xml"
@@ -1654,7 +1738,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Дојдовен зрак...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Дојдовен зрак...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mk/strings.xml"
@@ -1665,7 +1749,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ഇൻകമിംഗ് ബീം...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ഇൻകമിംഗ് ബീം...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ml/strings.xml"
@@ -1676,7 +1760,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Орж ирж буй бийм...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Орж ирж буй бийм...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mn/strings.xml"
@@ -1687,7 +1771,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;येणारे बीम...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;येणारे बीम...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mr/strings.xml"
@@ -1698,7 +1782,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Pancar sedang masuk...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Pancar sedang masuk...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ms/strings.xml"
@@ -1709,7 +1793,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;အဝင် လှိုင်းလွှင့်ခြင်း...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;အဝင် လှိုင်းလွှင့်ခြင်း...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-my/strings.xml"
@@ -1720,7 +1804,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;आगमन बिम...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;आगमन बिम...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ne/strings.xml"
@@ -1731,7 +1815,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Inkomende beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Inkomende beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-nl/strings.xml"
@@ -1742,7 +1826,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ବିମ୍‌ ଆସୁଛି...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ବିମ୍‌ ଆସୁଛି...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-or/strings.xml"
@@ -1753,7 +1837,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ਇਨਕਮਿੰਗ ਬੀਮ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ਇਨਕਮਿੰਗ ਬੀਮ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pa/strings.xml"
@@ -1764,7 +1848,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Odbieram dane zbliżeniowo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Odbieram dane zbliżeniowo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pl/strings.xml"
@@ -1775,7 +1859,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;A receber partilha...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;A receber partilha...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pt-rPT/strings.xml"
@@ -1786,7 +1870,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Beam chegando...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Beam chegando...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pt/strings.xml"
@@ -1797,7 +1881,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Transmitere primită...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Transmitere primită...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ro/strings.xml"
@@ -1808,7 +1892,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;එන බීම්...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;එන බීම්...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-si/strings.xml"
@@ -1819,7 +1903,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Prichádzajúci prenos...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Prichádzajúci prenos...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sk/strings.xml"
@@ -1830,7 +1914,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dohodni prenos ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dohodni prenos ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sl/strings.xml"
@@ -1841,7 +1925,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dërgimi me rreze është në ardhje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dërgimi me rreze është në ardhje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sq/strings.xml"
@@ -1852,7 +1936,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Долазно пребацивање...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Долазно пребацивање...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sr/strings.xml"
@@ -1863,7 +1947,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Inkommande trådlös överföring ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Inkommande trådlös överföring ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sv/strings.xml"
@@ -1874,7 +1958,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Boriti zinazoingia...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Boriti zinazoingia...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sw/strings.xml"
@@ -1885,7 +1969,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;உள்வரும் பீம்...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;உள்வரும் பீம்...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ta/strings.xml"
@@ -1896,7 +1980,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;ఇన్‌కమింగ్ Beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;ఇన్‌కమింగ్ Beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-te/strings.xml"
@@ -1907,7 +1991,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;บีมขาเข้า...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;บีมขาเข้า...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-th/strings.xml"
@@ -1918,7 +2002,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Dumarating na beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Dumarating na beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-tl/strings.xml"
@@ -1929,7 +2013,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Gelen ışın...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Gelen ışın...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-tr/strings.xml"
@@ -1940,7 +2024,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Вхідне передавання даних...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Вхідне передавання даних...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-uk/strings.xml"
@@ -1951,7 +2035,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Tia đến...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Tia đến...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-vi/strings.xml"
@@ -1962,7 +2046,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;正在接收传输内容...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;正在接收传输内容...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rCN/strings.xml"
@@ -1973,7 +2057,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;正在接收傳送...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;正在接收傳送...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rHK/strings.xml"
@@ -1984,7 +2068,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;正在接收傳輸...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;正在接收傳輸...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rTW/strings.xml"
@@ -1995,7 +2079,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;>&quot;Ukuvumelanisa okungenayo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot; msgid=&quot;1929294166633309327&quot;&gt;&quot;Ukuvumelanisa okungenayo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zu/strings.xml"
@@ -2006,7 +2090,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ሞገድ በማመንጨት ላይ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ሞገድ በማመንጨት ላይ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-am/strings.xml"
@@ -2017,7 +2101,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;إرسال لاسلكي...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;إرسال لاسلكي...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ar/strings.xml"
@@ -2028,7 +2112,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;বীম চলি আছে...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;বীম চলি আছে...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-as/strings.xml"
@@ -2039,7 +2123,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-az/strings.xml"
@@ -2050,7 +2134,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Prebacivanje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Prebacivanje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-b+sr+Latn/strings.xml"
@@ -2061,7 +2145,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Ззяючы (Beaming)...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Ззяючы (Beaming)...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-be/strings.xml"
@@ -2072,7 +2156,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Излъчва се...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Излъчва се...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bg/strings.xml"
@@ -2083,7 +2167,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;বীম হচ্ছে...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;বীম হচ্ছে...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bn/strings.xml"
@@ -2094,7 +2178,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Prenošenje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Prenošenje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-bs/strings.xml"
@@ -2105,7 +2189,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;S\&apos;està compartint...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;S\&apos;està compartint...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ca/strings.xml"
@@ -2116,7 +2200,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Přenášení...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Přenášení...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-cs/strings.xml"
@@ -2127,7 +2211,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Overfører...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Overfører...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-da/strings.xml"
@@ -2138,7 +2222,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beamen...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beamen...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-de/strings.xml"
@@ -2149,7 +2233,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rAU/strings.xml"
@@ -2160,7 +2244,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rCA/strings.xml"
@@ -2171,7 +2255,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rGB/strings.xml"
@@ -2182,7 +2266,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rIN/strings.xml"
@@ -2193,7 +2277,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;4679536649779123495&quot;>&quot;‎‏‎‎‎‎‎‏‎‏‏‏‎‎‎‎‎‏‎‏‎‎‏‎‏‏‎‏‏‏‏‏‏‏‎‎‎‎‎‎‏‏‏‏‎‎‎‏‎‎‎‎‏‏‎‏‏‏‎‎‏‎‏‎‎‎‏‎‏‎‏‏‏‎‎‎‎‎‎‏‏‎‎‏‎‏‎‏‎‎‏‎‎‏‏‏‎Beaming...‎‏‎‎‏‎&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;4679536649779123495&quot;&gt;&quot;‎‏‎‎‎‎‎‏‎‏‏‏‎‎‎‎‎‏‎‏‎‎‏‎‏‏‎‏‏‏‏‏‏‏‎‎‎‎‎‎‏‏‏‏‎‎‎‏‎‎‎‎‏‏‎‏‏‏‎‎‏‎‏‎‎‎‏‎‏‎‏‏‏‎‎‎‎‎‎‏‏‎‎‏‎‏‎‏‎‎‏‎‎‏‏‏‎Beaming...‎‏‎‎‏‎&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-en-rXC/strings.xml"
@@ -2204,7 +2288,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Transmitiendo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Transmitiendo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-es-rUS/strings.xml"
@@ -2215,7 +2299,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Compartiendo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Compartiendo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-es/strings.xml"
@@ -2226,7 +2310,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Kiirega edastamine ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Kiirega edastamine ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-et/strings.xml"
@@ -2237,7 +2321,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Transferindo...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Transferindo...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-gl/strings.xml"
@@ -2248,7 +2332,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;બીમિંગ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;બીમિંગ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-gu/strings.xml"
@@ -2259,7 +2343,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;बीम हो रहा है...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;बीम हो रहा है...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hi/strings.xml"
@@ -2270,7 +2354,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Emitiranje...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Emitiranje...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hr/strings.xml"
@@ -2281,7 +2365,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Sugárzás...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Sugárzás...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hu/strings.xml"
@@ -2292,7 +2376,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Փոխանցվում է...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Փոխանցվում է...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-hy/strings.xml"
@@ -2303,7 +2387,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Memancarkan...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Memancarkan...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-in/strings.xml"
@@ -2314,7 +2398,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Sendir...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Sendir...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-is/strings.xml"
@@ -2325,7 +2409,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Trasmissione...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Trasmissione...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-it/strings.xml"
@@ -2336,7 +2420,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;העברת התוכן מתבצעת...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;העברת התוכן מתבצעת...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-iw/strings.xml"
@@ -2347,7 +2431,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ビームしています...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ビームしています...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ja/strings.xml"
@@ -2358,7 +2442,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;სხივით გადაცემა...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;სხივით გადაცემა...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ka/strings.xml"
@@ -2369,7 +2453,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Хабар таратылуда...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Хабар таратылуда...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-kk/strings.xml"
@@ -2380,7 +2464,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;កំពុង​ផ្ទេរ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;កំពុង​ផ្ទេរ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-km/strings.xml"
@@ -2391,7 +2475,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ಬೀಮ್ ಮಾಡಲಾಗುತ್ತಿದೆ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ಬೀಮ್ ಮಾಡಲಾಗುತ್ತಿದೆ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-kn/strings.xml"
@@ -2402,7 +2486,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;공유 중...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;공유 중...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ko/strings.xml"
@@ -2413,7 +2497,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beam өткөрүүдө...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beam өткөрүүдө...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ky/strings.xml"
@@ -2424,7 +2508,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beaming...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beaming...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lo/strings.xml"
@@ -2435,7 +2519,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Perduodama...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Perduodama...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lt/strings.xml"
@@ -2446,7 +2530,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Notiek kopīgošana, izmantojot funkciju Beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Notiek kopīgošana, izmantojot funkciju Beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-lv/strings.xml"
@@ -2457,7 +2541,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Зрачење...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Зрачење...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mk/strings.xml"
@@ -2468,7 +2552,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ബീമിംഗ്...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ബീമിംഗ്...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ml/strings.xml"
@@ -2479,7 +2563,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Бийм цацруулж байна...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Бийм цацруулж байна...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mn/strings.xml"
@@ -2490,7 +2574,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;बीम करत आहे...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;बीम करत आहे...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-mr/strings.xml"
@@ -2501,7 +2585,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Memancar...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Memancar...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ms/strings.xml"
@@ -2512,7 +2596,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;လှိုင်းလွှင့်နေစဥ်...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;လှိုင်းလွှင့်နေစဥ်...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-my/strings.xml"
@@ -2523,7 +2607,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Sender ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Sender ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-nb/strings.xml"
@@ -2534,7 +2618,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;बिम गर्दै...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;बिम गर्दै...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ne/strings.xml"
@@ -2545,7 +2629,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beamen...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beamen...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-nl/strings.xml"
@@ -2556,7 +2640,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ବିମ୍‌ କରା ହେଉଛି...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ବିମ୍‌ କରା ହେଉଛି...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-or/strings.xml"
@@ -2567,7 +2651,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;ਬੀਮ ਕਰ ਰਿਹਾ ਹੈ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;ਬੀਮ ਕਰ ਰਿਹਾ ਹੈ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pa/strings.xml"
@@ -2578,7 +2662,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Przesyłam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Przesyłam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pl/strings.xml"
@@ -2589,7 +2673,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;A transmitir...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;A transmitir...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pt-rPT/strings.xml"
@@ -2600,7 +2684,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Enviando...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Enviando...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-pt/strings.xml"
@@ -2611,7 +2695,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Se transmite...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Se transmite...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ro/strings.xml"
@@ -2622,7 +2706,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Передача данных...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Передача данных...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ru/strings.xml"
@@ -2633,7 +2717,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;බීම් කරමින්...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;බීම් කරමින්...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-si/strings.xml"
@@ -2644,7 +2728,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Prenáša sa...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Prenáša sa...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sk/strings.xml"
@@ -2655,7 +2739,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Prenašanje ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Prenašanje ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sl/strings.xml"
@@ -2666,7 +2750,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Po dërgon me rreze...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Po dërgon me rreze...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sq/strings.xml"
@@ -2677,7 +2761,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Пребацивање...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Пребацивање...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sr/strings.xml"
@@ -2688,7 +2772,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Överför trådlöst ...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Överför trådlöst ...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sv/strings.xml"
@@ -2699,7 +2783,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Inasambaza...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Inasambaza...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-sw/strings.xml"
@@ -2710,7 +2794,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;பரிமாற்றுகிறது...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;பரிமாற்றுகிறது...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-ta/strings.xml"
@@ -2721,7 +2805,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Beam చేస్తోంది...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Beam చేస్తోంది...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-te/strings.xml"
@@ -2732,7 +2816,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;กำลังบีม...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;กำลังบีม...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-th/strings.xml"
@@ -2743,7 +2827,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Nagbi-beam...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Nagbi-beam...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-tl/strings.xml"
@@ -2754,7 +2838,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Işınlanıyor...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Işınlanıyor...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-tr/strings.xml"
@@ -2765,7 +2849,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Đang chiếu...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Đang chiếu...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-vi/strings.xml"
@@ -2776,7 +2860,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;正在传输信息...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;正在传输信息...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rCN/strings.xml"
@@ -2787,7 +2871,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;正在傳送...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;正在傳送...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rHK/strings.xml"
@@ -2798,7 +2882,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;即時傳輸中...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;即時傳輸中...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zh-rTW/strings.xml"
@@ -2809,7 +2893,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;>&quot;Ukuvumelanisa...&quot;&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot; msgid=&quot;5219329384828480018&quot;&gt;&quot;Ukuvumelanisa...&quot;&lt;/string&gt;"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values-zu/strings.xml"
@@ -2820,7 +2904,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_progress&quot;>Incoming beam...&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_progress&quot;&gt;Incoming beam...&lt;/string&gt;"
         errorLine2="                                 ~~~~~~~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values/strings.xml"
@@ -2831,7 +2915,7 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;beam_outgoing&quot;>Beaming...&lt;/string>"
+        errorLine1="    &lt;string name=&quot;beam_outgoing&quot;&gt;Beaming...&lt;/string&gt;"
         errorLine2="                                 ~~~~~~~~~~">
         <location
             file="packages/modules/Nfc/NfcNci/res/values/strings.xml"
@@ -3019,6 +3103,83 @@
             file="packages/modules/Nfc/NfcNci/res/layout/cardemu_payment_item.xml"
             line="28"
             column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.app.KeyguardManager#addDeviceLockedStateListener`"
+        errorLine1="            mKeyguard.addDeviceLockedStateListener("
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4719"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 36.1 (current min is 36): `android.app.KeyguardManager.DeviceLockedStateListener`"
+        errorLine1="            new DeviceLockedStateListener() {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/NfcService.java"
+            line="4768"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `new android.nfc.cardemulation.ApduServiceInfo`"
+        errorLine1="            ApduServiceInfo ndefNfceeAidService = new ApduServiceInfo("
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="579"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresScreenOn`"
+        errorLine1="                        serviceInfo.setRequiresScreenOn("
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="665"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresUnlock`"
+        errorLine1="                        serviceInfo.setRequiresUnlock("
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="672"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresScreenOn`"
+        errorLine1="                serviceInfo.setRequiresScreenOn(enable);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="1354"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 36.1 (current min is 36): `android.nfc.cardemulation.ApduServiceInfo#setRequiresUnlock`"
+        errorLine1="                serviceInfo.setRequiresUnlock(enable);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/modules/Nfc/NfcNci/src/com/android/nfc/cardemulation/RegisteredServicesCache.java"
+            line="1389"
+            column="29"/>
     </issue>
 
 </issues>

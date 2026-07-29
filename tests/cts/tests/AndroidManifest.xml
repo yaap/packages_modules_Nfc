@@ -28,6 +28,7 @@
     <queries>
         <package android:name="com.android.test.foregroundnfc" />
         <package android:name="com.android.test.walletroleholder" />
+        <package android:name="com.android.test.walletroleholder2" />
     </queries>
 
     <application android:testOnly="true">

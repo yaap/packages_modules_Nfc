@@ -22,6 +22,8 @@ import static android.nfc.cardemulation.CardEmulation.SET_SERVICE_ENABLED_STATUS
 import static android.nfc.cardemulation.CardEmulation.SET_SERVICE_ENABLED_STATUS_FAILURE_UNKNOWN_ERROR;
 import static android.nfc.cardemulation.CardEmulation.SET_SERVICE_ENABLED_STATUS_OK;
 
+import static com.android.nfc.module.flags.Flags.tapToX;
+
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -344,6 +346,14 @@ public class RegisteredServicesCache {
         sdFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         mContext.registerReceiverForAllUsers(mReceiver.get(), sdFilter, null, null);
 
+        IntentFilter localeChangedFilter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
+        mContext.registerReceiverForAllUsers(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onLocaleChanged();
+            }
+        }, localeChangedFilter, null, null);
+
         mDynamicSettingsFile = dynamicSettings;
         mOthersFile = otherSettings;
     }
@@ -373,6 +383,12 @@ public class RegisteredServicesCache {
     }
 
     public void onManagedProfileChanged() {
+        synchronized (mLock) {
+            refreshUserProfilesLocked(true);
+        }
+    }
+
+    public void onLocaleChanged() {
         synchronized (mLock) {
             refreshUserProfilesLocked(true);
         }
@@ -484,6 +500,30 @@ public class RegisteredServicesCache {
         return mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }
 
+    private boolean declaresAidOrPrefix(ApduServiceInfo service, String targetAid) {
+        if (service == null || targetAid == null) {
+            return false;
+        }
+        String target = targetAid.toUpperCase();
+
+        for (String registeredAid : service.getAids()) {
+            if (target.equals(registeredAid.toUpperCase())) {
+                return true;
+            }
+        }
+
+        for (String prefixAid : service.getPrefixAids()) {
+            if (prefixAid.isEmpty()) {
+                continue;
+            }
+            String prefix = prefixAid.substring(0, prefixAid.length() - 1);
+            if (target.startsWith(prefix.toUpperCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ArrayList<ApduServiceInfo> getInstalledServices(int userId) {
         PackageManager pm;
         try {
@@ -543,6 +583,18 @@ public class RegisteredServicesCache {
                 }
                 ApduServiceInfo service = mServiceParser.parseApduService(pm, resolvedService,
                         onHost);
+
+                // Check if the package declares GestureExchangeAid with permission
+                if (tapToX() && declaresAidOrPrefix(service, NfcService.GESTURE_EXCHAGE_AID)) {
+                    if (pm.checkPermission(android.Manifest.permission.PERFORM_GESTURE_EXCHANGE,
+                            si.packageName) != PackageManager.PERMISSION_GRANTED) {
+                        Log.e(TAG,
+                                "getInstalledServices: Skipping application component "
+                                        + componentName + ": it must request the permission "
+                                        + android.Manifest.permission.PERFORM_GESTURE_EXCHANGE);
+                        continue;
+                    }
+                }
                 if (service != null) {
                     validServices.add(service);
                 }
@@ -556,12 +608,15 @@ public class RegisteredServicesCache {
         }
 
         UserManager um = mContext.createContextAsUser(
-                UserHandle.of(ActivityManager.getCurrentUser()), /*flags=*/0)
+                UserHandle.of(userId), /*flags=*/0)
                 .getSystemService(UserManager.class);
         boolean isManagedProfile = um.isManagedProfile(userId);
+        boolean isCloneProfile = um.isCloneProfile();
+        boolean isPrivateProfile = um.isPrivateProfile();
         // Add NDEF-NFCEE AID - Only if NDEF-NFCEE feature supported
         // And only for user 0 to avoid adding several times (if multiple profiles)
-        if (!isManagedProfile && NfcService.getInstance().isNdefNfceefeatureEnabled()) {
+        if (!isManagedProfile && !isCloneProfile & !isPrivateProfile
+                && NfcService.getInstance().isNdefNfceefeatureEnabled()) {
             ResolveInfo ndefNfceeAppInfo = new ResolveInfo();
             ndefNfceeAppInfo.resolvePackageName = "NdefNfceeAidRoute";
             ndefNfceeAppInfo.serviceInfo = new ServiceInfo();
@@ -569,7 +624,12 @@ public class RegisteredServicesCache {
             ndefNfceeAppInfo.serviceInfo.name = "com.android.nfc.ndef_nfcee.NdefNfceeService";
             ndefNfceeAppInfo.serviceInfo.applicationInfo = new ApplicationInfo();
             List<String> ndefNfceeAid = new ArrayList<String>();
-            ndefNfceeAid.add(DEFAULT_T4T_NFCEE_AID);
+            String t4tNfceeAid = NfcService.getInstance().getT4tNfceeAid();
+            if (t4tNfceeAid == null) {
+                t4tNfceeAid = DEFAULT_T4T_NFCEE_AID;
+            }
+            Log.d(TAG, "getNdefNfceeAid: " + t4tNfceeAid);
+            ndefNfceeAid.add(t4tNfceeAid);
             AidGroup ndefNfceeAidGroup = new AidGroup(ndefNfceeAid, CATEGORY_OTHER);
             ArrayList<AidGroup> ndefNfceeAidStaticGroups = new ArrayList<>();
             ndefNfceeAidStaticGroups.add(ndefNfceeAidGroup);

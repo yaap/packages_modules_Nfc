@@ -26,6 +26,7 @@ android_test {
         "android.permission.flags-aconfig-java",
         "com.android.nfc.flags-aconfig-java",
         "com.android.nfc.module.flags-aconfig-exported-java",
+        "com.android.nfc.module.flags-aconfig-non-exported-java",
         "ctstestrunner-axt",
         "compatibility-device-util-axt",
         "flag-junit",
@@ -50,6 +51,7 @@ android_test {
     ],
     data: [
         ":WalletRoleHolderApp",
+        ":WalletRoleHolderApp2",
         ":ForegroundNfcApp",
         ":NonPaymentNfcApp",
     ],

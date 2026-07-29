@@ -24,7 +24,10 @@
     <string name="accessService">Access Service</string>
     <string name="screenOffPaymentService">Screen Off Payment Service</string>
     <string name="screenOnOnlyOffHostService">Screen On Only OffHost Service</string>
+    <string name="ndefService">NDEF Service</string>
     <string name="ppse">PPSE</string>
     <string name="mastercard">MasterCard</string>
     <string name="visa">Visa</string>
+    <string name="gesture_exchange_service">Gesture Exchange Service</string>
+    <string name="pollingLoopAnnotationService">Polling Loop Annotation Service</string>
 </resources>

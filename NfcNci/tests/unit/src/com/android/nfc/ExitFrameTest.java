@@ -53,9 +53,9 @@ public class ExitFrameTest {
 
     @Test
     public void testPrefixMatchingMaxLength() {
-        ExitFrame frame = new ExitFrame("00112233445566778899AABBCCDD.*");
+        ExitFrame frame = new ExitFrame("00112233445566778899AABBCCDDEEFF.*");
 
-        assertArrayEquals(HexFormat.of().parseHex("00112233445566778899AABBCCDD"),
+        assertArrayEquals(HexFormat.of().parseHex("00112233445566778899AABBCCDDEEFF"),
                 frame.getData());
         assertTrue(frame.isPrefixMatchingAllowed());
     }

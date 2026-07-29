@@ -612,8 +612,9 @@ public class AidRoutingManager {
                 String aid = aidEntry.getKey();
                 int power = aidEntry.getValue().power;
                 if (VDBG)  {
-                    Log.d(TAG, "commit: aid:" + aid + ",route:" + route
-                        + ",aidtype:" + aidType + ", power state:" + power);
+                    Log.d(TAG, "commit: aid:" + aid + ",route:" + Integer.toHexString(route)
+                            + ",aidtype:" + Integer.toHexString(aidType) + ", power state:"
+                            + Integer.toHexString(power));
                 }
                 NfcService.getInstance().routeAids(aid, route, aidType, power);
             }

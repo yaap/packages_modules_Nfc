@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> 앱에서 NFC 태그를 읽을 수 있습니다."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"다음 앱에서 NFC 태그를 읽을 수 있습니다. <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"사용 중지 방법을 알아보려면 탭하세요."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> 앱에서 NFC 태그를 읽으려고 합니다."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"<xliff:g id="APPNAMES">%1$s</xliff:g> 앱에서 NFC 태그를 읽으려고 합니다."</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"현재 설정을 보려면 탭하기"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC 데이터를 기록 중입니다"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"기록을 중지하려면 탭하세요."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"<xliff:g id="PKG">%1$s</xliff:g>에서 NFC를 사용하도록 허용하시겠습니까?"</string>

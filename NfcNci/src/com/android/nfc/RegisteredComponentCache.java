@@ -38,7 +38,9 @@ import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,6 +160,13 @@ public class RegisteredComponentCache {
             close();
         }
         super.finalize();
+    }
+
+    void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+        pw.println("Registered " + mAction + " services for current user: ");
+        for (ComponentInfo component : mComponents) {
+            pw.println("Component: " + component);
+        }
     }
 
     void dump(ArrayList<ComponentInfo> components) {

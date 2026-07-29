@@ -115,7 +115,11 @@ bool ConfigValue::parseFromString(std::string in) {
 }
 
 void ConfigFile::addConfig(const std::string& key, ConfigValue& value) {
-  CHECK(!hasKey(key));
+  bool key_exists = hasKey(key);
+  if (key_exists) {
+    LOG(ERROR) << "ConfigFile - Duplicate key found '" << key << "'";
+  }
+  CHECK(!key_exists);
   values_.emplace(key, value);
 }
 

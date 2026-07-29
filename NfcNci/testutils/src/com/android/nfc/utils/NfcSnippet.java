@@ -39,8 +39,17 @@ import java.util.concurrent.TimeUnit;
 public abstract class NfcSnippet implements Snippet {
     protected static final String TAG = "NfcSnippet";
     protected final Context mContext = InstrumentationRegistry.getInstrumentation().getContext();
-    private final UiDevice mDevice =
-            UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    private UiDevice mDevice;
+
+    public NfcSnippet() {
+    }
+
+    private UiDevice getDevice() {
+        if (mDevice == null) {
+            mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        }
+        return mDevice;
+    }
 
     @Rpc(description = "Checks if NFC supported on device")
     public boolean isNfcSupported() {
@@ -57,7 +66,7 @@ public abstract class NfcSnippet implements Snippet {
     @Rpc(description = "Turns device screen off")
     public void turnScreenOff() {
         try {
-            mDevice.sleep();
+            getDevice().sleep();
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException", e);
         }
@@ -67,7 +76,7 @@ public abstract class NfcSnippet implements Snippet {
     @Rpc(description = "Turns device screen on")
     public void turnScreenOn() {
         try {
-            mDevice.wakeUp();
+            getDevice().wakeUp();
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException", e);
         }
@@ -76,13 +85,13 @@ public abstract class NfcSnippet implements Snippet {
     /** Press device menu button to return device to home screen between tests. */
     @Rpc(description = "Press menu button")
     public void pressMenu() {
-        mDevice.pressMenu();
+        getDevice().pressMenu();
     }
 
     /** Press device home button. */
     @Rpc(description = "Press home button")
     public void pressHome() {
-        mDevice.pressHome();
+        getDevice().pressHome();
     }
 
     @Rpc(description = "Log info level message to device logcat")

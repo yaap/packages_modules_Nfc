@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> kan lese NFC-brikker."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Disse appene kan lese NFC-brikker:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Trykk for å finne ut hvordan du deaktiverer dette."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> vil lese NFC-brikker."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Disse appene vil lese NFC-brikker:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Trykk for å se de gjeldende innstillingene."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"Det registreres NFC-data"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Trykk for å stoppe registreringen."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"Vil du tillate at <xliff:g id="PKG">%1$s</xliff:g> aktiverer NFC?"</string>

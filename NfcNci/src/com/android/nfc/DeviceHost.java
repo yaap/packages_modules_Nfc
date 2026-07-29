@@ -233,6 +233,12 @@ public interface DeviceHost {
      */
     boolean isNdefNfceefeatureEnabled();
 
+    /**
+     * Get the T4T NFCEE AID.
+     * @return T4T NFCEE AID
+     */
+    byte[] getT4tNfceeAid();
+
     public void registerT3tIdentifier(byte[] t3tIdentifier);
 
     public void deregisterT3tIdentifier(byte[] t3tIdentifier);
@@ -353,4 +359,14 @@ public interface DeviceHost {
      * Send NCI config update command
      */
     void setNciConfig(int paramId, byte[] param, int length, boolean custom);
+
+    /**
+    * Get the committed rf discover configuration
+    */
+    byte[] getRfDiscoverConfig();
+
+    /**
+     * Set the default frame for tech A polling loop.
+     */
+    void setDefaultFrame(byte[] frame);
 }

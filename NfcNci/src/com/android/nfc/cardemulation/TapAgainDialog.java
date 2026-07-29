@@ -65,7 +65,7 @@ public class TapAgainDialog extends AlertActivity implements DialogInterface.OnC
 
         final NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
         if (adapter == null) {
-            Log.e(TAG, "adapter is null");
+            Log.e(TAG, "onCreate: adapter is null");
             finish();
             return;
         }

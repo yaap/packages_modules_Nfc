@@ -522,6 +522,7 @@ typedef struct {
   uint16_t system_codes[T3T_MAX_SYSTEM_CODES];
 
   uint8_t peer_nfcid2[NCI_NFCID2_LEN];
+  uint8_t peer_ndef_nfcid2[NCI_NFCID2_LEN];
   uint8_t cur_poll_rc; /* RC used in current POLL command */
 
   uint8_t flags; /* Flags see RW_T3T_FL_* */

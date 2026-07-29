@@ -1237,7 +1237,7 @@ tNFA_STATUS NFA_SendVsCommand(uint8_t oid, uint8_t cmd_params_len,
 **                  NFA_STATUS_FAILED otherwise
 **
 *******************************************************************************/
-tNFA_STATUS NFA_SendRawVsCommand(uint8_t cmd_params_len, uint8_t* p_cmd_params,
+tNFA_STATUS NFA_SendRawVsCommand(uint16_t cmd_params_len, uint8_t* p_cmd_params,
                                  tNFA_VSC_CBACK* p_cback) {
   if (cmd_params_len == 0x00 || p_cmd_params == nullptr || p_cback == nullptr) {
     return NFA_STATUS_INVALID_PARAM;

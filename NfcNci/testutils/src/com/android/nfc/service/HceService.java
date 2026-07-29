@@ -57,6 +57,7 @@ public abstract class HceService extends HostApduService {
     public HceService(CommandApdu[] commandApdus, String[] responseApdus) {
         mCommandApdus = commandApdus;
         mResponseApdus = responseApdus;
+        Log.d(TAG, "HceService: " + this.getClass().getName());
     }
 
     /** Called when service is deactivated */

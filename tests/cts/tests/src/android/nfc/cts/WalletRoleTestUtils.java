@@ -48,6 +48,7 @@ public final class WalletRoleTestUtils {
 
     static final String CTS_PACKAGE_NAME = "android.nfc.cts";
     static final String WALLET_HOLDER_PACKAGE_NAME = "com.android.test.walletroleholder";
+    static final String WALLET_HOLDER2_PACKAGE_NAME = "com.android.test.walletroleholder2";
     static final String WALLET_HOLDER_SERVICE_DESC = "Wallet Role CTS Nfc Test Service";
     static final String NFC_FOREGROUND_PACKAGE_NAME = "com.android.test.foregroundnfc";
     static final String NON_PAYMENT_NFC_PACKAGE_NAME = "com.android.test.nonpaymentnfc";
@@ -72,6 +73,11 @@ public final class WalletRoleTestUtils {
     static ComponentName getWalletRoleHolderXService() {
         return new ComponentName(WALLET_HOLDER_PACKAGE_NAME,
                 "com.android.test.walletroleholder.XWalletRoleHolderApduService");
+    }
+
+    static ComponentName getWalletRoleHolder2Service() {
+        return new ComponentName(WALLET_HOLDER2_PACKAGE_NAME,
+                "com.android.test.walletroleholder2.WalletRoleHolderApduService");
     }
 
     static ComponentName getForegroundService() {

@@ -84,7 +84,7 @@ public class HostNfcFEmulationManagerTest {
                 .mockStatic(Message.class)
                 .strictness(Strictness.LENIENT)
                 .startMocking();
-	Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Context mockContext = new ContextWrapper(context) {
 
             public Context createContextAsUser(@NonNull UserHandle user,
@@ -127,9 +127,10 @@ public class HostNfcFEmulationManagerTest {
         when(nfcFServiceInfo.getComponent()).thenReturn(componentName);
         when(t3tIdentifiersCache.resolveNfcid2("6D2E616E64726F69")).thenReturn(nfcFServiceInfo);
         Message message = new Message();
-        when(Message.obtain(null, HostNfcFService.MSG_COMMAND_PACKET)).thenReturn(message);
-        when(Message.obtain(null, HostNfcFService.MSG_DEACTIVATED)).thenReturn(message);
-        when(Message.obtain()).thenReturn(message);
+        when(Message.obtain(null, HostNfcFService.MSG_COMMAND_PACKET))
+                .thenAnswer(i -> new Message());
+        when(Message.obtain(null, HostNfcFService.MSG_DEACTIVATED)).thenAnswer(i -> new Message());
+        when(Message.obtain()).thenAnswer(i -> new Message());
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mHostNfcFEmulationManager =

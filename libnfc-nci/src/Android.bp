@@ -209,6 +209,7 @@ cc_fuzz {
         "nfc/nci/*.cc",
         "nfc/nfc/*.cc",
         "adaptation/debug_lmrt.cc",
+        "adaptation/debug_rf_discover.cc",
         "gki/common/*.cc",
         "gki/ulinux/*.cc",
         "fuzzers/*.cc",
@@ -291,6 +292,7 @@ cc_fuzz {
         "fuzzers/integration/fakes/*.cc",
         "gki/common/gki_buffer.cc",
         "adaptation/debug_lmrt.cc",
+        "adaptation/debug_rf_discover.cc",
         "nfa/ce/*.cc",
         "nfa/dm/*.cc",
         "nfa/ee/*.cc",
@@ -321,43 +323,5 @@ cc_fuzz {
         "libprotobuf-cpp-full",
         "libstatslog_nfc",
         "libz",
-    ],
-}
-
-genrule {
-    name: "NfcGeneratedPackets_rust",
-    defaults: ["pdl_rust_legacy_generator_defaults"],
-    srcs: ["nci_packets.pdl"],
-    out: ["nci_packets.rs"],
-}
-
-rust_library {
-    name: "libnfc_packets",
-    defaults: ["nfc_rust_defaults"],
-    crate_name: "nfc_packets",
-    srcs: [
-        "rust/packets/lib.rs",
-        ":NfcGeneratedPackets_rust",
-    ],
-    host_supported: true,
-    rustlibs: [
-        "libbytes",
-        "liblog_rust",
-        "libpdl_runtime",
-    ],
-}
-
-rust_test_host {
-    name: "libnfc_packets_test",
-    defaults: ["nfc_rust_defaults"],
-    srcs: [
-        "rust/packets/lib.rs",
-        ":NfcGeneratedPackets_rust",
-    ],
-    test_suites: ["general-tests"],
-    rustlibs: [
-        "libbytes",
-        "liblog_rust",
-        "libpdl_runtime",
     ],
 }

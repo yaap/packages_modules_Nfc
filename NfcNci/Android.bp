@@ -31,6 +31,7 @@ java_library {
 java_defaults {
     name: "NfcNciDefaults",
     static_libs: [
+        "dynamiccolors",
         "android.app.flags-aconfig-java",
         "android.service.chooser.flags-aconfig-java",
         "android.se.omapi-V1-java",
@@ -39,6 +40,7 @@ java_defaults {
         "app-compat-annotations",
         "bluetooth-protos-nfc-enums-java-gen",
         "com.google.android.material_material",
+        "modules-utils-build",
         "modules-utils-fastxmlserializer",
         "modules-utils-shell-command-handler",
         "PlatformProperties",
@@ -53,6 +55,7 @@ java_defaults {
     ],
     privileged: true,
     optimize: {
+        ignore_warnings: false,
         proguard_flags_files: ["proguard.flags"],
     },
     jarjar_rules: "jarjar-rules.txt",
@@ -110,14 +113,20 @@ android_app {
         // These flag libs are statically included in framework-nfc.jar
         "android.nfc.flags-aconfig-java",
         "android.permission.flags-aconfig-java",
-        "com.android.nfc.module.flags-aconfig-java",
+        "com.android.nfc.module.flags-aconfig-exported-java",
+        "com.android.nfc.module.flags-aconfig-non-exported-java",
         "framework-annotations-lib",
         "framework-bluetooth.stubs.module_lib",
         "framework-configinfrastructure.stubs.module_lib",
+        "framework-connectivity.stubs.module_lib",
+        "framework-connectivity-t.stubs.module_lib",
+        "framework-location.stubs.module_lib",
         "framework-nfc.impl",
         "framework-permission-s.stubs.module_lib",
         "framework-permission.stubs.module_lib",
         "framework-statsd.stubs.module_lib",
+        "framework-telecom.stubs.module_lib",
+        "framework-tethering.stubs.module_lib",
         "framework-wifi.stubs.module_lib",
         "unsupportedappusage",
     ],
@@ -130,6 +139,7 @@ android_app {
     lint: {
         baseline_filename: "lint-baseline.xml",
     },
+    preinstall_allowlist: ":preinstalled-packages-com.android.nfc.xml",
 }
 
 filegroup {
@@ -149,4 +159,11 @@ filegroup {
 filegroup {
     name: "privapp_allowlist_com.android.nfc.xml",
     srcs: ["com.android.nfc.xml"],
+}
+
+filegroup {
+    name: "preinstalled-packages-com.android.nfc.xml",
+    srcs: [
+        "preinstalled-packages-com.android.nfc.xml",
+    ],
 }

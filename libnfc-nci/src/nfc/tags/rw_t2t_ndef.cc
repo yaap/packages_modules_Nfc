@@ -402,8 +402,6 @@ static void rw_t2t_handle_tlv_detect_rsp(uint8_t* p_data) {
   uint16_t count = 0;
   uint8_t xx;
   tNFC_STATUS status;
-  tT2T_CMD_RSP_INFO* p_cmd_rsp_info =
-      (tT2T_CMD_RSP_INFO*)rw_cb.tcb.t2t.p_cmd_rsp_info;
   uint8_t tlvtype = p_t2t->tlv_detect;
 
   if (p_t2t->work_offset == 0) {
@@ -732,8 +730,6 @@ static void rw_t2t_handle_tlv_detect_rsp(uint8_t* p_data) {
   }
 
   p_t2t->work_offset += T2T_READ_DATA_LEN;
-
-  rw_t2t_info_to_event(p_cmd_rsp_info);
 
   /* If not found and not failed, read next block and search tlv */
   if (!found && !failed) {
@@ -1728,6 +1724,7 @@ static void rw_t2t_handle_config_tag_readonly(uint8_t* p_data) {
   uint8_t num_locks = 0;
   uint16_t offset;
 
+  memset(write_block, 0, sizeof(write_block));
   switch (p_t2t->substate) {
     case RW_T2T_SUBSTATE_WAIT_READ_CC:
 

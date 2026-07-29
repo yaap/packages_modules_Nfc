@@ -45,8 +45,8 @@ import java.nio.ByteOrder;
  * <p>MIFARE Classic tags require authentication on a per-sector basis before any
  * other I/O operations on that sector can be performed. There are two keys per sector,
  * and ACL bits determine what I/O operations are allowed on that sector after
- * authenticating with a key. {@see #authenticateSectorWithKeyA} and
- * {@see #authenticateSectorWithKeyB}.
+ * authenticating with a key. See {@link #authenticateSectorWithKeyA} and
+ * {@link #authenticateSectorWithKeyB}.
  *
  * <p>Three well-known authentication keys are defined in this class:
  * {@link #KEY_DEFAULT}, {@link #KEY_MIFARE_APPLICATION_DIRECTORY},

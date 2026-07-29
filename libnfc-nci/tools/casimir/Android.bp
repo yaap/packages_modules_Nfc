@@ -18,7 +18,7 @@ package {
 
 genrule {
     name: "casimir_nci_packets_rust_gen",
-    defaults: ["pdl_rust_legacy_generator_defaults"],
+    defaults: ["pdl_rust_generator_defaults"],
     srcs: ["src/nci_packets.pdl"],
     out: ["nci_packets.rs"],
     visibility: [
@@ -29,7 +29,7 @@ genrule {
 
 genrule {
     name: "casimir_rf_packets_rust_gen",
-    defaults: ["pdl_rust_legacy_generator_defaults"],
+    defaults: ["pdl_rust_generator_defaults"],
     srcs: ["src/rf_packets.pdl"],
     out: ["rf_packets.rs"],
     visibility: [

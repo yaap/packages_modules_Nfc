@@ -340,7 +340,7 @@ public final class NdefRecord implements Parcelable {
      *
      * @param uri URI to encode.
      * @return an NDEF Record containing the URI
-     * @throws IllegalArugmentException if the uri is empty or invalid
+     * @throws IllegalArgumentException if the uri is empty or invalid
      */
     public static NdefRecord createUri(Uri uri) {
         if (uri == null) throw new NullPointerException("uri is null");
@@ -383,7 +383,7 @@ public final class NdefRecord implements Parcelable {
      *
      * @param uriString string URI to encode.
      * @return an NDEF Record containing the URI
-     * @throws IllegalArugmentException if the uriString is empty or invalid
+     * @throws IllegalArgumentException if the uriString is empty or invalid
      */
     public static NdefRecord createUri(String uriString) {
         return createUri(Uri.parse(uriString));
@@ -410,7 +410,7 @@ public final class NdefRecord implements Parcelable {
      * @param mimeType a valid MIME type
      * @param mimeData MIME data as bytes
      * @return an NDEF Record containing the MIME-typed data
-     * @throws IllegalArugmentException if the mimeType is empty or invalid
+     * @throws IllegalArgumentException if the mimeType is empty or invalid
      *
      */
     public static NdefRecord createMime(String mimeType, byte[] mimeData) {
@@ -457,7 +457,7 @@ public final class NdefRecord implements Parcelable {
      * @param domain domain-name of issuing organization
      * @param type domain-specific type of data
      * @param data payload as bytes
-     * @throws IllegalArugmentException if either domain or type are empty or invalid
+     * @throws IllegalArgumentException if either domain or type are empty or invalid
      */
     public static NdefRecord createExternal(String domain, String type, byte[] data) {
         if (domain == null) throw new NullPointerException("domain is null");
@@ -556,7 +556,7 @@ public final class NdefRecord implements Parcelable {
      * @param id   byte array, containing zero to 255 bytes, or null
      * @param payload byte array, containing zero to (2 ** 32 - 1) bytes,
      *                or null
-     * @throws IllegalArugmentException if a valid record cannot be created
+     * @throws IllegalArgumentException if a valid record cannot be created
      */
     public NdefRecord(short tnf, byte[] type, byte[] id, byte[] payload) {
         /* convert nulls */

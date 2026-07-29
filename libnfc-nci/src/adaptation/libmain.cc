@@ -104,7 +104,7 @@ extern void nfa_nv_co_read(uint8_t* pBuffer, uint16_t nbytes, uint8_t block) {
       nfa_nv_ci_read(0, NFA_NV_CO_FAIL, block);
     }
   } else {
-    LOG(VERBOSE) << StringPrintf("%s: fail to open", __func__);
+    LOG(ERROR) << StringPrintf("%s: fail to open", __func__);
     nfa_nv_ci_read(0, NFA_NV_CO_FAIL, block);
   }
 }

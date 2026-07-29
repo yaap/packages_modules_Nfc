@@ -80,6 +80,11 @@ public class NfcActivityState {
      */
     public NfcActivityState(Activity activity, NfcActivityManager activityManager) {
         this.mNfcActivityManager = activityManager;
+        if (com.android.nfc.module.flags.Flags.tapToX() && activity == null) {
+            resumed = true;
+            this.token = new Binder();
+            return;
+        }
         if (activity.isDestroyed()) {
             throw new IllegalStateException("activity is already destroyed");
         }
@@ -96,7 +101,7 @@ public class NfcActivityState {
      * @hide
      */
     public void destroy() {
-        mNfcActivityManager.unregisterApplication(activity.getApplication());
+        if (activity != null) mNfcActivityManager.unregisterApplication(activity.getApplication());
         resumed = false;
         activity = null;
         readerCallback = null;

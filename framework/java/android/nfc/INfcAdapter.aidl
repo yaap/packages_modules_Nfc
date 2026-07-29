@@ -35,7 +35,9 @@ import android.nfc.IT4tNdefNfcee;
 import android.nfc.ITagRemovedCallback;
 import android.nfc.INfcDta;
 import android.nfc.INfcWlcStateListener;
+import android.nfc.IReaderCallback;
 import android.nfc.NfcAntennaInfo;
+import android.nfc.RfDiscoverConfig;
 import android.nfc.WlcListenerDeviceInfo;
 import android.nfc.cardemulation.PollingFrame;
 import android.os.Bundle;
@@ -132,4 +134,9 @@ interface INfcAdapter
     long getMaxPausePollingTimeoutMs();
     int emulateNfcATag(boolean setConfig, byte bitFrameSdd, byte platformConfig, byte selInfo,
         in byte[] nfcid1, byte rats, in byte[] histBytes);
+    void registerGestureExchangeCallback(in IReaderCallback callback);
+    void unregisterGestureExchangeCallback(in IReaderCallback callback);
+    String getGestureExchangeAid();
+    void allowOneTransaction();
+    List<RfDiscoverConfig> getRfDiscoverConfigurations();
 }

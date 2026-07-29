@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g>可以读取 NFC 标签。"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"以下应用可以读取 NFC 标签：<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"点按即可了解如何将其停用。"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"“<xliff:g id="APPNAMES">%1$s</xliff:g>”想要读取 NFC 标签。"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"以下应用想要读取 NFC 标签：<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"点按即可查看当前设置。"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"正在记录 NFC 数据"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"点按即可停止记录。"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"允许“<xliff:g id="PKG">%1$s</xliff:g>”启用 NFC？"</string>

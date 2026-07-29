@@ -260,7 +260,12 @@ public final class CardEmulation {
 
     /**
      * Property name used to indicate that an application wants to allow associated services
-     * to share the same AID routing priority when this application is the role holder.
+     * to share the same AID routing priority when this application is the role holder. Wallet role
+     * holder can either:
+     * <li> Set "android:value" to "true". This will allow any package signed by the same
+     * certificate to request for role holder priority.</li>
+     * <li> Set "android:value" to some other package name. This will only allow this package to
+     * request for role holder priority (can be signed by different certificates).</li>
      * <p>
      * Example:
      * <pre>
@@ -270,6 +275,15 @@ public final class CardEmulation {
      *       <property android:name="android.nfc.cardemulation.PROPERTY_ALLOW_SHARED_ROLE_PRIORITY"
      *         android:value="true"/>
      *     </application>
+     *     }
+     * </pre>
+     * <pre>
+     *     {@code
+     *     <service>
+     *       ...
+     *       <property android:name="android.nfc.cardemulation.PROPERTY_ALLOW_SHARED_ROLE_PRIORITY"
+     *         android:value="com.org.example"/>
+     *     </service>
      *     }
      * </pre>
      */
@@ -527,6 +541,14 @@ public final class CardEmulation {
      * delivered to {@link HostApduService#processPollingFrames(List)}.  If auto-transact
      * is set to true and this service is currently preferred or there are no other services
      * registered for this filter then observe mode will also be disabled.
+     * <p>
+     * When auto-transact is set to true, if the filter matches the following requirements, it
+     * will be considered to be included in the firmware filtering list (if the device supports
+     * exit frames). Filters not matching these requirements will be handled via the NFC stack
+     * software auto-transact functionality.
+     * <ul>
+     *   <li>The filter must not exceed 16 bytes (32 hexadecimal characters).</li>
+     * </ul>
      * @param service The HostApduService to register the filter for
      * @param pollingLoopFilter The filter to register
      * @param autoTransact true to have the NFC stack automatically disable observe mode and allow
@@ -586,6 +608,19 @@ public final class CardEmulation {
      * {@link HostApduService#processPollingFrames(List)}. If auto-transact is set to true and this
      * service is currently preferred or there are no other services registered for this filter
      * then observe mode will also be disabled.
+     * <p>
+     * When auto-transact is set to true, if the pattern matches the following requirements, it
+     * will be considered to be included in the firmware filtering list (if the device supports
+     * exit frames). Patterns not matching these requirements will be handled via the NFC stack
+     * software auto-transact functionality.
+     * <ul>
+     *   <li>The pattern must not include the `?` operator.</li>
+     *   <li>The `*` operator is only supported if it is the only character or if it is preceded
+     *       by a `.` and is at the end of the pattern (e.g. `.*`).</li>
+     *   <li>The pattern must have an even number of characters unless it ends with the `.*`
+     *       suffix.</li>
+     *   <li>The pattern must not exceed 32 characters (excluding the `.*` suffix).</li>
+     * </ul>
      *
      * @param service The HostApduService to register the filter for
      * @param pollingLoopPatternFilter The pattern filter to register, must to be compatible with
@@ -830,16 +865,20 @@ public final class CardEmulation {
      * <p>Note that this preference is not persisted by the OS, and hence must be
      * called every time the Activity is resumed.
      *
+     * <p>Starting with {@link Build.VERSION_CODES#CINNAMON_BUN}, this
+     * method will prefer all services matching the package name of the activity.
+     *
      * @param activity The activity which prefers this service to be invoked
      * @param service The service to be preferred while this activity is in the foreground
      * @return whether the registration was successful
      */
     public boolean setPreferredService(Activity activity, ComponentName service) {
         // Verify the activity is in the foreground before calling into NfcService
-        if (activity == null || service == null) {
-            throw new NullPointerException("activity or service or category is null");
+        if (service == null) {
+            throw new NullPointerException("service is null");
         }
-        return callServiceReturn(() -> sService.setPreferredService(service), false);
+        return callServiceReturn(() -> sService.setPreferredService(service, activity != null),
+                false);
     }
 
     /**
@@ -853,10 +892,7 @@ public final class CardEmulation {
      * @return true when successful
      */
     public boolean unsetPreferredService(Activity activity) {
-        if (activity == null) {
-            throw new NullPointerException("activity is null");
-        }
-        return callServiceReturn(() -> sService.unsetPreferredService(), false);
+        return callServiceReturn(() -> sService.unsetPreferredService(activity != null), false);
     }
 
     /**
@@ -954,18 +990,39 @@ public final class CardEmulation {
     }
 
     /**
+     * Sets the default service for the next tap.
+     *
+     * <p>This API allows an OEM extension or authorized system app to
+     * specify which service should handle the immediate next transaction.
+     *
+     * @param service The component name of the service to be used.
+     * @return true if the default was successfully set.
      * @hide
      */
-    public boolean setDefaultForNextTap(ComponentName service) {
+    @SystemApi
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    @RequiresPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+    public boolean setDefaultForNextTap(@NonNull ComponentName service) {
         return callServiceReturn(() ->
                 sService.setDefaultForNextTap(
                     mContext.getUser().getIdentifier(), service), false);
     }
 
     /**
+     * Sets the default service for the next tap for a specific user.
+     *
+     * <p>This API allows an OEM extension or authorized system app to
+     * specify which service should handle the immediate next transaction for a specific user.
+     *
+     * @param userId The user id of the user context.
+     * @param service The component name of the service to be used.
+     * @return true if the default was successfully set.
      * @hide
      */
-    public boolean setDefaultForNextTap(int userId, ComponentName service) {
+    @SystemApi
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    @RequiresPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+    public boolean setDefaultForNextTap(@UserIdInt int userId, @NonNull ComponentName service) {
         return callServiceReturn(() ->
                 sService.setDefaultForNextTap(userId, service), false);
     }
@@ -1169,6 +1226,11 @@ public final class CardEmulation {
         if (technology >= PROTOCOL_AND_TECHNOLOGY_ROUTE_DEFAULT) {
             throw new IllegalArgumentException("Invalid technology inputs.");
         }
+        if (protocol == PROTOCOL_AND_TECHNOLOGY_ROUTE_UNSET
+                && technology == PROTOCOL_AND_TECHNOLOGY_ROUTE_UNSET) {
+            throw new IllegalArgumentException("At least one routing parameter must be set.");
+        }
+
         String protocolRoute = routeIntToString(protocol);
         String technologyRoute = routeIntToString(technology);
         callService(() ->

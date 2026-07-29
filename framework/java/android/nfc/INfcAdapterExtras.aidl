@@ -20,7 +20,7 @@ import android.os.Bundle;
 
 
 /**
- * {@hide}
+ * @hide
  */
 interface INfcAdapterExtras {
     @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)

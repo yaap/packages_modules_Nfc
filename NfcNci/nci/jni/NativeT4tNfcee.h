@@ -214,6 +214,17 @@ class NativeT4tNfcee {
   *******************************************************************************/
   void checkAndUpdateT4TAid(uint8_t* t4tAid, uint8_t* t4tNdefAidLen);
 
+  /*******************************************************************************
+  **
+  ** Function:        getT4TNfceeAid
+  **
+  ** Description:     Get the T4T Nfcee AID.
+  **
+  ** Returns:         T4T AID: vector<uint8_t>
+  **
+  *******************************************************************************/
+  std::vector<uint8_t> getT4TNfceeAid();
+
  private:
   bool mBusy;
   static NativeT4tNfcee sNativeT4tNfceeInstance;
@@ -305,14 +316,4 @@ class NativeT4tNfcee {
    **
    *******************************************************************************/
   void resetBusy();
-  /*******************************************************************************
-  **
-  ** Function:        getT4TNfceeAid
-  **
-  ** Description:     Get the T4T Nfcee AID.
-  **
-  ** Returns:         T4T AID: vector<uint8_t>
-  **
-  *******************************************************************************/
-  std::vector<uint8_t> getT4TNfceeAid();
 };

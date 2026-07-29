@@ -28,6 +28,7 @@
         <option name="cleanup-apks" value="true"/>
         <option name="test-file-name" value="CtsNfcTestCases.apk"/>
         <option name="test-file-name" value="WalletRoleHolderApp.apk"/>
+        <option name="test-file-name" value="WalletRoleHolderApp2.apk"/>
         <option name="test-file-name" value="ForegroundNfcApp.apk"/>
         <option name="test-file-name" value="NonPaymentNfcApp.apk"/>
     </target_preparer>

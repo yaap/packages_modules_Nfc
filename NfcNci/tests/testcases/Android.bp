@@ -28,7 +28,7 @@ android_test {
         "androidx.test.rules",
         "androidx.test.ext.junit",
         "com.android.nfc.flags-aconfig",
-        "com.android.nfc.module.flags-aconfig-java",
+        "com.android.nfc.module.flags-aconfig-exported-java",
         "frameworks-base-testutils",
         "truth",
         "androidx.annotation_annotation",

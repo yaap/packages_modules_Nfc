@@ -49,8 +49,8 @@ interface INfcCardEmulation
     List<String> getPollingLoopFiltersForService(int userHandle, in ComponentName service);
     List<String> getPollingLoopPatternFiltersForService(int userHandle, in ComponentName service);
     List<ApduServiceInfo> getServices(int userHandle, in String category);
-    boolean setPreferredService(in ComponentName service);
-    boolean unsetPreferredService();
+    boolean setPreferredService(in ComponentName service, in boolean hasActivity);
+    boolean unsetPreferredService(in boolean hasActivity);
     boolean supportsAidPrefixRegistration();
     ApduServiceInfo getPreferredPaymentService(int userHandle);
     int setServiceEnabledForCategoryOther(int userHandle, in ComponentName app, boolean status);

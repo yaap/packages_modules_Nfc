@@ -254,7 +254,7 @@ public class RegisteredServicesCacheTest {
         // Verify that broadcast receivers for apk changes are created and registered properly
         assertNotNull(mRegisteredServicesCache.mReceiver.get());
         verify(mContext).createContextAsUser(eq(USER_HANDLE), eq(0));
-        verify(mContext, times(2)).registerReceiverForAllUsers(
+        verify(mContext, times(3)).registerReceiverForAllUsers(
                 mReceiverArgumentCaptor.capture(), mIntentFilterArgumentCaptor.capture(),
                 eq(null), eq(null));
         IntentFilter packageInstallTrackerIntent = mIntentFilterArgumentCaptor

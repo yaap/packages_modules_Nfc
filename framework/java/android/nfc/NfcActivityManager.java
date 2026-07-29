@@ -16,6 +16,7 @@
 
 package android.nfc;
 
+import android.annotation.FlaggedApi;
 import android.app.Activity;
 import android.app.Application;
 import android.compat.annotation.UnsupportedAppUsage;
@@ -217,6 +218,25 @@ public final class NfcActivityManager extends IAppCallback.Stub
         }
 
     }
+
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_TAP_TO_X)
+    @Override
+    public void onTagLost(Tag tag) throws RemoteException {
+        NfcAdapter.ReaderCallback callback;
+        synchronized (NfcActivityManager.this) {
+            NfcActivityState state = findResumedActivityState();
+            if (state == null) return;
+
+            callback = state.readerCallback;
+        }
+
+        // Make callback without lock
+        if (callback != null) {
+            callback.onTagLost(tag);
+        }
+
+    }
+
     /** Callback from Activity life-cycle, on main thread */
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) { /* NO-OP */ }

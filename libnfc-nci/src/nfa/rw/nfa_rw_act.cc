@@ -54,6 +54,7 @@ static void nfa_rw_cback(tRW_EVENT event, tRW_DATA* p_rw_data);
 static void nfa_rw_handle_mfc_evt(tRW_EVENT event, tRW_DATA* p_rw_data);
 
 extern void rw_t4t_handle_isodep_nak_fallback();
+extern void nfa_dm_disc_mifare_idle_timeout_cback(TIMER_LIST_ENT* p_tle);
 
 /*******************************************************************************
 **
@@ -459,6 +460,18 @@ void nfa_rw_handle_sleep_wakeup_rsp(tNFC_STATUS status) {
     LOG(VERBOSE) << StringPrintf("%s: Legacy presence check performed",
                                  __func__);
     /* Legacy presence check performed */
+    if (nfa_rw_cb.mifare_pres_check_status == NFA_RW_MIFARE_PRES_CHECK_IDLE) {
+      if (status == NFA_STATUS_OK) {
+        /* Initialize control block */
+        activate_params.protocol = nfa_rw_cb.protocol;
+        activate_params.rf_tech_param.param.pa.sel_rsp = nfa_rw_cb.pa_sel_res;
+        activate_params.rf_tech_param.mode = nfa_rw_cb.activated_tech_mode;
+        RW_SetActivatedTagType(&activate_params, nfa_rw_cback);
+      } else {
+        // If what triggered this call is not tag detection, stop the timer
+        nfa_sys_stop_timer(&nfa_dm_cb.disc_cb.mifare_pc_tle);
+      }
+    }
     nfa_rw_handle_presence_check_rsp(status);
   }
 }
@@ -2011,6 +2024,19 @@ void nfa_rw_presence_check(tNFA_RW_MSG* p_data) {
         NFA_RW_MIFARE_PRES_CHECK_AUTH_ON) {
       // Read last authenticated block address
       status = RW_MfcPresenceCheck(nfa_rw_cb.mifare_auth_cmd);
+    } else if (nfa_rw_cb.mifare_pres_check_status ==
+               NFA_RW_MIFARE_PRES_CHECK_IDLE) {
+      nfa_dm_cb.disc_cb.disc_flags |= NFA_DM_DISC_FLAGS_CHECKING;
+      nfa_dm_rf_deactivate(NFA_DEACTIVATE_TYPE_IDLE);
+      nfa_dm_cb.disc_cb.mifare_pc_tle.p_cback =
+          (TIMER_CBACK*)nfa_dm_disc_mifare_idle_timeout_cback;
+      nfa_sys_start_timer(&nfa_dm_cb.disc_cb.mifare_pc_tle, 0,
+                          NFA_DM_DISC_TIMEOUT_MIFARE_IDLE_PRESENCE_CHECK);
+      return;
+    } else if (nfa_rw_cb.mifare_pres_check_status ==
+               NFA_RW_MIFARE_PRES_CHECK_NONE) {
+      nfa_rw_cb.mifare_pres_check_status = NFA_RW_MIFARE_PRES_CHECK_START;
+      unsupported = true;
     } else {
       /* Protocol unsupported by RW module... */
       unsupported = true;

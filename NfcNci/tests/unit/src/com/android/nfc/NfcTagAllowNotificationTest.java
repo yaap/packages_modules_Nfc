@@ -102,7 +102,8 @@ public class NfcTagAllowNotificationTest {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mNfcTagAllowNotification = new NfcTagAllowNotification(mMockContext,
-                                                                                 mAppNames));
+                                                                                 mAppNames,
+                                                                                 true));
         Assert.assertNotNull(mNfcTagAllowNotification);
     }
 

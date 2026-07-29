@@ -48,7 +48,6 @@ import com.android.nfc.cardemulation.CardEmulationManager;
 import com.android.nfc.cardemulation.util.StatsdUtils;
 import com.android.nfc.cardemulation.util.StatsdUtilsContext;
 import com.android.nfc.dhimpl.NativeNfcManager;
-import com.android.nfc.flags.FeatureFlags;
 import com.android.nfc.flags.Flags;
 import com.android.nfc.handover.HandoverDataParser;
 import com.android.nfc.wlc.NfcCharging;
@@ -72,6 +71,7 @@ public class NfcInjector {
     private final Looper mMainLooper;
     private final NfcEventLog mNfcEventLog;
     private final RoutingTableParser mRoutingTableParser;
+    private final RfDiscoverCmdParser mRfDiscoverCmdParser;
     private final ScreenStateHelper mScreenStateHelper;
     private final NfcUnlockManager mNfcUnlockManager;
     private final HandoverDataParser mHandoverDataParser;
@@ -79,7 +79,6 @@ public class NfcInjector {
     private final NfcDispatcher mNfcDispatcher;
     private final VibrationEffect mVibrationEffect;
     private final BackupManager mBackupManager;
-    private final FeatureFlags mFeatureFlags;
     @Nullable
     private final StatsdUtils mStatsdUtils;
     @Nullable
@@ -108,6 +107,7 @@ public class NfcInjector {
         mContext = context;
         mMainLooper = mainLooper;
         mRoutingTableParser = new RoutingTableParser();
+        mRfDiscoverCmdParser = new RfDiscoverCmdParser();
         mScreenStateHelper = new ScreenStateHelper(mContext);
         mNfcUnlockManager = NfcUnlockManager.getInstance();
         mHandoverDataParser = new HandoverDataParser();
@@ -117,10 +117,8 @@ public class NfcInjector {
                     isInProvisionMode(), mDeviceConfigFacade);
         mVibrationEffect = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE);
         mBackupManager = new BackupManager(mContext);
-        mFeatureFlags = new com.android.nfc.flags.FeatureFlagsImpl();
-        mStatsdUtilsContext = mFeatureFlags.statsdCeEventsFlag() ? new StatsdUtilsContext() : null;
-        mStatsdUtils = mFeatureFlags.statsdCeEventsFlag() ?
-            new StatsdUtils(mStatsdUtilsContext) : null;
+        mStatsdUtilsContext = Flags.statsdCeEventsFlag() ? new StatsdUtilsContext() : null;
+        mStatsdUtils = Flags.statsdCeEventsFlag() ? new StatsdUtils(mStatsdUtilsContext) : null;
         mForegroundUtils =
                 ForegroundUtils.getInstance(mContext.getSystemService(ActivityManager.class));
         mNfcDiagnostics = new NfcDiagnostics(mContext);
@@ -176,6 +174,10 @@ public class NfcInjector {
         return mRoutingTableParser;
     }
 
+    public RfDiscoverCmdParser getRfDiscoverCmdParser() {
+        return mRfDiscoverCmdParser;
+    }
+
     public NfcUnlockManager getNfcUnlockManager() {
         return mNfcUnlockManager;
     }
@@ -198,10 +200,6 @@ public class NfcInjector {
 
     public BackupManager getBackupManager() {
         return mBackupManager;
-    }
-
-    public FeatureFlags getFeatureFlags() {
-        return mFeatureFlags;
     }
 
     @Nullable
@@ -269,7 +267,7 @@ public class NfcInjector {
     public ISecureElementService connectToSeService() throws RemoteException {
         SeServiceManager manager = SeFrameworkInitializer.getSeServiceManager();
         if (manager == null) {
-            Log.e(TAG, "SEServiceManager is null");
+            Log.e(TAG, "connectToSeService: SEServiceManager is null");
             return null;
         }
         return ISecureElementService.Stub.asInterface(
@@ -362,7 +360,7 @@ public class NfcInjector {
      */
     public boolean isDeviceLocked() {
         return (isInProvisionMode()
-            || (android.app.Flags.deviceUnlockListener() && Flags.useDeviceLockListener()))
+            || android.app.Flags.deviceUnlockListener())
                             ? mKeyguardManager.isDeviceLocked()
                             : mKeyguardManager.isKeyguardLocked();
     }
@@ -403,7 +401,8 @@ public class NfcInjector {
 
     /** Creates a NfcTagAllowNotification object */
     public NfcTagAllowNotification createNfcTagAllowNotification(
-            Context context, List<String> appNames) {
-        return new NfcTagAllowNotification(context, appNames);
+            Context context, List<String> appNames, boolean allow) {
+        return new NfcTagAllowNotification(context, appNames, allow);
     }
+
 }

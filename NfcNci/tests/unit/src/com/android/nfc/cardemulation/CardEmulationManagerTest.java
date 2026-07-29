@@ -1387,7 +1387,7 @@ public class CardEmulationManagerTest {
         assertTrue(
                 mCardEmulationManager
                         .getNfcCardEmulationInterface()
-                        .setPreferredService(WALLET_PAYMENT_SERVICE));
+                        .setPreferredService(WALLET_PAYMENT_SERVICE, true));
 
         ExtendedMockito.verify(
                 () -> {
@@ -1414,7 +1414,7 @@ public class CardEmulationManagerTest {
         assertFalse(
                 mCardEmulationManager
                         .getNfcCardEmulationInterface()
-                        .setPreferredService(WALLET_PAYMENT_SERVICE));
+                        .setPreferredService(WALLET_PAYMENT_SERVICE, true));
 
         ExtendedMockito.verify(
                 () -> {
@@ -1435,7 +1435,8 @@ public class CardEmulationManagerTest {
         when(mRegisteredServicesCache.hasService(eq(USER_ID), any())).thenReturn(true);
         when(mPreferredServices.unregisteredPreferredForegroundService(anyInt())).thenReturn(true);
 
-        assertTrue(mCardEmulationManager.getNfcCardEmulationInterface().unsetPreferredService());
+        assertTrue(mCardEmulationManager.getNfcCardEmulationInterface()
+                .unsetPreferredService(true));
 
         ExtendedMockito.verify(
                 () -> {
@@ -1452,7 +1453,8 @@ public class CardEmulationManagerTest {
             throws RemoteException {
         when(mPreferredServices.unregisteredPreferredForegroundService(anyInt())).thenReturn(false);
 
-        assertFalse(mCardEmulationManager.getNfcCardEmulationInterface().unsetPreferredService());
+        assertFalse(mCardEmulationManager.getNfcCardEmulationInterface()
+                .unsetPreferredService(true));
 
         ExtendedMockito.verify(
                 () -> {
@@ -2488,7 +2490,7 @@ public class CardEmulationManagerTest {
                 .unflattenFromString("com.android.test.component/.Component");
         when(mPreferredServices.registerPreferredForegroundService(any(), anyInt()))
                 .thenReturn(true);
-        boolean result = iNfcCardEmulation.setPreferredService(componentName);
+        boolean result = iNfcCardEmulation.setPreferredService(componentName, true);
         assertThat(result).isTrue();
     }
 
@@ -2512,7 +2514,7 @@ public class CardEmulationManagerTest {
         assertThat(iNfcCardEmulation).isNotNull();
         when(mPreferredServices
                 .unregisteredPreferredForegroundService(anyInt())).thenReturn(true);
-        boolean result = iNfcCardEmulation.unsetPreferredService();
+        boolean result = iNfcCardEmulation.unsetPreferredService(true);
         assertThat(result).isTrue();
     }
 
@@ -3263,5 +3265,44 @@ public class CardEmulationManagerTest {
         verify(mHostEmulationManager).onObserveModeDisabledInFirmware(exitFrame);
         verify(mStatsdUtils).logAutoTransactReported(StatsdUtils.PROCESSOR_NFCC,
             exitFrame.getData());
+    }
+
+    @Test
+    public void testRegisterPollingLoopFilter_ignoreFrameRejectedForNonWallet()
+            throws RemoteException {
+        String ignoreFrame = "6A01CF0000";
+        when(mRegisteredAidCache.isDefaultOrAssociatedWalletPackage(
+                eq(WALLET_HOLDER_PACKAGE_NAME), eq(USER_ID))).thenReturn(false);
+        when(mRegisteredServicesCache.hasService(eq(USER_ID), any())).thenReturn(true);
+
+        boolean result = mCardEmulationManager
+                .getNfcCardEmulationInterface()
+                .registerPollingLoopFilterForService(
+                        USER_ID, WALLET_PAYMENT_SERVICE, ignoreFrame, true);
+
+        assertFalse(result);
+        verify(mRegisteredServicesCache, never()).registerPollingLoopFilterForService(
+                anyInt(), anyInt(), any(), anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testRegisterPollingLoopFilter_ignoreFrameAcceptedForWallet()
+            throws RemoteException {
+        String ignoreFrame = "6A01CF0000";
+        when(mRegisteredAidCache.isDefaultOrAssociatedWalletPackage(
+                eq(WALLET_HOLDER_PACKAGE_NAME), eq(USER_ID))).thenReturn(true);
+        when(mRegisteredServicesCache.hasService(eq(USER_ID), any())).thenReturn(true);
+        when(mRegisteredServicesCache.registerPollingLoopFilterForService(
+                eq(USER_ID), anyInt(), any(), eq(ignoreFrame), anyBoolean()))
+                .thenReturn(true);
+
+        boolean result = mCardEmulationManager
+                .getNfcCardEmulationInterface()
+                .registerPollingLoopFilterForService(
+                        USER_ID, WALLET_PAYMENT_SERVICE, ignoreFrame, true);
+
+        assertTrue(result);
+        verify(mRegisteredServicesCache).registerPollingLoopFilterForService(
+                eq(USER_ID), anyInt(), eq(WALLET_PAYMENT_SERVICE), eq(ignoreFrame), eq(true));
     }
 }

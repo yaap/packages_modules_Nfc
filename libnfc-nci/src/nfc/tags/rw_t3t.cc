@@ -264,7 +264,7 @@ void rw_t3t_process_error(tNFC_STATUS status) {
 
       /* allocate a new buffer for message */
       p_cmd_buf = rw_t3t_get_cmd_buf();
-      if (p_cmd_buf != nullptr) {
+      if (p_cmd_buf != nullptr && p_cb->p_cur_cmd_buf != nullptr) {
         memcpy(p_cmd_buf, p_cb->p_cur_cmd_buf,
                sizeof(NFC_HDR) + p_cb->p_cur_cmd_buf->offset +
                    p_cb->p_cur_cmd_buf->len);
@@ -369,7 +369,9 @@ void rw_t3t_handle_nci_poll_ntf(uint8_t nci_status, uint8_t num_responses,
   if (p_cb->rw_state == RW_T3T_STATE_NOT_ACTIVATED) {
     // Tag was deactivated
     evt_data.status = nci_status;
-    (*(rw_cb.p_cback))(RW_T3T_INTF_ERROR_EVT, &evt_data);
+    if(rw_cb.p_cback){
+      (*(rw_cb.p_cback))(RW_T3T_INTF_ERROR_EVT, &evt_data);
+    }
     return;
   }
 
@@ -378,7 +380,9 @@ void rw_t3t_handle_nci_poll_ntf(uint8_t nci_status, uint8_t num_responses,
     p_cb->flags &= ~RW_T3T_FL_W4_PRESENCE_CHECK_POLL_RSP;
     evt_data.status = nci_status;
     p_cb->rw_state = RW_T3T_STATE_IDLE;
-    (*(rw_cb.p_cback))(RW_T3T_PRESENCE_CHECK_EVT, &evt_data);
+    if(rw_cb.p_cback){
+      (*(rw_cb.p_cback))(RW_T3T_PRESENCE_CHECK_EVT, &evt_data);
+    }
   } else if (p_cb->flags & RW_T3T_FL_W4_GET_SC_POLL_RSP) {
     /* Handle POLL ntf in response to get system codes */
     p_cb->flags &= ~RW_T3T_FL_W4_GET_SC_POLL_RSP;
@@ -395,6 +399,10 @@ void rw_t3t_handle_nci_poll_ntf(uint8_t nci_status, uint8_t num_responses,
   } else if (p_cb->flags & RW_T3T_FL_W4_NDEF_DETECT_POLL_RSP) {
     /* Handle POLL ntf in response to ndef detection */
     p_cb->flags &= ~RW_T3T_FL_W4_NDEF_DETECT_POLL_RSP;
+    if (sensf_res_buf_size > NCI_NFCID2_LEN) {
+      memcpy(p_cb->peer_ndef_nfcid2, &p_sensf_res_buf[T3T_MSG_RSP_OFFSET_IDM],
+             NCI_NFCID2_LEN);
+    }
     rw_t3t_handle_ndef_detect_poll_rsp(p_cb, nci_status, num_responses);
   } else {
     /* Handle POLL ntf in response to RW_T3tPoll */
@@ -408,7 +416,9 @@ void rw_t3t_handle_nci_poll_ntf(uint8_t nci_status, uint8_t num_responses,
     }
 
     p_cb->rw_state = RW_T3T_STATE_IDLE;
-    (*(rw_cb.p_cback))(RW_T3T_POLL_EVT, &evt_data);
+    if(rw_cb.p_cback){
+      (*(rw_cb.p_cback))(RW_T3T_POLL_EVT, &evt_data);
+    }
   }
 }
 
@@ -691,7 +701,7 @@ tNFC_STATUS rw_t3t_send_update_ndef_attribute_cmd(tRW_T3T_CB* p_cb,
     UINT8_TO_STREAM(p, T3T_MSG_OPC_UPDATE_CMD);
 
     /* Add IDm to message */
-    ARRAY_TO_STREAM(p, p_cb->peer_nfcid2, NCI_NFCID2_LEN);
+    ARRAY_TO_STREAM(p, p_cb->peer_ndef_nfcid2, NCI_NFCID2_LEN);
 
     /* Add Service code list */
     UINT8_TO_STREAM(p, 1); /* Number of services (only 1 service: NDEF) */
@@ -824,7 +834,7 @@ tNFC_STATUS rw_t3t_send_next_ndef_update_cmd(tRW_T3T_CB* p_cb) {
     UINT8_TO_STREAM(p, T3T_MSG_OPC_UPDATE_CMD);
 
     /* Add IDm to message */
-    ARRAY_TO_STREAM(p, p_cb->peer_nfcid2, NCI_NFCID2_LEN);
+    ARRAY_TO_STREAM(p, p_cb->peer_ndef_nfcid2, NCI_NFCID2_LEN);
 
     /* Add Service code list */
     UINT8_TO_STREAM(p, 1); /* Number of services (only 1 service: NDEF) */
@@ -962,7 +972,7 @@ tNFC_STATUS rw_t3t_send_next_ndef_check_cmd(tRW_T3T_CB* p_cb) {
     UINT8_TO_STREAM(p, T3T_MSG_OPC_CHECK_CMD);
 
     /* Add IDm to message */
-    ARRAY_TO_STREAM(p, p_cb->peer_nfcid2, NCI_NFCID2_LEN);
+    ARRAY_TO_STREAM(p, p_cb->peer_ndef_nfcid2, NCI_NFCID2_LEN);
 
     /* Add Service code list */
     UINT8_TO_STREAM(p, 1); /* Number of services (only 1 service: NDEF) */
@@ -1301,8 +1311,9 @@ void rw_t3t_act_handle_ndef_detect_rsp(tRW_T3T_CB* p_cb, NFC_HDR* p_msg_rsp) {
   /* Validate status code and NFCID2 response from tag */
   else if ((p_t3t_rsp[T3T_MSG_RSP_OFFSET_STATUS1] !=
             T3T_MSG_RSP_STATUS_OK) /* verify response status code */
-           || (memcmp(p_cb->peer_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
-                      NCI_NFCID2_LEN) != 0)) /* verify response IDm */
+           ||
+           (memcmp(p_cb->peer_ndef_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
+                   NCI_NFCID2_LEN) != 0)) /* verify response IDm */
   {
     evt_data.status = NFC_STATUS_FAILED;
   } else if (p_msg_rsp->len <
@@ -1555,8 +1566,9 @@ void rw_t3t_act_handle_check_ndef_rsp(tRW_T3T_CB* p_cb, NFC_HDR* p_msg_rsp) {
     /* Validate response from tag */
   } else if ((p_t3t_rsp[T3T_MSG_RSP_OFFSET_STATUS1] !=
               T3T_MSG_RSP_STATUS_OK) /* verify response status code */
-             || (memcmp(p_cb->peer_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
-                        NCI_NFCID2_LEN) != 0) /* verify response IDm */
+             ||
+             (memcmp(p_cb->peer_ndef_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
+                     NCI_NFCID2_LEN) != 0) /* verify response IDm */
              || (p_t3t_rsp[T3T_MSG_RSP_OFFSET_NUMBLOCKS] !=
                  ((p_cb->ndef_rx_readlen + 15) >>
                   4))) /* verify length of response */
@@ -1657,7 +1669,7 @@ void rw_t3t_act_handle_update_ndef_rsp(tRW_T3T_CB* p_cb, NFC_HDR* p_msg_rsp) {
   /* Check nfcid2 and status of response */
   if ((p_t3t_rsp[T3T_MSG_RSP_OFFSET_STATUS1] !=
        T3T_MSG_RSP_STATUS_OK) /* verify response status code */
-      || (memcmp(p_cb->peer_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
+      || (memcmp(p_cb->peer_ndef_nfcid2, &p_t3t_rsp[T3T_MSG_RSP_OFFSET_IDM],
                  NCI_NFCID2_LEN) != 0)) /* verify response IDm */
   {
     nfc_status = NFC_STATUS_FAILED;
@@ -1774,7 +1786,7 @@ static void rw_t3t_handle_ndef_detect_poll_rsp(tRW_T3T_CB* p_cb,
       UINT8_TO_STREAM(p, T3T_MSG_OPC_CHECK_CMD);
 
       /* Add IDm to message */
-      ARRAY_TO_STREAM(p, p_cb->peer_nfcid2, NCI_NFCID2_LEN);
+      ARRAY_TO_STREAM(p, p_cb->peer_ndef_nfcid2, NCI_NFCID2_LEN);
 
       /* Add Service code list */
       UINT8_TO_STREAM(p, 1); /* Number of services (only 1 service: NDEF) */

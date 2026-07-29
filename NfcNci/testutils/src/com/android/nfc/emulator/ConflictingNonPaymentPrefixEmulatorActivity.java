@@ -63,7 +63,8 @@ public class ConflictingNonPaymentPrefixEmulatorActivity extends BaseEmulatorAct
     public void onApduSequenceComplete(ComponentName component, long duration) {
         if (component.equals(PrefixTransportService2.COMPONENT)) {
             if (android.nfc.Flags.nfcEventListener()) {
-                if (mAidConflictOccurred.startsWith(HceUtils.TRANSPORT_AID)) {
+                if (mAidConflictOccurred != null
+                        && mAidConflictOccurred.startsWith(HceUtils.TRANSPORT_AID)) {
                     setTestPassed();
                 }
             } else {

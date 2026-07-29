@@ -18,6 +18,8 @@ package android.nfc.cts;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import android.content.Context;
@@ -25,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.nfc.AvailableNfcAntenna;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcAntennaInfo;
+import android.os.SystemProperties;
 
 import androidx.test.InstrumentationRegistry;
 
@@ -38,6 +41,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 public class NfcAntennaLocationApiTest {
@@ -49,6 +53,15 @@ public class NfcAntennaLocationApiTest {
     private boolean supportsHardware() {
         final PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
         return pm.hasSystemFeature(PackageManager.FEATURE_NFC);
+    }
+
+    private int getVendorApiLevel() {
+        return SystemProperties.getInt("ro.board.api_level", 0);
+    }
+
+    private static boolean isGsi() {
+        final File initGsiRc = new File("/system/system_ext/etc/init/init.gsi.rc");
+        return initGsiRc.exists();
     }
 
     private NfcAdapter mAdapter;
@@ -87,9 +100,13 @@ public class NfcAntennaLocationApiTest {
     /** Tests getNfcAntennaInfo API */
     @Test
     public void testGetNfcAntennaInfo() {
+        assumeTrue(getVendorApiLevel() > 202504);
+        assumeFalse(isGsi());
         NfcAntennaInfo nfcAntennaInfo = mAdapter.getNfcAntennaInfo();
 
         assertNotNull(nfcAntennaInfo);
+        assertTrue(nfcAntennaInfo.getDeviceWidth() > 0);
+        assertTrue(nfcAntennaInfo.getDeviceHeight() > 0);
         logAntennaInfo(Thread.currentThread().getStackTrace()[1].getMethodName(), nfcAntennaInfo);
     }
 

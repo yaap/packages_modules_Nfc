@@ -28,6 +28,8 @@ class NfcNcifTest : public ::testing::Test {
 };
 
 TEST_F(NfcNcifTest, NfcModeSetNtfTimeout) {
+  nfc_cb.flags |= NFC_FL_WAIT_MODE_SET_NTF;
+
   nfc_cb.p_resp_cback = [](tNFC_RESPONSE_EVT event, tNFC_RESPONSE* p_response) {
     ASSERT_EQ(p_response->mode_set.status, NCI_STATUS_FAILED);
     ASSERT_EQ(p_response->mode_set.nfcee_id, *nfc_cb.last_nfcee_cmd);
@@ -36,6 +38,8 @@ TEST_F(NfcNcifTest, NfcModeSetNtfTimeout) {
   };
 
   nfc_mode_set_ntf_timeout();
+
+  ASSERT_EQ((nfc_cb.flags & NFC_FL_WAIT_MODE_SET_NTF), 0);
 }
 
 TEST_F(NfcNcifTest, ProcActivateValidPacketIsoDepPollASuccess) {

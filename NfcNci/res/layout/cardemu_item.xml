@@ -21,7 +21,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:layout_height="72dp"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent" xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
 
     <ImageView android:id="@+id/appicon"
             android:layout_width="32dp"
@@ -34,7 +34,7 @@
     <!-- Activity name -->
     <TextView android:id="@+id/applabel"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/materialColorOnSurface"
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:gravity="center_vertical|left"

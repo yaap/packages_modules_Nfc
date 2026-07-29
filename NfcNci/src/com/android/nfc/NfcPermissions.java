@@ -47,6 +47,14 @@ public class NfcPermissions {
     private static final String NFC_SET_CONTROLLER_ALWAYS_ON_ERROR =
             "NFC_SET_CONTROLLER_ALWAYS_ON permission required";
 
+    /**
+     * NFC PERFORM_GESTURE_EXCHANGE permission
+     */
+    static final String GESTURE_EXCHANGE_PERMISSION =
+            android.Manifest.permission.PERFORM_GESTURE_EXCHANGE;
+    private static final String GESTURE_EXCHANGE_PERM_ERROR =
+            "GESTURE_EXCHANGE permission required";
+
     private final Context mContext;
     private final AppOpsManager mAppOpsManager;
 
@@ -105,6 +113,21 @@ public class NfcPermissions {
     public static void enforceSetControllerAlwaysOnPermissions(Context context) {
         context.enforceCallingOrSelfPermission(NFC_SET_CONTROLLER_ALWAYS_ON,
                 NFC_SET_CONTROLLER_ALWAYS_ON_ERROR);
+    }
+
+    /**
+     * Permission check for android.Manifest.permission.PERFORM_GESTURE_EXCHANGE
+     */
+    public static boolean checkGestureExchangePermissions(Context context) {
+        return context.checkCallingPermission(GESTURE_EXCHANGE_PERMISSION) == PERMISSION_GRANTED;
+    }
+
+    /**
+     * Permission check for android.Manifest.permission.PERFORM_GESTURE_EXCHANGE
+     */
+    public static void enforceGestureExchangePermissions(Context context) {
+        context.enforceCallingOrSelfPermission(GESTURE_EXCHANGE_PERMISSION,
+                GESTURE_EXCHANGE_PERM_ERROR);
     }
 
     /**

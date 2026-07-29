@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> NFC teglarini oʻqiydi."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"Quyidagi ilovalar NFC teglarini oʻqiydi:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"Uni qanday faolsizlantirish haqida maʼlumot olish uchun bosing."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> NFC teglarini oʻqishga ruxsat olmoqchi."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"Quyidagi ilovalar NFC teglarini oʻqishga ruxsat olmoqchi:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"Joriy sozlamalarni ochish uchun bosing."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC maʼlumotlar yozib olinmoqda"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"Yozib olishni toʻxtatish uchun bosing."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"<xliff:g id="PKG">%1$s</xliff:g> NFC aloqani yoqishiga ruxsat berilsinmi?"</string>

@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "include/debug_lmrt.h"
+#include "include/debug_rf_discover.h"
 #include "nci_defs.h"
 #include "nfc_api.h"
 #include "nfc_int.h"
@@ -437,6 +438,9 @@ uint8_t nci_snd_discover_cmd(uint8_t num, tNCI_DISCOVER_PARAMS* p_param) {
   }
   *p_size = (uint8_t)(pp - p_start);
   p->len = NCI_MSG_HDR_SIZE + *p_size;
+
+  uint8_t* rf_discover_head_ptr = (uint8_t*)(p + 1) + p->offset;
+  rf_discover_capture(rf_discover_head_ptr, size + 3);
 
   nfc_ncif_send_cmd(p);
   return (NCI_STATUS_OK);

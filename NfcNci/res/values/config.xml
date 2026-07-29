@@ -83,4 +83,5 @@
     <!-- Separate felica routing when default preferred subscription status changed -->
     <bool name="separate_offhost_felica_routing">true</bool>
     <bool name="telephony_subscription_routing_enabled">true</bool>
+    <bool name="launch_oem_app_chooser">false</bool>
 </resources>

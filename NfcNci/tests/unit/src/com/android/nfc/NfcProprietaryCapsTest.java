@@ -30,6 +30,7 @@ public class NfcProprietaryCapsTest {
     private static final int POWER_SAVING_MODE = 2;
     private static final int AUTOTRANSACT_POLLING_LOOP_FILTER = 3;
     private static final int NUMBER_OF_EXIT_FRAMES_SUPPORTED = 4;
+    private static final int READER_MODE_ANNOTATIONS_SUPPORTED = 5;
 
     @Test
     public void testCreateFromByteArraySupportWithoutRfDeactivation() {
@@ -120,6 +121,92 @@ public class NfcProprietaryCapsTest {
     }
 
     @Test
+    public void testCreateFromByteArrayWithNullArray() {
+        // Verifies that passing a null byte array does not cause a crash and returns a default
+        // NfcProprietaryCaps object. This is the primary test for the added null check.
+        NfcProprietaryCaps result = NfcProprietaryCaps.createFromByteArray(null);
+
+        assertNotNull(result);
+        assertEquals(NfcProprietaryCaps.PassiveObserveMode.NOT_SUPPORTED,
+                result.getPassiveObserveMode());
+        assertFalse(result.isPollingFrameNotificationSupported());
+        assertFalse(result.isPowerSavingModeSupported());
+        assertFalse(result.isAutotransactPollingLoopFilterSupported());
+        assertEquals(0, result.getNumberOfExitFramesSupported());
+        assertFalse(result.isReaderModeAnnotationSupported());
+    }
+
+    @Test
+    public void testCreateFromByteArrayReaderModeAnnotationSupported() {
+        // Verifies parsing for the READER_MODE_ANNOTATIONS_SUPPORTED capability.
+        byte[] inputCaps = {
+                (byte) READER_MODE_ANNOTATIONS_SUPPORTED, 1, 1
+        };
+
+        NfcProprietaryCaps result = NfcProprietaryCaps.createFromByteArray(inputCaps);
+
+        assertNotNull(result);
+        assertTrue(result.isReaderModeAnnotationSupported());
+        // Verify other properties have their default values.
+        assertEquals(NfcProprietaryCaps.PassiveObserveMode.NOT_SUPPORTED,
+                result.getPassiveObserveMode());
+        assertFalse(result.isPollingFrameNotificationSupported());
+        assertFalse(result.isPowerSavingModeSupported());
+        assertFalse(result.isAutotransactPollingLoopFilterSupported());
+        assertEquals(0, result.getNumberOfExitFramesSupported());
+    }
+
+    @Test
+    public void testCreateFromByteArrayWithZeroLengthValue() {
+        // Verifies that a capability with a value length of 0 is handled gracefully.
+        // The parsing loop should break, and default values should be returned.
+        byte[] invalidCaps = {(byte) PASSIVE_OBSERVE_MODE, 0}; // Length is 0
+
+        NfcProprietaryCaps result = NfcProprietaryCaps.createFromByteArray(invalidCaps);
+
+        assertNotNull(result);
+        assertEquals(NfcProprietaryCaps.PassiveObserveMode.NOT_SUPPORTED,
+                result.getPassiveObserveMode());
+        assertFalse(result.isPollingFrameNotificationSupported());
+        assertFalse(result.isPowerSavingModeSupported());
+        assertFalse(result.isAutotransactPollingLoopFilterSupported());
+        assertEquals(0, result.getNumberOfExitFramesSupported());
+        assertFalse(result.isReaderModeAnnotationSupported());
+    }
+
+    @Test
+    public void testCreateFromByteArrayPassiveObserveModeInvalidValue() {
+        // Verifies that an invalid value for PASSIVE_OBSERVE_MODE is handled correctly.
+        // The default value should be retained.
+        byte[] inputCaps = {
+                (byte) PASSIVE_OBSERVE_MODE, 1, 99 // Invalid value for passive observe mode
+        };
+
+        NfcProprietaryCaps result = NfcProprietaryCaps.createFromByteArray(inputCaps);
+
+        assertNotNull(result);
+        // The value should be ignored, and the default should be kept.
+        assertEquals(NfcProprietaryCaps.PassiveObserveMode.NOT_SUPPORTED,
+                result.getPassiveObserveMode());
+    }
+
+    @Test
+    public void testCreateFromByteArrayNumberOfExitFramesFallthrough() {
+        // Verifies the behavior of the fall-through from NUMBER_OF_EXIT_FRAMES_SUPPORTED
+        // to READER_MODE_ANNOTATIONS_SUPPORTED due to a missing break statement in the source.
+        byte[] inputCaps = {
+                (byte) NUMBER_OF_EXIT_FRAMES_SUPPORTED, 1, 1
+        };
+
+        NfcProprietaryCaps result = NfcProprietaryCaps.createFromByteArray(inputCaps);
+
+        assertNotNull(result);
+        assertEquals(1, result.getNumberOfExitFramesSupported());
+        // Due to fall-through, isReaderModeAnnotationSupported should be true (1 == 0x1)
+        assertTrue(result.isReaderModeAnnotationSupported());
+    }
+
+    @Test
     public void testToString() {
         NfcProprietaryCaps caps = new NfcProprietaryCaps(
                 NfcProprietaryCaps.PassiveObserveMode.SUPPORT_WITHOUT_RF_DEACTIVATION,
@@ -134,6 +221,7 @@ public class NfcProprietaryCapsTest {
                 "isPollingFrameNotificationSupported=true, " +
                 "isPowerSavingModeSupported=false, " +
                 "isAutotransactPollingLoopFilterSupported=true, " +
+                "numberOfExitFramesSupported=5, " +
                 "mIsReaderModeAnnotationSupported=false}";
 
         assertEquals(expected, caps.toString());

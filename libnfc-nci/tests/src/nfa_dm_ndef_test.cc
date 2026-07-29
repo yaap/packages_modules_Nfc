@@ -359,6 +359,7 @@ TEST_F(NfaDmTest, FindHandler_NoHandlerFound) {
 }
 
 TEST_F(NfaDmTest, FindNextHandlerWithTNFMatch) {
+    std::memset(&nfa_dm_cb, 0, sizeof(nfa_dm_cb));
     tNFA_DM_API_REG_NDEF_HDLR handler = {};
     handler.tnf = NFA_TNF_DEFAULT;
     nfa_dm_cb.p_ndef_handler[1] = &handler;
@@ -368,6 +369,7 @@ TEST_F(NfaDmTest, FindNextHandlerWithTNFMatch) {
 }
 
 TEST_F(NfaDmTest, FindNextHandlerWithNoMatchingTNF) {
+    std::memset(&nfa_dm_cb, 0, sizeof(nfa_dm_cb));
     tNFA_DM_API_REG_NDEF_HDLR handler1 = {};
     handler1.tnf = NFA_TNF_DEFAULT;
     nfa_dm_cb.p_ndef_handler[1] = &handler1;
@@ -380,6 +382,7 @@ TEST_F(NfaDmTest, FindNextHandlerWithNoMatchingTNF) {
 }
 
 TEST_F(NfaDmTest, FindNextHandlerAfterInitialHandler) {
+    std::memset(&nfa_dm_cb, 0, sizeof(nfa_dm_cb));
     tNFA_DM_API_REG_NDEF_HDLR handler1 = {};
     handler1.tnf = NFA_TNF_WKT;
     handler1.ndef_type_handle = 1;
@@ -394,6 +397,7 @@ TEST_F(NfaDmTest, FindNextHandlerAfterInitialHandler) {
 }
 
 TEST_F(NfaDmTest, FindNextHandlerWithURIHandlerMismatch) {
+    std::memset(&nfa_dm_cb, 0, sizeof(nfa_dm_cb));
     tNFA_DM_API_REG_NDEF_HDLR handler = {};
     handler.tnf = NFA_TNF_WKT;
     handler.flags = NFA_NDEF_FLAGS_WKT_URI;

@@ -50,7 +50,7 @@ class RoutingManager {
   int registerT3tIdentifier(uint8_t* t3tId, uint8_t t3tIdLen);
   void deregisterT3tIdentifier(int handle);
   void onNfccShutdown();
-  int registerJniFunctions(JNIEnv* e);
+  static int registerJniFunctions(JNIEnv* e);
   bool setNfcSecure(bool enable);
   void updateRoutingTable();
   void eeSetPwrAndLinkCtrl(uint8_t config);

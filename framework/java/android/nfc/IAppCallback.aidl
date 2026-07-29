@@ -24,4 +24,5 @@ import android.nfc.Tag;
 interface IAppCallback
 {
     oneway void onTagDiscovered(in Tag tag);
+    oneway void onTagLost(in Tag tag);
 }

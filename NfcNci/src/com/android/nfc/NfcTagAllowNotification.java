@@ -36,6 +36,7 @@ public class NfcTagAllowNotification {
     public static final int NOTIFICATION_ID_NFC = -1000003;
     Context mContext;
     List<String> mAppNames;
+    boolean mAllow;
 
     /**
      * Constructor
@@ -43,9 +44,10 @@ public class NfcTagAllowNotification {
      * @param ctx The context to use to obtain access to the resources
      * @param appName The tag application name
      */
-    public NfcTagAllowNotification(Context ctx, List<String> appNames) {
+    public NfcTagAllowNotification(Context ctx, List<String> appNames, boolean allow) {
         mContext = ctx;
         mAppNames = appNames;
+        mAllow = allow;
     }
 
     /**
@@ -57,11 +59,16 @@ public class NfcTagAllowNotification {
         Notification.Builder builder = new Notification.Builder(mContext, NFC_NOTIFICATION_CHANNEL);
         String formatString;
         if (mAppNames.size() == 1) {
-            formatString = mContext.getString(R.string.tag_app_alert_message);
+            String msgAllowStr = mContext.getString(R.string.tag_app_alert_message);
+            String msgBlockStr = mContext.getString(R.string.tag_app_alert_blocked_message);
+            formatString = mAllow ? msgAllowStr : msgBlockStr;
             builder.setContentText(String.format(formatString, mAppNames.get(0)));
         } else if (mAppNames.size() > 1) {
             StringBuilder sb = new StringBuilder();
-            formatString = mContext.getString(R.string.tag_app_alert_message_multiple);
+            String msgAllowStr = mContext.getString(R.string.tag_app_alert_message_multiple);
+            String msgBlockStr =
+                    mContext.getString(R.string.tag_app_alert_message_blocked_multiple);
+            formatString = mAllow ? msgAllowStr : msgBlockStr;
             mAppNames.forEach(name -> sb.append(String.format("\n%s", name)));
             String message = String.format(formatString, sb.toString());
             builder.setContentText(message)
@@ -70,8 +77,10 @@ public class NfcTagAllowNotification {
         Intent infoIntent = new Intent().setAction(NfcAdapter.ACTION_CHANGE_TAG_INTENT_PREFERENCE);
         PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, infoIntent,
                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+        String btnAllowStr = mContext.getString(R.string.tag_app_alert_action_button);
+        String btnBlockStr = mContext.getString(R.string.tag_app_alert_action_blocked_button);
         Notification.Action action = new Notification.Action.Builder(null,
-                mContext.getString(R.string.tag_app_alert_action_button), pIntent).build();
+                mAllow ? btnAllowStr : btnBlockStr, pIntent).build();
         builder.setContentTitle(mContext.getString(R.string.tag_app_alert_title))
                 .setSmallIcon(R.drawable.nfc_icon)
                 .setPriority(NotificationManager.IMPORTANCE_DEFAULT)

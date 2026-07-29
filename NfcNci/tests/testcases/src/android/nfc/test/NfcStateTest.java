@@ -29,6 +29,8 @@ import android.util.Log;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.android.compatibility.common.util.ShellUtils;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -84,6 +86,7 @@ public final class NfcStateTest {
                     mListener);
             mIsAlwaysOnEnabled = mNfcAdapter.isControllerAlwaysOn();
         }
+        ShellUtils.runShellCommand("setprop persist.nfc.vendor_debug_enabled true");
     }
 
     @After
@@ -94,6 +97,7 @@ public final class NfcStateTest {
         }
         InstrumentationRegistry.getInstrumentation().getUiAutomation()
                 .dropShellPermissionIdentity();
+        ShellUtils.runShellCommand("setprop persist.nfc.vendor_debug_enabled false");
     }
 
     @Test

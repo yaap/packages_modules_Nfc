@@ -17,7 +17,7 @@
     <string name="beam_busy" msgid="8179024484757185047">"«پرتو» در حال حاضر مشغول است. هنگامی که انتقال قبلی کامل شد دوباره امتحان کنید."</string>
     <string name="device" msgid="6859793408635712424">"دستگاه"</string>
     <string name="connecting_peripheral" msgid="5023158537894294802">"در حال اتصال <xliff:g id="DEVICE_NAME">%1$s</xliff:g>"</string>
-    <string name="connected_peripheral" msgid="2496731052957541047">"‫<xliff:g id="DEVICE_NAME">%1$s</xliff:g> وصل شد"</string>
+    <string name="connected_peripheral" msgid="2496731052957541047">"‫‫<xliff:g id="DEVICE_NAME">%1$s</xliff:g> متصل شد"</string>
     <string name="connect_peripheral_failed" msgid="368937385551413385">"<xliff:g id="DEVICE_NAME">%1$s</xliff:g> متصل نشد"</string>
     <string name="disconnecting_peripheral" msgid="1121670272906082527">"در حال قطع ارتباط <xliff:g id="DEVICE_NAME">%1$s</xliff:g>"</string>
     <string name="disconnected_peripheral" msgid="9009042963082667744">"ارتباط <xliff:g id="DEVICE_NAME">%1$s</xliff:g> قطع شد"</string>
@@ -37,7 +37,7 @@
     <string name="complete_with" msgid="6624789011610610450">"تکمیل با"</string>
     <string name="default_pay_app_removed" msgid="4678760785647557185">"سرویس ترجیحی شما برای «پرداخت با تک‌ضرب» حذف شده است. سرویس دیگری انتخاب می‌کنید؟"</string>
     <string name="ask_nfc_tap" msgid="7921925213499063051">"برای تکمیل، روی دستگاه دیگری تک‌ضرب بزنید"</string>
-    <string name="wifi_connect" msgid="2726973850576310336">"اتصال"</string>
+    <string name="wifi_connect" msgid="2726973850576310336">"متصل کردن"</string>
     <string name="status_unable_to_connect" msgid="3282224066213036023">"اتصال به شبکه ممکن نیست"</string>
     <string name="status_wifi_connected" msgid="8878112079913521399">"متصل شد"</string>
     <string name="title_connect_to_network" msgid="5617055452888255705">"اتصال به شبکه"</string>
@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"‏‫<xliff:g id="APPNAMES">%1$s</xliff:g> می‌تواند برچسب‌های NFC را بخواند."</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"‏برنامه‌های زیر می‌توانند برچسب‌های NFC را بخوانند:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"برای آشنایی با نحوه غیرفعال کردن آن، تک‌ضرب بزنید."</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"‏‫<xliff:g id="APPNAMES">%1$s</xliff:g> می‌خواهد برچسب‌های NFC را بخواند."</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"‏برنامه‌های زیر می‌خواهند برچسب‌های NFC را بخوانند:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"برای دیدن تنظیمات کنونی تک‌ضرب بزنید."</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"‏داده‌های NFC ضبط می‌شود"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"برای توقف ضبط، تک‌ضرب بزنید."</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"‏به <xliff:g id="PKG">%1$s</xliff:g> اجازه می‌دهید NFC را فعال کند؟"</string>

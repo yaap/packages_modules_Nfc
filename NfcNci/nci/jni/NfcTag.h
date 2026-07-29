@@ -166,17 +166,6 @@ class NfcTag {
 
   /*******************************************************************************
   **
-  ** Function:        getProtocol
-  **
-  ** Description:     Get the protocol of the current tag.
-  **
-  ** Returns:         Protocol number.
-  **
-  *******************************************************************************/
-  tNFC_PROTOCOL getProtocol();
-
-  /*******************************************************************************
-  **
   ** Function:        selectFirstTag
   **
   ** Description:     When multiple tags are discovered, just select the first
@@ -316,17 +305,6 @@ class NfcTag {
   **
   *******************************************************************************/
   bool isT2tNackResponse(const uint8_t* response, uint32_t responseLen);
-
-  /*******************************************************************************
-  **
-  ** Function:        isNdefDetectionTimedOut
-  **
-  ** Description:     Whether NDEF-detection algorithm has timed out.
-  **
-  ** Returns:         True if NDEF-detection algorithm timed out.
-  **
-  *******************************************************************************/
-  bool isNdefDetectionTimedOut();
 
   /*******************************************************************************
   **

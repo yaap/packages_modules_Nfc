@@ -18,7 +18,7 @@ package android.nfc;
 import android.os.Bundle;
 
 /**
- * {@hide}
+ * @hide
  */
 interface INfcDta {
 

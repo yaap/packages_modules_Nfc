@@ -57,10 +57,13 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> သည် NFC tag များကို ဖတ်နိုင်သည်။"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"အောက်ပါအက်ပ်များသည် NFC tag များကို ဖတ်နိုင်သည်-<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"၎င်းအား ပိတ်နည်းကို လေ့လာရန် တို့ပါ။"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> သည် NFC tag များကို ဖတ်လိုသည်။"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"အောက်ပါအက်ပ်များသည် NFC tag များကို ဖတ်လိုသည်- <xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"လက်ရှိဆက်တင်များကို ကြည့်ရန် တို့ပါ။"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC ဒေတာကို မှတ်တမ်းတင်နေသည်"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"မှတ်တမ်းတင်ခြင်းရပ်ရန် တို့ပါ။"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"NFC ဖွင့်ရန် <xliff:g id="PKG">%1$s</xliff:g> ကို ခွင့်ပြုမလား။"</string>
-    <string name="enable_nfc_yes" msgid="3514504441883079276">"ဖွင့်မည်"</string>
-    <string name="enable_nfc_no" msgid="4272144216339787073">"မဖွင့်ပါ"</string>
+    <string name="enable_nfc_yes" msgid="3514504441883079276">"Yes"</string>
+    <string name="enable_nfc_no" msgid="4272144216339787073">"No"</string>
     <string name="device_ndef_nfcee_service_name" msgid="1035872251333915624">"မြှုပ်သွင်းထားသည့်တဂ်"</string>
 </resources>

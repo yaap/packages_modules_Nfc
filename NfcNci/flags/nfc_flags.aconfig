@@ -27,31 +27,10 @@ flag {
 }
 
 flag {
-    name: "send_view_intent_for_url_tag_dispatch"
-    namespace: "nfc"
-    description: "Send VIEW intent instead of NFC_TAG_DISCOVERED for URL tag dispatch"
-    bug: "345570691"
-}
-
-flag {
     name: "observe_mode_without_rf"
     namespace: "nfc"
     description: "Enable setting obseve mode state with out deactivating RF"
     bug: "368655283"
-}
-
-flag {
-    name: "post_callbacks"
-    namespace: "nfc"
-    description: "Post callbacks to CardEmulationManager to handler to get off of NFC callback thread."
-    bug: "370015438"
-}
-
-flag {
-    name: "ee_aid_select"
-    namespace: "nfc"
-    description: "Propigate NFA_EE_ACTION_EVT->NFC_EE_TRIG_SELECT up to onOffHostAidSelected()"
-    bug: "323440961"
 }
 
 # Don't add any new flags for Android 16+ targeting features. Use the flags

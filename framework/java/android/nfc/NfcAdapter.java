@@ -82,6 +82,7 @@ public final class NfcAdapter {
     private final NfcControllerAlwaysOnListener mControllerAlwaysOnListener;
     private final NfcWlcStateListener mNfcWlcStateListener;
     private final NfcVendorNciCallbackListener mNfcVendorNciCallbackListener;
+    private final NfcGestureExchangeCallbackListener mNfcGestureExchangeCallbackListener;
 
     /**
      * Intent to start an activity when a tag with NDEF payload is discovered.
@@ -165,7 +166,15 @@ public final class NfcAdapter {
      *
      * <p>This intent will not be started when a tag is discovered if any activities respond to
      * {@link #ACTION_NDEF_DISCOVERED} or {@link #ACTION_TECH_DISCOVERED} for the current tag.
+     *
+     * @deprecated This intent action is deprecated. Please use
+     * {@link #ACTION_NDEF_DISCOVERED} or {@link #ACTION_TECH_DISCOVERED} instead.
+     * <p>To achieve the same behavior as {@link #ACTION_TAG_DISCOVERED} (listening for all
+     * types of tags), use {@link #ACTION_TECH_DISCOVERED} and include all available
+     * NFC technologies in the meta-data.
      */
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    @Deprecated
     @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
     public static final String ACTION_TAG_DISCOVERED = "android.nfc.action.TAG_DISCOVERED";
 
@@ -196,8 +205,12 @@ public final class NfcAdapter {
 
     /**
      * Broadcast to only the activity that handles ACTION_TAG_DISCOVERED
+     *
+     * @deprecated this is no longer used.
      * @hide
      */
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    @Deprecated
     public static final String ACTION_TAG_LEFT_FIELD = "android.nfc.action.TAG_LOST";
 
     /**
@@ -277,11 +290,23 @@ public final class NfcAdapter {
      * calling {@link #enableReaderMode(Activity, ReaderCallback, int, Bundle)}.
      *
      * This polling loop annotation will be included as a non-standard polling frame which will be
-     * reported to via {@link android.nfc.cardemulation.HostApduService#processPollingFrames(List)}
+     * reported to via {@link android.nfc.cardemulation.HostApduService#processPollingFrames(List)}.
+     * If there is no explicit value set by the app, the device will emit the default annotation.
+     * Use {@code new byte[0]} as annotation in the extra to override the default and don't emit
+     * any annotation.
      */
-    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_READER_MODE_ANNOTATIONS)
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_READER_MODE_ANNOTATIONS_API)
     public static final String EXTRA_READER_TECH_A_POLLING_LOOP_ANNOTATION =
             "android.nfc.extra.READER_TECH_A_POLLING_LOOP_ANNOTATION";
+
+    /**
+     * @hide
+     * Add vendor specific bytes to be added at the end of annotation.
+     */
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_READER_MODE_ANNOTATIONS_API)
+    public static final String EXTRA_READER_TECH_A_POLLING_LOOP_ANNOTATION_VENDOR_EXTENSION =
+            "android.nfc.extra.READER_TECH_A_POLLING_LOOP_ANNOTATION_VENDOR_EXTENSION";
+
     /**
      * Nfc is enabled and the preferred payment aids are registered.
      */
@@ -624,6 +649,7 @@ public final class NfcAdapter {
     final Context mContext;
     final HashMap<NfcUnlockHandler, INfcUnlockHandler> mNfcUnlockHandlers;
     final Object mLock;
+    private Binder mDiscoveryTechToken;
     final NfcOemExtension mNfcOemExtension;
 
 
@@ -637,6 +663,14 @@ public final class NfcAdapter {
      */
     public interface ReaderCallback {
         public void onTagDiscovered(Tag tag);
+        /**
+         * Called when the previously discovered tag is lost.
+         */
+        @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_TAP_TO_X)
+        default void onTagLost(@NonNull Tag tag) {
+            // Do nothing by default.
+            // Apps can optionally override this.
+        }
     }
 
     /**
@@ -948,6 +982,7 @@ public final class NfcAdapter {
         mNfcWlcStateListener = new NfcWlcStateListener(getService());
         mNfcVendorNciCallbackListener = new NfcVendorNciCallbackListener();
         mNfcOemExtension = new NfcOemExtension(mContext, this);
+        mNfcGestureExchangeCallbackListener = new NfcGestureExchangeCallbackListener();
     }
 
     /**
@@ -1206,7 +1241,7 @@ public final class NfcAdapter {
      * {@link #setObserveModeEnabled(boolean)} .
      * @return true if the mode is supported, false otherwise.
      */
-    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_READER_MODE_ANNOTATIONS)
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_READER_MODE_ANNOTATIONS_API)
     public boolean isReaderModeAnnotationSupported() {
         return callServiceReturn(() ->  sService.isReaderModeAnnotationSupported(), false);
     }
@@ -1894,8 +1929,8 @@ public final class NfcAdapter {
      *       Please use with care.
      */
 
-    @FlaggedApi(Flags.FLAG_ENABLE_NFC_SET_DISCOVERY_TECH)
-    public void setDiscoveryTechnology(@NonNull Activity activity,
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    public void setDiscoveryTechnology(@Nullable Activity activity,
             @PollTechnology int pollTechnology, @ListenTechnology int listenTechnology) {
 
         synchronized (sLock) {
@@ -1907,7 +1942,12 @@ public final class NfcAdapter {
         if (activity == null
                 || (pollTechnology & FLAG_SET_DEFAULT_TECH) == FLAG_SET_DEFAULT_TECH
                 || (listenTechnology & FLAG_SET_DEFAULT_TECH) == FLAG_SET_DEFAULT_TECH) {
-            Binder token = new Binder();
+            synchronized (mLock) {
+                if (mDiscoveryTechToken == null) {
+                    mDiscoveryTechToken = new Binder();
+                }
+            }
+            Binder token = mDiscoveryTechToken;
             callService(() ->
                     sService.updateDiscoveryTechnology(
                             token, pollTechnology, listenTechnology, mContext.getPackageName()));
@@ -1923,11 +1963,16 @@ public final class NfcAdapter {
      * @param activity The Activity that requested to change technologies.
      */
 
-    @FlaggedApi(Flags.FLAG_ENABLE_NFC_SET_DISCOVERY_TECH)
-    public void resetDiscoveryTechnology(@NonNull Activity activity) {
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    public void resetDiscoveryTechnology(@Nullable Activity activity) {
         // Allow priv apps to pass null in activity.
         if (activity == null) {
-            Binder token = new Binder();
+            synchronized (mLock) {
+                if (mDiscoveryTechToken == null) {
+                    mDiscoveryTechToken = new Binder();
+                }
+            }
+            Binder token = mDiscoveryTechToken;
             callService(() ->
                     sService.updateDiscoveryTechnology(
                             token, NfcAdapter.FLAG_USE_ALL_TECH, NfcAdapter.FLAG_USE_ALL_TECH,
@@ -3031,4 +3076,85 @@ public final class NfcAdapter {
         return callServiceReturn(() ->  sService.isTagIntentAllowed(mContext.getPackageName(),
                 UserHandle.myUserId()), false);
     }
+
+    /**
+     * Registers a {@link ReaderCallback} to be invoked when the GESTURE_EXCHAGE_AID is detected
+     * during regular NFC polling.
+     *
+     * <p>When this callback is registered, the NFC service will attempt to select the
+     * {@link TAP_TO_SHARE AID} in addition to the standard NDEF AID during its regular polling
+     * cycle.
+     *
+     * <p>Registering this callback prevents the platform from playing sounds or vibrating when
+     * dispatching a tag to the application that registers this callback. This behavior is
+     * equivalent to using the {@link FLAG_READER_NO_PLATFORM_SOUNDS} flag when calling
+     * {@link enableReaderMode}.
+     *
+     * <p>The provided callback will be invoked by the given {@link Executor}.
+     *
+     * @param executor an {@link Executor} to dispatch the callback
+     * @param callback user implementation of the {@link ReaderCallback}
+     * @hide
+     */
+    @SystemApi
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_TAP_TO_X)
+    @RequiresPermission(android.Manifest.permission.PERFORM_GESTURE_EXCHANGE)
+    public void registerGestureExchangeReaderCallback(@NonNull @CallbackExecutor Executor executor,
+            @NonNull ReaderCallback callback) {
+        mNfcGestureExchangeCallbackListener.register(executor, callback);
+    }
+
+    /**
+     * Unregisters the specified {@link ReaderCallback}
+     *
+     * <p>The same {@link ReaderCallback} object used when calling
+     * {@link #registerGestureExchangeReaderCallback(Executor, ReaderCallback)} must be used.
+     *
+     * <p>Callbacks are automatically unregistered when application process goes away
+     *
+     * @param callback user implementation of the {@link ReaderCallback}
+     * @hide
+     */
+    @SystemApi
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_TAP_TO_X)
+    @RequiresPermission(android.Manifest.permission.PERFORM_GESTURE_EXCHANGE)
+    public void unregisterGestureExchangeReaderCallback(@NonNull ReaderCallback callback) {
+        mNfcGestureExchangeCallbackListener.unregister(callback);
+    }
+
+    /**
+      * Get the AID for Tap to Share functionality.
+      */
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_TAP_TO_X)
+    @RequiresPermission(android.Manifest.permission.PERFORM_GESTURE_EXCHANGE)
+    @Nullable
+    public String getGestureExchangeAid() {
+        return callServiceReturn(() ->  sService.getGestureExchangeAid(), null);
+    }
+
+    /**
+     * Temporarily disables observe mode to allow a single Host Card Emulation (HCE)
+     * transaction to proceed.
+     *
+     * <p>This is typically used in scenarios where an application, such as a digital wallet,
+     * needs to perform a tap-to-pay transaction while observe mode is active. After
+     * calling this method, observe mode will be disabled, allowing the HCE service
+     * to be selected by the reader. Observe mode will be automatically re-enabled
+     * after the transaction is complete or if the NFC field is lost.
+     *
+     */
+    @FlaggedApi(com.android.nfc.module.flags.Flags.FLAG_NFCSTACK_26Q2_UPDATES)
+    public void allowOneTransaction() {
+        try {
+            INfcAdapter service = getService();
+            if (service != null) {
+                service.allowOneTransaction();
+            } else {
+                Log.e(TAG, "NFC service is not available.");
+            }
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+
 }

@@ -37,22 +37,24 @@ import logging
 import re
 import ssl
 import sys
+import threading
 import time
 
-from android.platform.test.annotations import CddTest
 from android.platform.test.annotations import ApiTest
+from android.platform.test.annotations import CddTest
 from mobly import asserts
 from mobly import base_test
 from mobly import test_runner
-from mobly import utils
 from mobly.controllers import android_device
 from mobly.controllers.android_device_lib import adb
 
+import pn532_utils
 
 _LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 try:
     import pn532
+    from pn532 import tag_emulator
     from pn532.nfcutils import (
         parse_protocol_params,
         create_select_apdu,
@@ -106,6 +108,7 @@ _TRANSPORT_SERVICE_1 = _SERVICE_PACKAGE + ".TransportService1"
 _TRANSPORT_SERVICE_2 = _SERVICE_PACKAGE + ".TransportService2"
 _POLLING_LOOP_SERVICE_1 = _SERVICE_PACKAGE + ".PollingLoopService"
 _POLLING_LOOP_SERVICE_2 = _SERVICE_PACKAGE + ".PollingLoopService2"
+_EXIT_FRAME_SERVICE = _SERVICE_PACKAGE+ ".ExitFrameService"
 
 _NUM_POLLING_LOOPS = 50
 _FAILED_TAG_MSG =  "Reader did not detect tag, transaction not attempted."
@@ -191,6 +194,8 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
                 raise Exception("Must define payment_default_service for payment tests.")
             self.emulator.nfc_emulator.waitForService(payment_default_service)
 
+        time.sleep(3) # Let NFC stack complete set up emulator
+
     def _set_up_reader_and_assert_transaction(self, expected_service=None):
         """
         Sets up reader, and asserts successful APDU transaction
@@ -209,6 +214,9 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         product_name = ad.adb.getprop("ro.product.name")
         return "cf_x86" in product_name
 
+    def _is_user_build(self, ad: android_device.AndroidDevice) -> bool:
+        return ad.adb.getprop("ro.build.type") == "user"
+
     def _reboot(self, ad: android_device.AndroidDevice):
         ad.reboot()
         ad.nfc_emulator.turnScreenOn()
@@ -225,6 +233,17 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         first_device = json_obj[0]
         return first_device["device_id"]
 
+    def _enable_nfc_logs(self, ad: android_device.AndroidDevice):
+        """
+        Enables NFC logs on the Android device.
+        """
+        ad.adb.shell("setprop log.tag.libnfc_nci VERBOSE")
+        ad.adb.shell("setprop persist.log.tag.libnfc_nci VERBOSE")
+        if not self._is_user_build(self.emulator):
+            ad.adb.shell("setprop persist.nfc.vendor_debug_enabled true")
+            ad.adb.shell("setprop persist.nfc.snoop_log_mode full")
+        ad.reboot()
+
     def setup_class(self):
         """
         Sets up class by registering an emulator device, enabling NFC, and loading snippets.
@@ -233,10 +252,16 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         second phone as a reader device.
         """
         self.pn532 = None
+        self.pn532_lock = None
+
+        self.emulator = self.register_controller(android_device)[0]
 
         # This tracks the error message for a setup failure.
         # It is set to None only if the entire setup_class runs successfully.
-        self._setup_failure_reason = 'Failed to find Android device(s).'
+        self._setup_failure_reason = (
+            f"Could not locate a corresponding PN532 device attached to"
+            f" {self.emulator.serial}."
+        )
 
         # Indicates if the setup failure should block (FAIL) or not block (SKIP) test cases.
         # Blocking failures indicate that something unexpectedly went wrong during test setup,
@@ -246,8 +271,28 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         self._setup_failure_should_block_tests = True
 
         try:
-            devices = self.register_controller(android_device)[:1]
-            self.emulator = devices[0]
+            try:
+                self.pn532_lock, pn532_serial_path, android_serial = pn532_utils.discover_active_pair([self.emulator])
+                self.emulator.log.info("Auto-discovery result: %s paired with %s",
+                                       pn532_serial_path, android_serial)
+            except Exception:
+                self.emulator.log.exception("Auto-discovery failed")
+                self.emulator.take_bug_report(
+                    test_name="auto_discovery_failure",
+                    destination=self.emulator.log_path,
+                )
+                if (
+                    hasattr(self.emulator, "dimensions")
+                    and "pn532_serial_path" in self.emulator.dimensions
+                ):
+                    pn532_serial_path = self.emulator.dimensions["pn532_serial_path"]
+                else:
+                    pn532_serial_path = self.user_params.get("pn532_serial_path", "")
+                self.emulator.log.warning(
+                    "Falling back to testbed parameter 'pn532_serial_path': %s", pn532_serial_path
+                )
+
+            self._enable_nfc_logs(self.emulator)
             self.record_mainline_version(self.emulator)
 
             self._setup_failure_reason = (
@@ -265,13 +310,6 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
                 self.emulator.nfc_emulator.setNfcState(True)
             # Ensure any wallet role holder is reset before tests.
             self.emulator.nfc_emulator.resetWalletRoleHolder()
-            if (
-                hasattr(self.emulator, 'dimensions')
-                and 'pn532_serial_path' in self.emulator.dimensions
-            ):
-                pn532_serial_path = self.emulator.dimensions["pn532_serial_path"]
-            else:
-                pn532_serial_path = self.user_params.get("pn532_serial_path", "")
 
             casimir_id = None
             if self._is_cuttlefish_device(self.emulator):
@@ -281,12 +319,20 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
 
             if casimir_id is not None and len(casimir_id) > 0:
                 self._setup_failure_reason = 'Failed to connect to casimir'
-                _LOG.info("casimir_id = " + casimir_id)
+                _LOG.info("casimir_id = %s", casimir_id)
                 self.pn532 = pn532.Casimir(casimir_id)
             else:
                 self._setup_failure_reason = 'Failed to connect to PN532 board.'
-                self.pn532 = pn532.PN532(pn532_serial_path)
-                self.pn532.mute()
+                _LOG.info(
+                    '[PN532_DEBUG] Attempting to initialize PN532 at: %s', pn532_serial_path
+                )
+                try:
+                    self.pn532 = pn532.PN532(pn532_serial_path)
+                    self.pn532.mute()
+                    _LOG.info('[PN532_DEBUG] PN532 initialization SUCCESS!')
+                except Exception:
+                    _LOG.exception('[PN532_DEBUG] FAILED to init PN532')
+                    raise
 
         except Exception as e:
             _LOG.warning('setup_class failed with error %s', e)
@@ -395,10 +441,11 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
             payment_default_service=_PAYMENT_SERVICE_1,
             should_disable_services_on_destroy=False # Don't disable services on shutdown.
         )
-        time.sleep(3) # Let NFC stack complete set up emulator
+
         self._reboot(self.emulator)
         # Setup the payment service activity to handle the transaction after
         # reboot.
+        time.sleep(30)
         self._set_up_emulator(
             service_list=[_PAYMENT_SERVICE_1],
             expected_service=_PAYMENT_SERVICE_1,
@@ -469,6 +516,7 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
             _LOG.info(f"Could not kill pid {pid} through adb.")
             self.emulator.nfc_emulator.killProcess(pid)
 
+        time.sleep(2) # Wait for the payment service to be restarted.
         self._set_up_reader_and_assert_transaction(expected_service=_PAYMENT_SERVICE_1)
 
     @CddTest(requirements = ["7.4.4/C-2-2", "7.4.4/C-1-2", "9.1/C-0-1"])
@@ -853,6 +901,7 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         """
         self._set_up_emulator(service_list=[_TRANSPORT_SERVICE_1,_TRANSPORT_SERVICE_2],
                               expected_service=_TRANSPORT_SERVICE_2, is_payment=False)
+
         command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator, _TRANSPORT_SERVICE_2)
         poll_and_transact(self.pn532, command_apdus[:1], response_apdus[:1])
 
@@ -1014,6 +1063,292 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         self._set_up_reader_and_assert_transaction(expected_service=
                                                    _SCREEN_ON_ONLY_OFF_HOST_SERVICE)
 
+   # START of new CTS tests for Exit Frames
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_manifest_filter(self):
+        """
+
+        Tests autotransact with exit frames using a manifest-defined filter.
+
+        """
+        asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+        )
+        self._set_up_emulator(
+                  "41fbc7b9", [], True,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+        )
+        asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+        )
+
+        command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+        test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+        )
+        tag_detected, transacted = poll_and_transact(
+              self.pn532, command_apdus, response_apdus, "41fbc7b9")
+        asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+        asserts.assert_true(transacted, _FAILED_TRANSACTION_MSG)
+        test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+        time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+        asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+        )
+        tag_detected, _ = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus)
+        asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+        )
+
+        self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_registered_filters(self):
+              """Tests autotransact with exit frames using dynamically registered filters."""
+              asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+              )
+              self._set_up_emulator(
+                  "12345678", ["12345678", "aaaa"], True,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+              )
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+              )
+
+              command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+              test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+              )
+              tag_detected, transacted = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus, "12345678")
+              asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+              asserts.assert_true(transacted, _FAILED_TRANSACTION_MSG)
+              test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+              time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+              )
+              tag_detected, _ = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus)
+              asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+              )
+
+              self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_prefix_match(self):
+              """Tests autotransact with exit frames using a prefix match."""
+              asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+              )
+              self._set_up_emulator(
+                  "dd1234", ["12345678", "dd.*", "ee.*", "ff.."], True,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+              )
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+              )
+
+              command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+              test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+              )
+              tag_detected, transacted = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus, "dd1234")
+              asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+              asserts.assert_true(transacted, _FAILED_TRANSACTION_MSG)
+              test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+              time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+              )
+              tag_detected, _ = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus)
+              asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+              )
+
+              self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_mask_match(self):
+              """Tests autotransact with exit frames using a mask match."""
+              asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+              )
+              self._set_up_emulator(
+                  "ff11", ["12345678", "ff.."], True,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+              )
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+              )
+
+              command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+              test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+              )
+              tag_detected, transacted = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus, "ff11")
+              asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+              asserts.assert_true(transacted, _FAILED_TRANSACTION_MSG)
+              test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+              time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+              )
+              tag_detected, _ = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus)
+              asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+              )
+
+              self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_mask_and_prefix_match(self):
+              """Tests autotransact with exit frames using a combined mask and prefix match."""
+              asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+              )
+              self._set_up_emulator(
+                  "ddfe1134", ["12345678", "dd..11.*", "ee.*", "ff.."], True,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+              )
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+              )
+
+              command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+              test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+              )
+              tag_detected, transacted = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus, "ddfe1134")
+              asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+              asserts.assert_true(transacted, _FAILED_TRANSACTION_MSG)
+              test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+              time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+              )
+              tag_detected, _ = poll_and_transact(
+                  self.pn532, command_apdus, response_apdus)
+              asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+              )
+              self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+    @CddTest(requirements = ["7.4.4/C-1-13"])
+    def test_exit_frames_no_transaction_observe_mode_reenabled(self):
+              """Verifies observe mode is re-enabled even if no transaction occurs."""
+              asserts.skip_if(
+                  not self.emulator.nfc_emulator.isExitFramesSupported(),
+                  f"{self.emulator} exit frame not supported",
+              )
+              self._set_up_emulator(
+                  "12345678", ["12345678", "aaaa"], False,
+                  start_emulator_fun=self.emulator.nfc_emulator.startExitFrameActivity,
+                  service_list=[_EXIT_FRAME_SERVICE],
+                  expected_service=_EXIT_FRAME_SERVICE,
+                  is_payment=True,
+                  payment_default_service=_EXIT_FRAME_SERVICE
+              )
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.setObserveModeEnabled(True),
+                  f"{self.emulator} could not set observe mode",
+              )
+
+              command_apdus, response_apdus = get_apdus(self.emulator.nfc_emulator,
+                                                         _EXIT_FRAME_SERVICE)
+              test_pass_handler = self.emulator.nfc_emulator.asyncWaitForTestPass(
+                  'ExitFrameListenerSuccess'
+              )
+              tag_detected, transacted = poll_and_transact(
+                  self.pn532, [], [], "12345678")
+              asserts.assert_true(tag_detected, _FAILED_TAG_MSG)
+              test_pass_handler.waitAndGet('ExitFrameListenerSuccess', _NFC_TIMEOUT_SEC)
+
+              time.sleep(_NFC_TIMEOUT_SEC)
+
+              # Poll again; observe mode should be re-enabled.
+              asserts.assert_true(
+                  self.emulator.nfc_emulator.isObserveModeEnabled(),
+                  f"{self.emulator} isObserveModeEnabled did not return True",
+              )
+              tag_detected, _ = poll_and_transact(
+                  self.pn532, [], [])
+              asserts.assert_false(
+                  tag_detected,
+                  "Reader detected emulator even though observe mode was enabled."
+              )
+              self.emulator.nfc_emulator.setObserveModeEnabled(False)
+
+   # END of new CTS tests for Exit Frames
+
     def test_single_payment_service_toggle_nfc_off_on(self):
         """Tests successful APDU exchange between payment service and
         reader.
@@ -1076,8 +1411,6 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
         self._set_up_emulator(
             start_emulator_fun=self.emulator.nfc_emulator.startPollingFrameEmulatorActivity
         )
-
-        time.sleep(3) # Let NFC stack complete onServicesUpdated.
 
         timed_pn532 = TimedWrapper(self.pn532)
         testcases = [
@@ -1401,13 +1734,10 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
                 "*** TEST END: " + self.current_test_info.name + " ***")
         if hasattr(self, 'pn532'):
             self.pn532.reset_buffers()
+            self.pn532.chip_reset()
             self.pn532.mute()
-        if hasattr(self, 'emulator'):
-            param_list = [[self.emulator]]
-            utils.concurrent_exec(lambda d: d.services.create_output_excerpts_all(
-                self.current_test_info),
-                                  param_list=param_list,
-                                  raise_on_exception=True)
+        if hasattr(self, "emulator"):
+            self.emulator.services.create_output_excerpts_all(self.current_test_info)
 
     #@CddTest(requirements = {"7.4.4/C-2-2", "7.4.4/C-1-2"})
     def test_single_non_payment_service_with_listen_tech_disabled(self):
@@ -1486,6 +1816,190 @@ class CtsNfcHceMultiDeviceTestCases(base_test.BaseTestClass):
 
         # Reset listen tech back.
         self.emulator.nfc_emulator.resetListenTech()
+
+    def test_ndef_read(self):
+        asserts.skip("Skipped due to hardware timeout flakiness (b/498085081)")
+        """Tests that the Android NDEF protocol stack can successfully read a Type 4 Tag.
+
+        Test Steps:
+        1. Enable reader mode on the emulator with NDEF checking enabled.
+        2. Set up a handler to catch the 'TagDiscovered' event.
+        3. Use PN532 to listen and serve NDEF requests using a Type 4 Tag emulator.
+        4. Verify that the NDEF exchange was completed and the tag was discovered.
+
+        Verifies:
+        1. The Android NCI stack completes the full NDEF read sequence.
+        2. The application layer receives the Tag object.
+        """
+
+        # Skip the test if reader mode is not supported
+        asserts.skip_if(not self.emulator.nfc_emulator.isNfcSupported(),
+                        "Reader mode is not supportedd")
+
+        # Constants for polling limits
+        _MAX_INIT_RETRIES = 5
+
+        # Setup Reader Mode on the Android device.
+        # 0x1 (NFC-A) | 0x10 (Barcode/NDEF)
+        _NFC_TECH_A_POLLING_ON_WITH_NDEF = 0x1 | 0x10
+        self.emulator.nfc_emulator.startPN532Activity()
+        self.emulator.nfc_emulator.enableReaderMode(_NFC_TECH_A_POLLING_ON_WITH_NDEF)
+
+        # Register handler for the application-level callback.
+        tag_discovered_handler = self.emulator.nfc_emulator.asyncWaitsForTagDiscovered(
+            "TagDiscovered"
+        )
+
+        # Run the PN532 NDEF service logic.
+        tag = tag_emulator.Type4Tag()
+        _LOG.info("PN532 is listening for NDEF read requests...")
+
+        ndef_read_success = False
+        # We allow a few retries for the physical RF sync between phone and PN532.
+        for attempt in range(_MAX_INIT_RETRIES):
+            if self.pn532.listen_and_serve_ndef(tag, timeout=2.0):
+                ndef_read_success = True
+                break
+
+        # Asserts that the NDEF data exchange was fully completed without NCI/JNI stack interruption.
+        asserts.assert_true(
+            ndef_read_success,
+            "Android NFC stack interrupted or failed the NDEF reading process."
+        )
+
+        # Asserts that the system properly dispatched the parsed Tag object to the application.
+        tag_event = tag_discovered_handler.waitAndGet("TagDiscovered", _NFC_TIMEOUT_SEC)
+        asserts.assert_is_not_none(
+            tag_event,
+            "Emulator app did not receive the TagDiscovered event after NDEF exchange."
+        )
+
+    def test_pn532_tag_presence_check(self):
+        asserts.skip("Skipped due to hardware timeout flakiness (b/498085081)")
+        """Tests that the Android NFC stack correctly handles Tag detachment.
+
+        Test Steps:
+        1. Start PN532 activity with TagLoss stress loop flag enabled.
+        2. Enable reader mode on the emulator.
+        3. Establish emulation and serve exactly 10 APDUs sequentially.
+        4. Mute the PN532 RF field to simulate sudden tag removal.
+        5. Verify that the Android snippet caught the TagLostException.
+
+        Verifies:
+        1. The Android application layers can catch TagLostException without system crash.
+        """
+
+        # Skip the test if reader mode is not supported
+        asserts.skip_if(not self.emulator.nfc_emulator.isNfcSupported(),
+                        "Reader mode is not supportedd")
+
+        # 1. Setup Activity with TagLoss Transceive Loop triggered
+        self.emulator.nfc_emulator.startPN532ActivityForTagLoss()
+
+        # 0x1 indicates NFC-A technology
+        self.emulator.nfc_emulator.enableReaderMode(0x1)
+
+        # Register handler for the loss event catch
+        tag_lost_handler = self.emulator.nfc_emulator.asyncWaitForTagLostException(
+            "TagLostException"
+        )
+
+        # 2. Establish initial emulation connection
+        tag = tag_emulator.Type4Tag()
+        _LOG.info("Establishing connection and starting reading loop...")
+
+        # 3. Serve 10 APDUs then return.
+        # Blocks sequential execution until 10 exchanges are served.
+        self.pn532.listen_and_serve_ndef(tag, max_apdu_exchanges=10)
+
+        # 4. Simulate sudden tag removal
+        _LOG.info("Muting PN532 RF modulation to simulate sudden removal...")
+        # Java-side is still waiting to transceive 11th package
+        self.pn532.mute()
+
+        # 5. Verify exception caught inside snippet
+        _LOG.info("Waiting for Android to trigger or handle TagLostException...")
+        lost_event = tag_lost_handler.waitAndGet("TagLostException", _NFC_TIMEOUT_SEC)
+
+        asserts.assert_is_not_none(
+            lost_event,
+            "Android failed to trigger TagLostException upon tag mute/removal."
+        )
+
+    def test_ndef_write(self):
+        asserts.skip("Skipped due to hardware timeout flakiness (b/498085081)")
+        """Tests that the Android NFC stack can correctly write NDEF message to an emulated Type 4 Tag.
+
+        Test Steps:
+        1. Start PN532 Activity on Android Emulator.
+        2. Enable reader mode on Emulator.
+        3. Establish emulation connection via Type4Tag.
+        4. Trigger async NDEF write from Android snippet.
+        5. Re-enter the emulation loop to process the write commands.
+        6. Verify the write was successful from both Python Tag state and Android snippet event.
+
+        Verifies:
+        1. Android can send UPDATE_BINARY commands over NFC.
+        2. NDEF message is persisted in Type4Tag's buffer.
+        """
+
+        # Skip the test if reader mode is not supported
+        asserts.skip_if(not self.emulator.nfc_emulator.isNfcSupported(),
+                        "Reader mode is not supportedd")
+
+        _NFC_TECH_A_POLLING_ON_WITH_NDEF = 0x1 | 0x10
+
+        _LOG.info("Step 1: Starting PN532 Activity...")
+        self.emulator.nfc_emulator.startPN532Activity()
+        self.emulator.nfc_emulator.enableReaderMode(_NFC_TECH_A_POLLING_ON_WITH_NDEF)
+
+        tag_discovered_handler = self.emulator.nfc_emulator.asyncWaitsForTagDiscovered("TagDiscovered")
+
+        tag = tag_emulator.Type4Tag()
+        _LOG.info("Step 2: Starting background tag emulation thread...")
+        def listen_worker():
+            _LOG.info("Step 4 (Thread): Listening for NDEF APDUs from Android (Discovery & Write)...")
+            self.pn532.listen_and_serve_ndef(tag, get_data_timeout=5.0)
+
+        listen_thread = threading.Thread(target=listen_worker)
+        listen_thread.start()
+
+        _LOG.info("Waiting for Android to discover the tag...")
+        tag_discovered_handler.waitAndGet("TagDiscovered", timeout=_NFC_TIMEOUT_SEC)
+
+        ndef_msg_hex = "D1010D55046578616D706C652E636F6D2F"
+
+        _LOG.info("Step 3: Triggering async NDEF write from snippet...")
+        write_handler = self.emulator.nfc_emulator.asyncWriteNdefMessage("NdefWriteComplete", ndef_msg_hex)
+
+        _LOG.info("Step 5: Waiting for write completion events...")
+        write_event = write_handler.waitAndGet("NdefWriteComplete", timeout=10.0)
+        listen_thread.join()
+
+        asserts.assert_is_not_none(
+            write_event,
+            "Android failed to complete the NDEF write operation or snippet timed out."
+        )
+
+        _LOG.info("Step 6: Verifying NDEF payload consistency on Python side...")
+        asserts.assert_equal(
+            tag.ndef_file_buffer[2:],
+            bytearray.fromhex(ndef_msg_hex),
+            "Python side tag buffer does not match sent NDEF message"
+        )
+
+        length = int.from_bytes(tag.ndef_file_buffer[0:2], 'big')
+        written_bytes = tag.ndef_file_buffer[2 : 2 + length]
+        expected_bytes = bytearray.fromhex(ndef_msg_hex)
+
+        _LOG.info("Expected NDEF payload: %s", expected_bytes.hex())
+        _LOG.info("Actual Type4Tag payload: %s", written_bytes.hex())
+
+        asserts.assert_equal(
+            written_bytes,
+            expected_bytes,
+            "Verification failed: Type4Tag written buffer does not match expected payload."
+        )
 
 if __name__ == '__main__':
     # Take test args

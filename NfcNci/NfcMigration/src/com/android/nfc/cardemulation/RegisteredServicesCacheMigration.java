@@ -482,7 +482,7 @@ public class RegisteredServicesCacheMigration {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, ": Could not parse others AIDs file, e=", e);
+            Log.e(TAG, "readOtherFromFile: Could not parse others AIDs file, e=", e);
             settingsFile.delete();
         } finally {
             if (fis != null) {

@@ -40,7 +40,8 @@ android_test {
         "modules-utils-extended-mockito-rule",
         "android.nfc.flags-aconfig-java",
         "android.permission.flags-aconfig-java",
-        "com.android.nfc.module.flags-aconfig-java",
+        "com.android.nfc.module.flags-aconfig-exported-java",
+        "com.android.nfc.module.flags-aconfig-non-exported-java",
     ],
     libs: [
         "androidx.annotation_annotation",

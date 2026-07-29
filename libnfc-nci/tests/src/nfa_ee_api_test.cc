@@ -385,9 +385,9 @@ TEST_F(NfaEeApiTest, NFA_EeUpdateNowInProgress) {
 }
 
 TEST_F(NfaEeApiTest, NFA_EeUpdateNowNormal) {
-  NFC_HDR* p_msg = (NFC_HDR*)malloc(sizeof(NFC_HDR_SIZE));
+  NFC_HDR* p_msg = (NFC_HDR*)malloc(NFC_HDR_SIZE);
 
-  EXPECT_CALL(*((MockGkiUtils*)gki_utils), getbuf(sizeof(NFC_HDR_SIZE)))
+  EXPECT_CALL(*((MockGkiUtils*)gki_utils), getbuf(NFC_HDR_SIZE))
       .WillOnce(testing::Return(p_msg));
   tNFA_STATUS status = NFA_EeUpdateNow();
 

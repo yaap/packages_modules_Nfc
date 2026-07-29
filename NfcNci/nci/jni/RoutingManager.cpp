@@ -71,6 +71,7 @@ static const uint16_t DEFAULT_SYS_CODE = 0xFEFE;
 
 static const uint8_t AID_ROUTE_QUAL_PREFIX = 0x10;
 
+static bool gFirstRun = true;
 static Mutex sEeInfoMutex;
 static Mutex sEeInfoChangedMutex;
 
@@ -242,6 +243,7 @@ bool RoutingManager::initialize(nfc_jni_native_data* native) {
     LOG(ERROR) << fn << ": Failed to register wildcard AID for DH";
 
   // Trigger RT update
+  gFirstRun = true;
   mNfceeListenConfig.nb_config = 0;
   setEeInfoChangedFlag();
   mDefaultAidRouteAdded = false;
@@ -292,6 +294,7 @@ bool RoutingManager::isTypeATypeBTechSupportedInEe(tNFA_HANDLE eeHandle) {
   }
 
   if (mEuiccMepMode) {
+    actualNbEe = NFA_EE_MAX_EE_SUPPORTED;
     memset(&eeInfo, 0, actualNbEe * sizeof(tNFA_EE_INFO));
     nfaStat = NFA_EeGetMepInfo(&actualNbEe, eeInfo);
     if (nfaStat != NFA_STATUS_OK) {
@@ -307,7 +310,8 @@ bool RoutingManager::isTypeATypeBTechSupportedInEe(tNFA_HANDLE eeHandle) {
   }
 
   LOG(WARNING) << StringPrintf(
-      "%s:  Route does not support A/B, using DH as default", fn);
+      "%s:  Route %02X does not support A/B, using DH as default", fn,
+      eeHandle);
   return false;
 }
 
@@ -325,9 +329,18 @@ bool RoutingManager::addAidRouting(const uint8_t* aid, uint8_t aidLen,
                                    int route, int aidInfo, int power) {
   static const char fn[] = "RoutingManager::addAidRouting";
   uint8_t powerState = 0x01;
+  int defaultAidRoute = mDefaultEe;
 
   if (route != NFC_DH_ID &&
       !isTypeATypeBTechSupportedInEe(route | NFA_HANDLE_GROUP_EE)) {
+    // If default AID route is DH no need to add aid explicitly
+    // as all AIDs will be routed to DH
+    if (defaultAidRoute == NFC_DH_ID) {
+      LOG(DEBUG) << StringPrintf(
+          "%s:  defaultAidRoute=%02x, Skip fallback to DH", fn,
+          defaultAidRoute);
+      return true;
+    }
     route = NFC_DH_ID;
     power = 0x11;
   }
@@ -356,7 +369,9 @@ bool RoutingManager::addAidRouting(const uint8_t* aid, uint8_t aidLen,
   mAidRoutingConfigured = false;
   tNFA_STATUS nfaStat =
       NFA_EeAddAidRouting(route, aidLen, (uint8_t*)aid, powerState, aidInfo);
-  if (nfaStat == NFA_STATUS_OK) {
+  if (!sIsRecovering && nfaStat == NFA_STATUS_OK) {
+    LOG(DEBUG) << StringPrintf("%s: wait for mAidAddRemoveEvent completion",
+                               fn);
     mAidAddRemoveEvent.wait();
   }
   if (mAidRoutingConfigured) {
@@ -391,8 +406,12 @@ bool RoutingManager::removeAidRouting(const uint8_t* aid, uint8_t aidLen) {
   SyncEventGuard guard(mAidAddRemoveEvent);
   mAidRoutingConfigured = false;
   tNFA_STATUS nfaStat = NFA_EeRemoveAidRouting(aidLen, (uint8_t*)aid);
-  if (nfaStat == NFA_STATUS_OK) {
-    mAidAddRemoveEvent.wait();
+  if (!sIsRecovering) {
+    if (nfaStat == NFA_STATUS_OK) {
+      LOG(DEBUG) << StringPrintf("%s: wait for mAidAddRemoveEvent completion",
+                                fn);
+      mAidAddRemoveEvent.wait();
+    }
   }
   if (mAidRoutingConfigured) {
     return true;
@@ -505,6 +524,7 @@ void RoutingManager::onNfccShutdown() {
   {
     SyncEventGuard guard(mAidAddRemoveEvent);
     mAidAddRemoveEvent.notifyOne();
+    LOG(DEBUG) << StringPrintf("%s: mAidAddRemoveEvent notified", fn);
   }
 }
 
@@ -560,6 +580,16 @@ bool RoutingManager::getNameOfEe(tNFA_HANDLE ee_handle, std::string& eeName) {
     if (ee_handle == mOffHostRouteUicc[i]) {
       eeName = "SIM" + std::to_string(i + 1);
       return true;
+    }
+  }
+  if (NfcConfig::hasKey(NAME_T4T_NFCEE_ENABLE)) {
+    if (NfcConfig::getUnsigned(NAME_T4T_NFCEE_ENABLE)) {
+      uint8_t defaultNdefNfceeRoute =
+          NfcConfig::getUnsigned(NAME_DEFAULT_NDEF_NFCEE_ROUTE, 0x10);
+      if (ee_handle == defaultNdefNfceeRoute) {
+        eeName = "NDEF-NFCEE";
+        return true;
+      }
     }
   }
 
@@ -892,7 +922,6 @@ void RoutingManager::updateSystemCodeRoute(int route) {
   LOG(DEBUG) << StringPrintf("%s:  New default SC route=0x%x", fn, route);
   setEeInfoChangedFlag();
   mDefaultSysCodeRoute = route;
-  updateDefaultRoute();
 }
 
 /*******************************************************************************
@@ -932,8 +961,12 @@ void RoutingManager::updateDefaultProtocolRoute() {
     SyncEventGuard guard(mRoutingEvent);
     tNFA_PROTOCOL_MASK protoMask = NFA_PROTOCOL_MASK_T3T;
     if (mDefaultEe == NFC_DH_ID) {
-      nfaStat =
+      if ((mHostListenTechMask & NFA_TECHNOLOGY_MASK_F) != 0) {
+        nfaStat =
           NFA_EeSetDefaultProtoRouting(NFC_DH_ID, protoMask, 0, 0, 0, 0, 0);
+      } else {
+        return;
+      }
     } else {
       nfaStat = NFA_EeSetDefaultProtoRouting(
           mDefaultEe, protoMask, 0, 0, mSecureNfcEnabled ? 0 : protoMask,
@@ -966,7 +999,7 @@ void RoutingManager::updateDefaultRoute() {
                              mDefaultSysCodeRoute);
 
   // remove SC routing
-  {
+  if (!gFirstRun) {
     SyncEventGuard guard(mRoutingEvent);
     tNFA_STATUS stat = NFA_EeRemoveSystemCodeRouting(mDefaultSysCode);
     if (sIsRecovering) return;
@@ -1007,8 +1040,9 @@ void RoutingManager::updateDefaultRoute() {
                                         NFA_HANDLE_GROUP_EE))) {
       defaultAidRoute = NFC_DH_ID;
     }
-
-    removeAidRouting(nullptr, 0);
+    if (!gFirstRun) {
+      removeAidRouting(nullptr, 0);
+    }
     uint8_t powerState = 0x01;
     if (!mSecureNfcEnabled) {
       powerState =
@@ -1022,6 +1056,7 @@ void RoutingManager::updateDefaultRoute() {
       mDefaultAidRouteAdded = true;
     }
   }
+  gFirstRun = false;
 }
 
 /*******************************************************************************
@@ -1344,6 +1379,7 @@ void RoutingManager::nfaEeCallback(tNFA_EE_EVT event,
       routingManager.mAidRoutingConfigured =
           (eventData->status == NFA_STATUS_OK);
       routingManager.mAidAddRemoveEvent.notifyOne();
+      LOG(DEBUG) << StringPrintf("%s: NFA_EE_ADD_AID_EVT notified", fn);
     } break;
 
     case NFA_EE_ADD_SYSCODE_EVT: {
@@ -1367,6 +1403,7 @@ void RoutingManager::nfaEeCallback(tNFA_EE_EVT event,
       routingManager.mAidRoutingConfigured =
           (eventData->status == NFA_STATUS_OK);
       routingManager.mAidAddRemoveEvent.notifyOne();
+      LOG(DEBUG) << StringPrintf("%s: NFA_EE_REMOVE_AID_EVT notified", fn);
     } break;
 
     case NFA_EE_NEW_EE_EVT: {

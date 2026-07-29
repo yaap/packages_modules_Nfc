@@ -75,9 +75,9 @@ public class ExitFrame {
             }
         }
         mData = HexFormat.of().parseHex(String.valueOf(filterChars));
-        if (mData.length > 14) {
+        if (mData.length > 16) {
             throw new IllegalArgumentException(
-                    "Filter too long, firmware exit frames only support 14 byte filters.");
+                    "Filter too long, firmware exit frames only support 16 byte filters.");
         }
         mDataMask = HexFormat.of().parseHex(String.valueOf(maskChars));
 

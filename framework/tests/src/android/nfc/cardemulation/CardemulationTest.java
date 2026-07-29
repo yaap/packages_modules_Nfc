@@ -26,8 +26,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.role.RoleManager;
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -300,21 +300,21 @@ public class CardemulationTest {
     public void testSetPreferredService() throws RemoteException {
         Activity activity = mock(Activity.class);
         ComponentName componentName = mock(ComponentName.class);
-        when(mINfcCardEmulation.setPreferredService(componentName))
+        when(mINfcCardEmulation.setPreferredService(componentName, true))
                 .thenReturn(true);
         boolean result = mCardEmulation.setPreferredService(activity, componentName);
         assertThat(result).isTrue();
-        verify(mINfcCardEmulation).setPreferredService(componentName);
+        verify(mINfcCardEmulation).setPreferredService(componentName, true);
     }
 
     @Test
     public void testUnsetPreferredService() throws RemoteException {
         Activity activity = mock(Activity.class);
-        when(mINfcCardEmulation.unsetPreferredService())
+        when(mINfcCardEmulation.unsetPreferredService(true))
                 .thenReturn(true);
         boolean result = mCardEmulation.unsetPreferredService(activity);
         assertThat(result).isTrue();
-        verify(mINfcCardEmulation).unsetPreferredService();
+        verify(mINfcCardEmulation).unsetPreferredService(true);
     }
 
     @Test

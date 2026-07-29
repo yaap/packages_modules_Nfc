@@ -23,6 +23,7 @@
  ******************************************************************************/
 #include <android-base/logging.h>
 #include <android-base/stringprintf.h>
+#include <pthread.h>
 #include <string.h>
 
 #include "nfa_dm_int.h"
@@ -276,12 +277,9 @@ bool nfa_hci_is_valid_cfg(void) {
                                      nfa_hci_cb.cfg.dyn_gates[xx].gate_owner);
         return false;
       }
-      if (!((nfa_hci_cb.cfg.dyn_gates[xx].gate_id ==
-             NFA_HCI_CONNECTIVITY_GATE) ||
-            ((nfa_hci_cb.cfg.dyn_gates[xx].gate_id >=
-              NFA_HCI_PROP_GATE_FIRST) ||
-             (nfa_hci_cb.cfg.dyn_gates[xx].gate_id <=
-              NFA_HCI_PROP_GATE_LAST)))) {
+      if ((nfa_hci_cb.cfg.dyn_gates[xx].gate_id != NFA_HCI_CONNECTIVITY_GATE) &&
+          ((nfa_hci_cb.cfg.dyn_gates[xx].gate_id < NFA_HCI_PROP_GATE_FIRST) ||
+           (nfa_hci_cb.cfg.dyn_gates[xx].gate_id > NFA_HCI_PROP_GATE_LAST))) {
         /* The gate owner should be one of the registered application */
         for (zz = 0; zz < app_count; zz++) {
           if (nfa_hci_cb.cfg.dyn_gates[xx].gate_owner == reg_app[zz]) break;
@@ -560,7 +558,8 @@ void nfa_hci_enable_one_nfcee(void) {
     } else if (nfa_hci_cb.hci_state == NFA_HCI_STATE_EE_RECOVERY) {
       nfa_hci_cb.hci_state = NFA_HCI_STATE_IDLE;
       if (nfa_ee_cb.isDiscoveryStopped == true) {
-        nfa_dm_act_start_rf_discovery(nullptr);
+        LOG(ERROR) << StringPrintf(
+            "%s: await routing table commit for RF discovery start", __func__);
         nfa_ee_cb.isDiscoveryStopped = false;
         if (!nfc_cb.is_nfcee_discovery_required) {
           tNFA_EE_CBACK_DATA nfa_ee_cback_data;

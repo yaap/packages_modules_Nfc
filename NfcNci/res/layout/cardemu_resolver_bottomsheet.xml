@@ -21,7 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true" xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
 
         <View
             android:id="@+id/touch_outside"
@@ -58,7 +58,7 @@
             android:textAlignment="center"
             android:text="@string/appchooser_description"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?android:attr/textColorPrimary"/>
+            android:textColor="@color/materialColorOnSurface"/>
 
         <ListView
             android:id="@+id/resolver_list"

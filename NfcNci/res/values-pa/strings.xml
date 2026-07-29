@@ -57,6 +57,9 @@
     <string name="tag_app_alert_message" msgid="5518729638341784348">"<xliff:g id="APPNAMES">%1$s</xliff:g> ਐਪ NFC ਟੈਗ ਪੜ੍ਹ ਸਕਦੀ ਹੈ।"</string>
     <string name="tag_app_alert_message_multiple" msgid="6989858224684960030">"ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਪਾਂ NFC ਟੈਗ ਪੜ੍ਹ ਸਕਦੀਆਂ ਹਨ:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
     <string name="tag_app_alert_action_button" msgid="1442462487575846704">"ਇਸਨੂੰ ਬੰਦ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣਨ ਲਈ ਟੈਪ ਕਰੋ।"</string>
+    <string name="tag_app_alert_blocked_message" msgid="4364326516975030539">"<xliff:g id="APPNAMES">%1$s</xliff:g> ਐਪ NFC ਟੈਗ ਪੜ੍ਹਨਾ ਚਾਹੁੰਦੀ ਹੈ।"</string>
+    <string name="tag_app_alert_message_blocked_multiple" msgid="4561487419346368974">"ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਪਾਂ NFC ਟੈਗ ਪੜ੍ਹਨਾ ਚਾਹੁੰਦੀਆਂ ਹਨ:<xliff:g id="APPNAMES">%1$s</xliff:g>"</string>
+    <string name="tag_app_alert_action_blocked_button" msgid="5449814184207463110">"ਮੌਜੂਦਾ ਸੈਟਿੰਗਾਂ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।"</string>
     <string name="nfc_logging_alert_title" msgid="7355334076019926549">"NFC ਡਾਟੇ ਨੂੰ ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
     <string name="nfc_logging_alert_message" msgid="3833608086332697579">"ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।"</string>
     <string name="title_package_enabling_nfc" msgid="7797373366778008307">"ਕੀ <xliff:g id="PKG">%1$s</xliff:g> ਨੂੰ NFC ਚਾਲੂ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?"</string>

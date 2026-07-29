@@ -1,0 +1,29 @@
+package: "com.android.nfc.module.nonexported.flags"
+container: "com.android.nfcservices"
+
+flag {
+    name: "coalesce_rf_field_on_off_broadcasts"
+    namespace: "nfc"
+    description: "Set delivery group policy to coalesce RF field on/off broadcasts."
+    bug: "447360447"
+    metadata {
+        purpose: PURPOSE_BUGFIX
+    }
+}
+
+flag {
+    name: "foreground_app_package_name_matching"
+    namespace: "nfc"
+    description: "Use package name instead of component name for foreground app matching."
+    bug: "433127912"
+}
+
+flag {
+    name: "revert_auto_disable_observe_mode"
+    namespace: "nfc"
+    description: "Revert 'auto-disable observe mode' feature"
+    bug: "468068051"
+    metadata {
+        purpose: PURPOSE_BUGFIX
+    }
+}

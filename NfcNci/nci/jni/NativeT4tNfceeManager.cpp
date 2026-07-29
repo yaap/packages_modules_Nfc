@@ -159,6 +159,28 @@ jboolean t4tNfceeManager_isNdefNfceefeatureEnabled(JNIEnv* e, jobject o) {
   return false;
 }
 
+/*******************************************************************************
+**
+** Function:        t4tNfceeManager_getT4tNfceeAid
+**
+** Description:     Get the T4T NFCEE AID.
+**                  e: JVM environment.
+**                  o: Java object.
+**
+** Returns:         jbyteArray : T4T NFCEE AID
+**
+*******************************************************************************/
+jbyteArray t4tNfceeManager_getT4tNfceeAid(JNIEnv* e, jobject o) {
+  std::vector<uint8_t> t4tNfceeAid =
+      NativeT4tNfcee::getInstance().getT4TNfceeAid();
+  if (t4tNfceeAid.size() == 0) {
+    return NULL;
+  }
+  jbyteArray result = e->NewByteArray(t4tNfceeAid.size());
+  e->SetByteArrayRegion(result, 0, t4tNfceeAid.size(), (jbyte*)t4tNfceeAid.data());
+  return result;
+}
+
 /*****************************************************************************
  **
  ** Description:     JNI functions
@@ -177,6 +199,7 @@ static JNINativeMethod gMethods[] = {
     {"getNdefNfceeRouteId", "()I", (void*)t4tNfceeManager_getNdefNfceeRouteId},
     {"isNdefNfceefeatureEnabled", "()Z",
      (void*)t4tNfceeManager_isNdefNfceefeatureEnabled},
+    {"getT4tNfceeAid", "()[B", (void*)t4tNfceeManager_getT4tNfceeAid},
 };
 
 /*******************************************************************************

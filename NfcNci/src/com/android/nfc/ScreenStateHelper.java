@@ -12,13 +12,13 @@ import com.android.server.display.feature.flags.Flags;
 /**
  * Helper class for determining the current screen state for NFC activities.
  */
-class ScreenStateHelper {
+public class ScreenStateHelper {
 
-    static final int SCREEN_STATE_UNKNOWN = 0x00;
-    static final int SCREEN_STATE_OFF_UNLOCKED = 0x01;
-    static final int SCREEN_STATE_OFF_LOCKED = 0x02;
-    static final int SCREEN_STATE_ON_LOCKED = 0x04;
-    static final int SCREEN_STATE_ON_UNLOCKED = 0x08;
+    public static final int SCREEN_STATE_UNKNOWN = 0x00;
+    public static final int SCREEN_STATE_OFF_UNLOCKED = 0x01;
+    public static final int SCREEN_STATE_OFF_LOCKED = 0x02;
+    public static final int SCREEN_STATE_ON_LOCKED = 0x04;
+    public static final int SCREEN_STATE_ON_UNLOCKED = 0x08;
 
     // Display category built-in displays before the AOSP API is ready.
     // TODO (b/321309554): Get the correct value from OEM.
@@ -60,17 +60,18 @@ class ScreenStateHelper {
                 || (displayBuiltIn != null && displayBuiltIn.getState() == Display.STATE_ON);
     }
 
-    int checkScreenState(boolean checkDisplayState) {
-        if (!mPowerManager.isInteractive() || (checkDisplayState && !isDisplayOn())) {
+    public int checkScreenState(boolean checkDisplayState) {
+        if ((!checkDisplayState && mPowerManager.isInteractive())
+                || (checkDisplayState && isDisplayOn())) {
             if (NfcInjector.getInstance().isDeviceLocked()) {
-                return SCREEN_STATE_OFF_LOCKED;
+                return SCREEN_STATE_ON_LOCKED;
             } else {
-                return SCREEN_STATE_OFF_UNLOCKED;
+                return SCREEN_STATE_ON_UNLOCKED;
             }
         } else if (NfcInjector.getInstance().isDeviceLocked()) {
-            return SCREEN_STATE_ON_LOCKED;
+            return SCREEN_STATE_OFF_LOCKED;
         } else {
-            return SCREEN_STATE_ON_UNLOCKED;
+            return SCREEN_STATE_OFF_UNLOCKED;
         }
     }
 
